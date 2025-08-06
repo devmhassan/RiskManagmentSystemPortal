@@ -1,0 +1,43 @@
+<div class="app-layout">
+  <!-- Header -->
+  <header class="app-header">
+    <div class="header-left">
+      <a class="brand" routerLink="/">
+        Bowtie
+      </a>
+      <nav class="main-nav">
+        <a routerLink="/dashboard" routerLinkActive="active">
+          <i class="fas fa-home"></i>
+          Dashboard
+        </a>
+        <a routerLink="/risk" routerLinkActive="active">
+          <i class="fas fa-exclamation-triangle"></i>
+          Risks
+        </a>
+        <a routerLink="/action-tracker" routerLinkActive="active">
+          <i class="fas fa-tasks"></i>
+          Action Tracker
+        </a>
+        <a routerLink="/reports" routerLinkActive="active">
+          <i class="fas fa-chart-bar"></i>
+          Reports
+        </a>
+      </nav>
+    </div>
+    <div class="header-right">
+      <button class="header-btn" routerLink="/settings">
+        <i class="fas fa-cog"></i>
+        Settings
+      </button>
+      <button class="header-btn sign-out" (click)="logout()">
+        <i class="fas fa-sign-out-alt"></i>
+        Sign Out
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="app-main">
+    <router-outlet></router-outlet>
+  </main>
+</div>

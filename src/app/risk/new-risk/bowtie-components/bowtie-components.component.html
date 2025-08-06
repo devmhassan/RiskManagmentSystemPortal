@@ -1,0 +1,136 @@
+<form [formGroup]="bowtieForm" >
+  <div class="page-header">
+    <h1>Bowtie Components</h1>
+    <p class="subtitle">Define the causes, consequences, and controls for the risk</p>
+  </div>
+
+  <div class="bowtie-section">
+    <div class="causes-container">
+      <div *ngFor="let causeSection of causesSections; let sectionIndex=index" class="causes-section">
+        <div class="heading">
+          <span>Cause {{sectionIndex + 1}}</span>
+          <div class="badges">
+            <span class="badge l3">L3</span>
+            <span class="badge highest">Highest</span>
+          </div>
+        </div>
+      <div class="risk-card">
+        <div formArrayName="causes">
+          <div *ngFor="let cause of getCauseControls(sectionIndex); let i=index">
+            <div class="input-group">
+              <input [formControlName]="getCauseControlIndex(sectionIndex, i)" placeholder="What could cause this risk to occur..." class="form-control">
+              <button type="button" class="copy-btn" aria-label="Copy">
+                <i class="copy-icon"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="risk-details">
+          <div class="likelihood-section">
+            <label>Likelihood (1-5)</label>
+            <select class="form-select">
+              <option>3 - Possible</option>
+            </select>
+          </div>
+
+          <div class="actions-section">
+            <h4>Preventive Actions</h4>
+            <div formArrayName="preventiveControls">
+              <div *ngFor="let control of preventiveControls.controls; let i=index">
+                <div class="action-item">
+                  <div class="input-group">
+                    <input [formControlName]="i" placeholder="Action to prevent this cause..." class="form-control">
+                    <button type="button" class="copy-btn" aria-label="Copy">
+                      <i class="copy-icon"></i>
+                    </button>
+                  </div>
+                  <div class="action-details">
+                    <div class="cost-input">
+                      <span class="currency">$</span>
+                      <input type="number" placeholder="0" class="cost-value">
+                    </div>
+                    <select class="priority-select">
+                      <option>Medium Priority</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <button type="button" class="add-action-btn" (click)="addPreventiveControl()">+ Add Preventive Action</button>
+          </div>
+        </div>
+      </div>
+      </div>
+      <button type="button" class="add-cause-btn" (click)="addCause()">+ Add Another Cause</button>
+    </div>
+
+    <div class="consequences-section">
+      <div class="heading">
+        <span>Consequence 1</span>
+        <div class="badges">
+          <span class="badge s3">S3</span>
+          <span class="badge highest">Highest</span>
+        </div>
+      </div>
+      <div class="risk-card">
+        <div formArrayName="consequences">
+          <div *ngFor="let consequence of consequences.controls; let i=index">
+            <div class="input-group">
+              <input [formControlName]="i" placeholder="What could happen if this risk occurs..." class="form-control">
+              <button type="button" class="copy-btn" aria-label="Copy">
+                <i class="copy-icon"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="risk-details">
+          <div class="severity-cost-section">
+            <div class="severity-section">
+              <label>Severity (1-5)</label>
+              <select class="form-select">
+                <option>3 - Moderate</option>
+              </select>
+            </div>
+            <div class="potential-cost">
+              <label>Potential Cost</label>
+              <div class="cost-input">
+                <span class="currency">$</span>
+                <input type="number" placeholder="0" class="cost-value">
+              </div>
+            </div>
+          </div>
+
+          <div class="actions-section">
+            <h4>Mitigation Actions</h4>
+            <div formArrayName="mitigatingControls">
+              <div *ngFor="let control of mitigatingControls.controls; let i=index">
+                <div class="action-item">
+                  <div class="input-group">
+                    <input [formControlName]="i" placeholder="Action to mitigate this consequence..." class="form-control">
+                    <button type="button" class="copy-btn" aria-label="Copy">
+                      <i class="copy-icon"></i>
+                    </button>
+                  </div>
+                  <div class="action-details">
+                    <div class="cost-input">
+                      <span class="currency">$</span>
+                      <input type="number" placeholder="0" class="cost-value">
+                    </div>
+                    <select class="priority-select">
+                      <option>Medium Priority</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <button type="button" class="add-action-btn" (click)="addMitigatingControl()">+ Add Mitigation Action</button>
+          </div>
+        </div>
+      </div>
+      <button type="button" class="add-cause-btn" (click)="addConsequence()">+ Add Another Consequence</button>
+    </div>
+
+  </div>
+</form>

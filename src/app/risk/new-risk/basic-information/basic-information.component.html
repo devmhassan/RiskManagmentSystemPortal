@@ -1,0 +1,81 @@
+<div class="risk-information">
+  <h2>Risk Information</h2>
+  <p class="subtitle">Enter the basic information about the risk</p>
+
+  <form [formGroup]="basicInfoForm" class="form-container">
+    <div class="form-row">
+      <div class="form-group">
+        <label for="riskId">Risk ID</label>
+        <input id="riskId" type="text" formControlName="riskId" class="form-control">
+        <div class="error-message" *ngIf="basicInfoForm.get('riskId')?.touched && basicInfoForm.get('riskId')?.errors?.['required']">
+          Risk ID is required
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="status">Status</label>
+        <select id="status" class="form-control" formControlName="status">
+          <option value="Open">Open</option>
+          <option value="In Progress">In Progress</option>
+          <option value="Closed">Closed</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="riskDescription">Risk Description</label>
+      <textarea id="riskDescription" formControlName="riskDescription" class="form-control" rows="3" 
+                placeholder="Describe the risk..."></textarea>
+      <div class="error-message" *ngIf="basicInfoForm.get('riskDescription')?.touched && basicInfoForm.get('riskDescription')?.errors?.['required']">
+        Risk description is required
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="businessDomain">Business Domain</label>
+      <select id="businessDomain" formControlName="businessDomain" class="form-control">
+        <option value="">Select a business domain</option>
+        <option *ngFor="let domain of businessDomains" [value]="domain">{{domain}}</option>
+      </select>
+      <div class="error-message" *ngIf="basicInfoForm.get('businessDomain')?.touched && basicInfoForm.get('businessDomain')?.errors?.['required']">
+        Business domain is required
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="riskOwner">Risk Owner</label>
+      <input id="riskOwner" type="text" formControlName="riskOwner" class="form-control" 
+             placeholder="Department or individual responsible">
+      <div class="error-message" *ngIf="basicInfoForm.get('riskOwner')?.touched && basicInfoForm.get('riskOwner')?.errors?.['required']">
+        Risk owner is required
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="reviewDate">Review Date</label>
+      <input id="reviewDate" type="date" formControlName="reviewDate" class="form-control">
+      <div class="error-message" *ngIf="basicInfoForm.get('reviewDate')?.touched && basicInfoForm.get('reviewDate')?.errors?.['required']">
+        Review date is required
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Trigger Events</label>
+      <div class="trigger-events-container">
+        <div class="trigger-input-group">
+          <input id="triggerEvents" type="text" formControlName="triggerEvents" class="form-control"
+                 placeholder="Event that would trigger this risk...">
+          <button type="button" class="btn-add" (click)="addTriggerEvent()" [disabled]="!basicInfoForm.get('triggerEvents')?.value">
+            Add
+          </button>
+        </div>
+        <div class="trigger-events-list">
+          <div *ngFor="let event of triggerEvents; let i = index" class="trigger-event-item">
+            <span>{{event}}</span>
+            <button type="button" class="btn-remove" (click)="removeTriggerEvent(i)">×</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>

@@ -1,0 +1,139 @@
+.risk-information {
+  padding: 0;
+  width: 100%;
+
+  h2 {
+    margin: 0;
+    font-size: 24px;
+    color: #333;
+  }
+
+  .subtitle {
+    color: #666;
+    margin: 8px 0 24px;
+  }
+}
+
+.form-container {
+  max-width: 100%;
+}
+
+.form-row {
+  display: flex;
+  gap: 50px;
+  margin-bottom: 20px;
+
+  .form-group {
+    flex: 1;
+  }
+}
+
+.form-group {
+  margin-bottom: 20px;
+
+  label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: #333;
+  }
+
+  .form-control {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    font-size: 14px;
+    transition: all 0.3s ease;
+
+    &:focus {
+      outline: none;
+      border-color: #2196f3;
+      box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.1);
+    }
+
+    &::placeholder {
+      color: #999;
+    }
+  }
+
+  select.form-control {
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 16px;
+    padding-right: 40px;
+  }
+
+  textarea.form-control {
+    resize: vertical;
+    min-height: 100px;
+  }
+}
+
+.error-message {
+  color: #f44336;
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+.trigger-events-container {
+  .trigger-input-group {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 12px;
+
+    .btn-add {
+      padding: 8px 20px;
+      background: #2196f3;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: background 0.3s ease;
+
+      &:hover {
+        background: #1976d2;
+      }
+
+      &:disabled {
+        background: #e0e0e0;
+        cursor: not-allowed;
+      }
+    }
+  }
+
+  .trigger-events-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    .trigger-event-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 12px;
+      background: #f5f5f5;
+      border-radius: 4px;
+
+      span {
+        color: #333;
+      }
+
+      .btn-remove {
+        background: none;
+        border: none;
+        color: #666;
+        font-size: 18px;
+        cursor: pointer;
+        padding: 0 4px;
+        
+        &:hover {
+          color: #f44336;
+        }
+      }
+    }
+  }
+}

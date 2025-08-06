@@ -1,0 +1,39 @@
+<div class="page-header">
+  <button class="back-button" (click)="onCancel()">
+    <i class="fas fa-arrow-left"></i>
+  </button>
+  <h1>Add New Risk</h1>
+</div>
+
+<div class="risk-tabs">
+  <div *ngFor="let step of steps" 
+       [class.active]="step.active"
+       [class.completed]="step.completed"
+       class="tab"
+       (click)="goToStep(step.id)">
+    {{ step.label }}
+  </div>
+</div>
+
+<div class="content-container">
+  <div class="step-content">
+    
+  </div>
+<app-basic-information *ngIf="currentStep === 1"></app-basic-information>
+    <app-risk-assessment *ngIf="currentStep === 2"></app-risk-assessment>
+    <app-bowtie-components *ngIf="currentStep === 3"></app-bowtie-components>
+  <div class="navigation-buttons">
+    <button 
+      class="btn btn-secondary"
+      (click)="previousStep()" 
+      [disabled]="currentStep === 1">
+      <i class="fas fa-arrow-left"></i> Previous
+    </button>
+    <button 
+      class="btn btn-primary"
+      (click)="nextStep()" 
+      [disabled]="currentStep === totalSteps">
+      Next <i class="fas fa-arrow-right"></i>
+    </button>
+  </div>
+</div>

@@ -1,0 +1,21 @@
+{
+  "production": true,
+  "application": {
+    "baseUrl":"https://riskmanagement-web",
+    "name": "RiskManagement",
+    "logoUrl": ""
+  },
+  "oAuthConfig": {
+    "issuer": "https://riskmanagement-api/",
+    "redirectUri": "https://riskmanagement",
+    "clientId": "RiskManagement_App",
+    "responseType": "code",
+    "scope": "offline_access openid profile email phone"
+  },
+  "apis": {
+    "default": {
+      "url": "https://riskmanagement-api",
+      "rootNamespace": "RiskManagement"
+    }
+  }
+}
