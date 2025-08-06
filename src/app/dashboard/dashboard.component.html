@@ -1,0 +1,114 @@
+<div class="dashboard-container">
+  <!-- Navigation Tabs -->
+  <div class="dashboard-tabs">
+    <button 
+      class="tab-button" 
+      [class.active]="activeTab === 'overview'"
+      (click)="setActiveTab('overview')">
+      Overview
+    </button>
+    <button 
+      class="tab-button" 
+      [class.active]="activeTab === 'risks'"
+      (click)="setActiveTab('risks')">
+      Risks
+    </button>
+    <button 
+      class="tab-button" 
+      [class.active]="activeTab === 'actions'"
+      (click)="setActiveTab('actions')">
+      Actions
+    </button>
+  </div>
+
+  <!-- Dashboard Content -->
+  <div class="dashboard-content" *ngIf="activeTab === 'overview'">
+    <div *ngIf="loading" class="loading-container">
+      <div class="spinner"></div>
+      <p>Loading dashboard...</p>
+    </div>
+
+    <div *ngIf="!loading && dashboardStats" class="stats-grid">
+      <!-- Total Risks Card -->
+      <div class="stat-card">
+        <div class="stat-header">
+          <h3>Total Risks</h3>
+        </div>
+        <div class="stat-value">
+          <span class="number">{{ dashboardStats.totalRisks }}</span>
+          <span 
+            class="change" 
+            [ngClass]="getChangeClass(dashboardStats.totalRisksChange)">
+            {{ getChangeIcon(dashboardStats.totalRisksChange) }}{{ Math.abs(dashboardStats.totalRisksChange) }} since last month
+          </span>
+        </div>
+      </div>
+
+      <!-- High Risks Card -->
+      <div class="stat-card high-risk">
+        <div class="stat-header">
+          <h3>High Risks</h3>
+        </div>
+        <div class="stat-value">
+          <span class="number">{{ dashboardStats.highRisks }}</span>
+          <span 
+            class="change" 
+            [ngClass]="getChangeClass(dashboardStats.highRisksChange)">
+            {{ getChangeIcon(dashboardStats.highRisksChange) }}{{ Math.abs(dashboardStats.highRisksChange) }} since last month
+          </span>
+        </div>
+      </div>
+
+      <!-- Open Actions Card -->
+      <div class="stat-card">
+        <div class="stat-header">
+          <h3>Open Actions</h3>
+        </div>
+        <div class="stat-value">
+          <span class="number">{{ dashboardStats.openActions }}</span>
+          <span 
+            class="change" 
+            [ngClass]="getChangeClass(dashboardStats.openActionsChange)">
+            {{ getChangeIcon(dashboardStats.openActionsChange) }}{{ Math.abs(dashboardStats.openActionsChange) }} since last month
+          </span>
+        </div>
+      </div>
+
+      <!-- Mitigated Risks Card -->
+      <div class="stat-card success">
+        <div class="stat-header">
+          <h3>Mitigated Risks</h3>
+        </div>
+        <div class="stat-value">
+          <span class="number">{{ dashboardStats.mitigatedRisks }}</span>
+          <span 
+            class="change" 
+            [ngClass]="getChangeClass(dashboardStats.mitigatedRisksChange)">
+            {{ getChangeIcon(dashboardStats.mitigatedRisksChange) }}{{ Math.abs(dashboardStats.mitigatedRisksChange) }} since last month
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="!loading && !dashboardStats" class="error-container">
+      <p>Failed to load dashboard data. Please try again.</p>
+      <button class="retry-button" (click)="loadDashboardStats()">Retry</button>
+    </div>
+  </div>
+
+  <!-- Risks Tab Content -->
+  <div class="dashboard-content" *ngIf="activeTab === 'risks'">
+    <div class="coming-soon">
+      <h3>Risks Overview</h3>
+      <p>Risk management features coming soon...</p>
+    </div>
+  </div>
+
+  <!-- Actions Tab Content -->
+  <div class="dashboard-content" *ngIf="activeTab === 'actions'">
+    <div class="coming-soon">
+      <h3>Actions Overview</h3>
+      <p>Action tracking features coming soon...</p>
+    </div>
+  </div>
+</div>
