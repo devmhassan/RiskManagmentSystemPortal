@@ -5,6 +5,7 @@ import { SharedModule } from '../shared/shared.module';
 import { RiskRoutingModule } from './risk-routing.module';
 import { CoreModule } from '@abp/ng.core';
 import { ThemeSharedModule } from '@abp/ng.theme.shared';
+import { RiskListComponent } from './risk-list/risk-list.component';
 
 @NgModule({
   declarations: [],
@@ -15,7 +16,8 @@ import { ThemeSharedModule } from '@abp/ng.theme.shared';
     CoreModule,
     ThemeSharedModule,
     SharedModule,
-    RiskRoutingModule
+    RiskRoutingModule,
+    RiskListComponent
   ]
 })
 export class RiskModule { }
