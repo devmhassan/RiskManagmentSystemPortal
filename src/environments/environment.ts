@@ -3,7 +3,7 @@ import { Environment } from '@abp/ng.core';
 const baseUrl = 'http://localhost:4200';
 
 const oAuthConfig = {
-  issuer: 'https://localhost:44345/',
+  issuer: 'https://localhost:44338/',
   redirectUri: baseUrl,
   clientId: 'RiskManagement_App',
   responseType: 'code',
@@ -20,7 +20,7 @@ export const environment = {
   oAuthConfig,
   apis: {
     default: {
-      url: 'https://localhost:44345',
+      url: 'https://localhost:44338',
       rootNamespace: 'RiskManagement',
     },
     AbpAccountPublic: {

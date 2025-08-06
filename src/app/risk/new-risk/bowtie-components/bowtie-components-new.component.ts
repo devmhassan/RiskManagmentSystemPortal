@@ -16,7 +16,6 @@ import { ActionPriority, actionPriorityOptions } from '../../../proxy/risk-manag
 })
 export class BowtieComponentsComponent implements OnInit {
   bowtieForm: FormGroup;
-  private isUpdatingFromService = false; // Guard to prevent circular updates
   
   // Enum options for dropdowns
   likelihoodOptions = likelihoodOptions;
@@ -42,21 +41,17 @@ export class BowtieComponentsComponent implements OnInit {
     // Load existing form data if available
     this.riskFormService.riskFormData$.subscribe(data => {
       if (data.causes && data.causes.length > 0) {
-        this.isUpdatingFromService = true; // Set guard before loading data
         this.loadExistingData(data.causes, data.consequences || []);
-        this.isUpdatingFromService = false; // Clear guard after loading
-      } else if (!this.isUpdatingFromService) {
-        // Only add initial data if not updating from service
+      } else {
+        // Add initial empty cause and consequence
         this.addCause();
         this.addConsequence();
       }
     });
 
-    // Subscribe to form changes with guard to prevent circular updates
+    // Subscribe to form changes
     this.bowtieForm.valueChanges.subscribe(() => {
-      if (!this.isUpdatingFromService) {
-        this.updateFormData();
-      }
+      this.updateFormData();
     });
   }
 

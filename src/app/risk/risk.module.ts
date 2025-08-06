@@ -6,6 +6,9 @@ import { RiskRoutingModule } from './risk-routing.module';
 import { CoreModule } from '@abp/ng.core';
 import { ThemeSharedModule } from '@abp/ng.theme.shared';
 
+// Import the proxy services
+import { RiskService } from '../proxy/risk-managment-system/risks/risk.service';
+
 @NgModule({
   declarations: [],
   imports: [
@@ -16,6 +19,9 @@ import { ThemeSharedModule } from '@abp/ng.theme.shared';
     ThemeSharedModule,
     SharedModule,
     RiskRoutingModule
+  ],
+  providers: [
+    RiskService
   ]
 })
 export class RiskModule { }
