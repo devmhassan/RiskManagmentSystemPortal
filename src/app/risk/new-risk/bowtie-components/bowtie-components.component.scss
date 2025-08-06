@@ -13,6 +13,7 @@
 
   .page-header {
     margin-bottom: 32px;
+    display: block !important;
     
     h1 {
       font-size: 24px;
@@ -42,7 +43,7 @@
   background-color: #ffffff;
   border-radius: 12px;
 
-  .causes-container {
+  .causes-container, .consequences-container {
     display: flex;
     flex-direction: column;
     gap: 16px;
@@ -160,7 +161,8 @@
 
 .input-group {
   display: flex;
-  gap: 12px;
+  align-items: center;
+  gap: 8px;
   margin-bottom: 20px;
 
   .form-control {
@@ -169,9 +171,16 @@
     border: 1px solid #E4E6EF;
     border-radius: 4px;
     font-size: 14px;
-    
+     background-color: #FFFFFF;
     &::placeholder {
       color: #A1A5B7;
+    }
+
+    &:focus {
+      outline: none;
+      border-color: #007bff;
+      box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.1);
+      background-color: #fff;
     }
   }
 
@@ -289,6 +298,12 @@
   }
 }
 
+.consequences-section {
+  .action-item {
+    background: #fff5f8;
+  }
+}
+
   .action-details {
     display: flex;
     gap: 50px;
@@ -326,29 +341,11 @@
     }
 }
 
-.causes-section {
-  &:nth-child(1) {
-    background-color: #FFF5F8;
-    .action-item {
-      background: #fff5f8;
-    }
-  }
-  
-  &:nth-child(2) {
-    background-color: rgb(248 250 252/1);
-    border: none;
-    border-color: transparent;
-    .action-item {
-      background: rgb(248 250 252/1);
-    }
-  }
-}
-
 .add-action-btn {
   width: 100%;
   padding: 12px;
-  background: none;
-  border: none;
+  background: #F8F5FF;
+  border: 1px solid #E1E3EA;
   color: #7239EA;
   font-size: 13px;
   font-weight: 500;
@@ -360,13 +357,41 @@
   border-radius: 6px;
   transition: all 0.2s ease;
 
+  .plus-icon {
+    font-size: 16px;
+    font-weight: bold;
+  }
+
   &:hover {
-    background-color: #F8F5FF;
+    background-color: #F0EBFF;
+    border-color: #D1C7F7;
+  }
+}
+
+.add-consequence-btn {
+  width: fit-content;
+  padding: 12px 16px;
+  background: white;
+  border: 1px solid #E4E6EF;
+  border-radius: 6px;
+  color: #181C32;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 16px;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background-color: #F9F9F9;
+    border-color: #D6D6E0;
   }
 }
 
 .add-cause-btn {
-  width: auto;
+  width: fit-content;
   padding: 12px 16px;
   background: white;
   border: 1px solid #E4E6EF;
@@ -387,21 +412,36 @@
   }
 }
 
-  .form-control {
-    flex: 1;
-    padding: 12px;
-    border: 1px solid #e0e0e0;
-    border-radius: 6px;
-    font-size: 14px;
-    background-color: #f8f9fa;
+.delete-btn {
+  background: none;
+  border: none;
+  color: #F1416C;
+  font-size: 14px;
+  cursor: pointer;
+  padding: 8px;
+  margin-left: 8px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  width: 32px;
+  height: 32px;
 
-    &:focus {
-      outline: none;
-      border-color: #007bff;
-      box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.1);
-      background-color: #fff;
-    }
+  &:hover:not(.disabled) {
+    background-color: #FFF5F8;
+    color: #E1306C;
   }
+
+  &.disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+  }
+
+  i {
+    font-size: 14px;
+  }
+}
 
 .remove-btn {
   background: none;

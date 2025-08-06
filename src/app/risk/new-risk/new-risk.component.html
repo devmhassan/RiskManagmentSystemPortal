@@ -33,7 +33,8 @@
       class="btn btn-primary"
       (click)="nextStep()" 
       [disabled]="currentStep === totalSteps">
-      Next <i class="fas fa-arrow-right"></i>
+      {{ currentStep === totalSteps ? 'Save Risk' : 'Next' }} 
+      <i class="fas" [class.fa-save]="currentStep === totalSteps" [class.fa-arrow-right]="currentStep !== totalSteps"></i>
     </button>
   </div>
 </div>

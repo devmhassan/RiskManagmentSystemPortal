@@ -1,5 +1,5 @@
 <form [formGroup]="bowtieForm" >
-  <div class="page-header">
+  <div class="page-header" style="display: block;">
     <h1>Bowtie Components</h1>
     <p class="subtitle">Define the causes, consequences, and controls for the risk</p>
   </div>
@@ -16,11 +16,11 @@
         </div>
       <div class="risk-card">
         <div formArrayName="causes">
-          <div *ngFor="let cause of getCauseControls(sectionIndex); let i=index">
+          <div >
             <div class="input-group">
-              <input [formControlName]="getCauseControlIndex(sectionIndex, i)" placeholder="What could cause this risk to occur..." class="form-control">
+              <input [formControlName]="getCauseControlIndex(1, i)" placeholder="What could cause this risk to occur..." class="form-control">
               <button type="button" class="copy-btn" aria-label="Copy">
-                <i class="copy-icon"></i>
+             <i class="fas fa-trash"></i>
               </button>
             </div>
           </div>
@@ -36,13 +36,22 @@
 
           <div class="actions-section">
             <h4>Preventive Actions</h4>
-            <div formArrayName="preventiveControls">
-              <div *ngFor="let control of preventiveControls.controls; let i=index">
+            <div>
+              <div *ngFor="let control of getPreventiveControls(sectionIndex).controls; let i=index">
                 <div class="action-item">
                   <div class="input-group">
-                    <input [formControlName]="i" placeholder="Action to prevent this cause..." class="form-control">
+                    <input [formControl]="control" placeholder="Action to prevent this cause..." class="form-control">
                     <button type="button" class="copy-btn" aria-label="Copy">
                       <i class="copy-icon"></i>
+                    </button>
+                    <button 
+                      type="button" 
+                      class="delete-btn" 
+                      [disabled]="!canDeletePreventiveControl(sectionIndex)"
+                      [class.disabled]="!canDeletePreventiveControl(sectionIndex)"
+                      (click)="removePreventiveControl(sectionIndex, i)" 
+                      aria-label="Delete">
+                      <i class="fas fa-trash"></i>
                     </button>
                   </div>
                   <div class="action-details">
@@ -57,7 +66,10 @@
                 </div>
               </div>
             </div>
-            <button type="button" class="add-action-btn" (click)="addPreventiveControl()">+ Add Preventive Action</button>
+            <button type="button" class="add-action-btn" (click)="addPreventiveControl(sectionIndex)">
+              <span class="plus-icon">+</span>
+              Add Preventive Action
+            </button>
           </div>
         </div>
       </div>
@@ -65,71 +77,85 @@
       <button type="button" class="add-cause-btn" (click)="addCause()">+ Add Another Cause</button>
     </div>
 
-    <div class="consequences-section">
-      <div class="heading">
-        <span>Consequence 1</span>
-        <div class="badges">
-          <span class="badge s3">S3</span>
-          <span class="badge highest">Highest</span>
+    <div class="consequences-container">
+      <div *ngFor="let consequenceSection of consequencesSections; let sectionIndex=index" class="consequences-section">
+        <div class="heading">
+          <span>Consequence {{sectionIndex + 1}}</span>
+          <div class="badges">
+            <span class="badge s3">S3</span>
+            <span class="badge highest">Highest</span>
+          </div>
         </div>
-      </div>
-      <div class="risk-card">
-        <div formArrayName="consequences">
-          <div *ngFor="let consequence of consequences.controls; let i=index">
-            <div class="input-group">
-              <input [formControlName]="i" placeholder="What could happen if this risk occurs..." class="form-control">
-              <button type="button" class="copy-btn" aria-label="Copy">
-                <i class="copy-icon"></i>
+        <div class="risk-card">
+          <div formArrayName="consequences">
+            <div *ngFor="let consequence of getConsequenceControls(sectionIndex); let i=index">
+              <div class="input-group">
+                <input [formControlName]="getConsequenceControlIndex(sectionIndex)" placeholder="What could happen if this risk occurs..." class="form-control">
+                <button type="button" class="copy-btn" aria-label="Copy">
+                  <i class="copy-icon"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="risk-details">
+            <div class="severity-cost-section">
+              <div class="severity-section">
+                <label>Severity (1-5)</label>
+                <select class="form-select">
+                  <option>3 - Moderate</option>
+                </select>
+              </div>
+              <div class="potential-cost">
+                <label>Potential Cost</label>
+                <div class="cost-input">
+                  <span class="currency">$</span>
+                  <input type="number" placeholder="0" class="cost-value">
+                </div>
+              </div>
+            </div>
+
+            <div class="actions-section">
+              <h4>Mitigation Actions</h4>
+              <div>
+                <div *ngFor="let control of getMitigatingControls(sectionIndex).controls; let i=index">
+                  <div class="action-item">
+                    <div class="input-group">
+                      <input [formControl]="control" placeholder="Action to mitigate this consequence..." class="form-control">
+                      <button type="button" class="copy-btn" aria-label="Copy">
+                        <i class="copy-icon"></i>
+                      </button>
+                      <button 
+                        type="button" 
+                        class="delete-btn" 
+                        [disabled]="!canDeleteMitigatingControl(sectionIndex)"
+                        [class.disabled]="!canDeleteMitigatingControl(sectionIndex)"
+                        (click)="removeMitigatingControl(sectionIndex, i)" 
+                        aria-label="Delete">
+                        <i class="fas fa-trash"></i>
+                      </button>
+                    </div>
+                    <div class="action-details">
+                      <div class="cost-input">
+                        <span class="currency">$</span>
+                        <input type="number" placeholder="0" class="cost-value">
+                      </div>
+                      <select class="priority-select">
+                        <option>Medium Priority</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <button type="button" class="add-action-btn" (click)="addMitigatingControl(sectionIndex)">
+                <span class="plus-icon">+</span>
+                Add Mitigation Action
               </button>
             </div>
           </div>
         </div>
-
-        <div class="risk-details">
-          <div class="severity-cost-section">
-            <div class="severity-section">
-              <label>Severity (1-5)</label>
-              <select class="form-select">
-                <option>3 - Moderate</option>
-              </select>
-            </div>
-            <div class="potential-cost">
-              <label>Potential Cost</label>
-              <div class="cost-input">
-                <span class="currency">$</span>
-                <input type="number" placeholder="0" class="cost-value">
-              </div>
-            </div>
-          </div>
-
-          <div class="actions-section">
-            <h4>Mitigation Actions</h4>
-            <div formArrayName="mitigatingControls">
-              <div *ngFor="let control of mitigatingControls.controls; let i=index">
-                <div class="action-item">
-                  <div class="input-group">
-                    <input [formControlName]="i" placeholder="Action to mitigate this consequence..." class="form-control">
-                    <button type="button" class="copy-btn" aria-label="Copy">
-                      <i class="copy-icon"></i>
-                    </button>
-                  </div>
-                  <div class="action-details">
-                    <div class="cost-input">
-                      <span class="currency">$</span>
-                      <input type="number" placeholder="0" class="cost-value">
-                    </div>
-                    <select class="priority-select">
-                      <option>Medium Priority</option>
-                    </select>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <button type="button" class="add-action-btn" (click)="addMitigatingControl()">+ Add Mitigation Action</button>
-          </div>
-        </div>
       </div>
-      <button type="button" class="add-cause-btn" (click)="addConsequence()">+ Add Another Consequence</button>
+      <button type="button" class="add-consequence-btn" (click)="addConsequence()">+ Add Another Consequence</button>
     </div>
 
   </div>

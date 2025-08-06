@@ -18,7 +18,7 @@ import { BowtieComponentsComponent } from './bowtie-components/bowtie-components
   ]
 })
 export class NewRiskComponent {
-  currentStep = 3;
+  currentStep = 1;
   totalSteps = 3;
 
   steps = [
