@@ -11,21 +11,18 @@ import { CommonModule } from '@angular/common';
 })
 export class BowtieComponentsComponent {
   bowtieForm: FormGroup;
-  causesSections: number[] = [];
+  causesSections: any[] = [];
+  consequencesSections: any[] = [];
 
   constructor(private fb: FormBuilder) {
     this.bowtieForm = this.fb.group({
       causes: this.fb.array([]),
-      consequences: this.fb.array([]),
-      preventiveControls: this.fb.array([]),
-      mitigatingControls: this.fb.array([])
+      consequences: this.fb.array([])
     });
 
     // Add initial empty items
     this.addCause();
     this.addConsequence();
-    this.addPreventiveControl();
-    this.addMitigatingControl();
   }
 
   // Getters for form arrays
@@ -37,27 +34,23 @@ export class BowtieComponentsComponent {
     return this.bowtieForm.get('consequences') as FormArray;
   }
 
-  get preventiveControls() {
-    return this.bowtieForm.get('preventiveControls') as FormArray;
-  }
-
-  get mitigatingControls() {
-    return this.bowtieForm.get('mitigatingControls') as FormArray;
-  }
-
   getCauseControls(sectionIndex: number) {
-    const startIndex = sectionIndex * 3; // Assuming 3 causes per section
+    const startIndex = sectionIndex ; // Assuming 3 causes per section
     return this.causes.controls.slice(startIndex, startIndex + 3);
   }
 
   getCauseControlIndex(sectionIndex: number, causeIndex: number): number {
-    return sectionIndex * 3 + causeIndex;
+    return sectionIndex + causeIndex;
   }
 
   // Add methods
   addCause() {
-    // Add a new section
-    this.causesSections.push(this.causesSections.length);
+    // Add a new cause section with its own preventive controls
+    const causeIndex = this.causesSections.length;
+    this.causesSections.push({
+      index: causeIndex,
+      preventiveControls: this.fb.array([this.fb.control('', Validators.required)])
+    });
     
     // Add three new cause controls for the new section
     for (let i = 0; i < 3; i++) {
@@ -65,16 +58,47 @@ export class BowtieComponentsComponent {
     }
   }
 
+  getPreventiveControls(causeIndex: number): FormArray {
+    if (this.causesSections[causeIndex]) {
+      return this.causesSections[causeIndex].preventiveControls;
+    }
+    return this.fb.array([]);
+  }
+
+  addPreventiveControl(causeIndex: number) {
+    const preventiveControls = this.getPreventiveControls(causeIndex);
+    preventiveControls.push(this.fb.control('', Validators.required));
+  }
+
   addConsequence() {
+    // Add a new consequence section with its own mitigation controls
+    const consequenceIndex = this.consequencesSections.length;
+    this.consequencesSections.push({
+      index: consequenceIndex,
+      mitigatingControls: this.fb.array([this.fb.control('', Validators.required)])
+    });
     this.consequences.push(this.fb.control('', Validators.required));
   }
 
-  addPreventiveControl() {
-    this.preventiveControls.push(this.fb.control('', Validators.required));
+  getConsequenceControls(sectionIndex: number) {
+    const startIndex = sectionIndex; // One consequence per section
+    return this.consequences.controls.slice(startIndex, startIndex + 1);
   }
 
-  addMitigatingControl() {
-    this.mitigatingControls.push(this.fb.control('', Validators.required));
+  getConsequenceControlIndex(sectionIndex: number): number {
+    return sectionIndex;
+  }
+
+  getMitigatingControls(consequenceIndex: number): FormArray {
+    if (this.consequencesSections[consequenceIndex]) {
+      return this.consequencesSections[consequenceIndex].mitigatingControls;
+    }
+    return this.fb.array([]);
+  }
+
+  addMitigatingControl(consequenceIndex: number) {
+    const mitigatingControls = this.getMitigatingControls(consequenceIndex);
+    mitigatingControls.push(this.fb.control('', Validators.required));
   }
 
   // Remove methods
@@ -86,11 +110,29 @@ export class BowtieComponentsComponent {
     this.consequences.removeAt(index);
   }
 
-  removePreventiveControl(index: number) {
-    this.preventiveControls.removeAt(index);
+  removePreventiveControl(causeIndex: number, controlIndex: number) {
+    // Validate that we can't delete if there's only one preventive action
+    const preventiveControls = this.getPreventiveControls(causeIndex);
+    if (preventiveControls.length > 1) {
+      preventiveControls.removeAt(controlIndex);
+    }
   }
 
-  removeMitigatingControl(index: number) {
-    this.mitigatingControls.removeAt(index);
+  removeMitigatingControl(consequenceIndex: number, controlIndex: number) {
+    // Validate that we can't delete if there's only one mitigation action
+    const mitigatingControls = this.getMitigatingControls(consequenceIndex);
+    if (mitigatingControls.length > 1) {
+      mitigatingControls.removeAt(controlIndex);
+    }
+  }
+
+  canDeletePreventiveControl(causeIndex: number): boolean {
+    const preventiveControls = this.getPreventiveControls(causeIndex);
+    return preventiveControls.length > 1;
+  }
+
+  canDeleteMitigatingControl(consequenceIndex: number): boolean {
+    const mitigatingControls = this.getMitigatingControls(consequenceIndex);
+    return mitigatingControls.length > 1;
   }
 }
