@@ -12,6 +12,10 @@ const routes: Routes = [
     loadChildren: () => import('./risk/risk.module').then(m => m.RiskModule),
   },
   {
+    path: 'action-tracker',
+    loadChildren: () => import('./action-tracker/action-tracker.module').then(m => m.ActionTrackerModule),
+  },
+  {
     path: 'account',
     loadChildren: () => import('@abp/ng.account').then(m => m.AccountModule.forLazy()),
   },

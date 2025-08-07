@@ -1,0 +1,166 @@
+<div class="action-tracker-container">
+  <!-- Header -->
+  <div class="header">
+    <h1 class="title">Action Tracker</h1>
+    <p class="subtitle">Track and manage all preventive and mitigation actions across risks</p>
+  </div>
+
+  <!-- Status Summary Cards -->
+  <div class="status-summary">
+    <div class="status-card open">
+      <div class="status-content">
+        <div class="status-label">Open</div>
+        <div class="status-count">{{ statusSummary.open }}</div>
+      </div>
+      <div class="status-icon">
+        <i class="fas fa-clock"></i>
+      </div>
+    </div>
+
+    <div class="status-card in-progress">
+      <div class="status-content">
+        <div class="status-label">In Progress</div>
+        <div class="status-count">{{ statusSummary.inProgress }}</div>
+      </div>
+      <div class="status-icon">
+        <i class="fas fa-spinner"></i>
+      </div>
+    </div>
+
+    <div class="status-card completed">
+      <div class="status-content">
+        <div class="status-label">Completed</div>
+        <div class="status-count">{{ statusSummary.completed }}</div>
+      </div>
+      <div class="status-icon">
+        <i class="fas fa-check-circle"></i>
+      </div>
+    </div>
+
+    <div class="status-card overdue">
+      <div class="status-content">
+        <div class="status-label">Overdue</div>
+        <div class="status-count">{{ statusSummary.overdue }}</div>
+      </div>
+      <div class="status-icon">
+        <i class="fas fa-exclamation-triangle"></i>
+      </div>
+    </div>
+  </div>
+
+  <!-- Action Tracker Section -->
+  <div class="action-tracker-section" 
+       [class.tab-all]="activeTab === 'all'"
+       [class.tab-upcoming]="activeTab === 'upcoming'"
+       [class.tab-overdue]="activeTab === 'overdue'"
+       [class.tab-completed]="activeTab === 'completed'">
+    <div class="section-header">
+      <h2>Action Tracker</h2>
+      <p class="section-subtitle">Track and manage all preventive and mitigation actions</p>
+    </div>
+
+    <!-- Tab Navigation -->
+    <div class="tab-navigation">
+      <button 
+        class="tab" 
+        [class.active]="activeTab === 'all'"
+        (click)="setActiveTab('all')">
+        All Actions
+      </button>
+      <button 
+        class="tab" 
+        [class.active]="activeTab === 'upcoming'"
+        (click)="setActiveTab('upcoming')">
+        Upcoming
+      </button>
+      <button 
+        class="tab" 
+        [class.active]="activeTab === 'overdue'"
+        (click)="setActiveTab('overdue')">
+        Overdue
+      </button>
+      <button 
+        class="tab" 
+        [class.active]="activeTab === 'completed'"
+        (click)="setActiveTab('completed')">
+        Completed
+      </button>
+    </div>
+
+
+
+    <!-- Actions List -->
+    <div class="actions-list" *ngIf="filteredActions.length > 0; else noActions">
+      <div *ngFor="let action of filteredActions" class="action-item" 
+           [class.status-completed]="action.status === 'completed'"
+           [class.status-in-progress]="action.status === 'in-progress'"
+           [class.status-open]="action.status === 'open'"
+           [class.status-overdue]="action.status === 'overdue'">
+        <!-- Action Header -->
+        <div class="action-header">
+          <div class="action-id-status">
+            <span class="action-id">{{ action.id }}</span>
+            <span [class]="getStatusBadgeClass(action.status)">
+              <i class="fas fa-check-circle" *ngIf="action.status === 'completed'"></i>
+              <i class="fas fa-spinner" *ngIf="action.status === 'in-progress'"></i>
+              <i class="fas fa-clock" *ngIf="action.status === 'open'"></i>
+              <i class="fas fa-exclamation-triangle" *ngIf="action.status === 'overdue'"></i>
+              {{ action.status === 'in-progress' ? 'In progress' : action.status | titlecase }}
+            </span>
+          </div>
+          <button class="view-btn">
+            View <i class="fas fa-chevron-right"></i>
+          </button>
+        </div>
+
+        <!-- Action Title -->
+        <h3 class="action-title">{{ action.title }}</h3>
+
+        <!-- Action Description -->
+        <p class="action-description">{{ action.description }}</p>
+
+        <!-- Risk Information -->
+        <div class="risk-info" *ngIf="action.riskId">
+          <span class="risk-label">Risk:</span>
+          <span class="risk-id">{{ action.riskId }}</span>
+          <span class="risk-separator">-</span>
+          <span class="risk-title">{{ action.riskTitle }}</span>
+        </div>
+
+        <!-- Action Meta -->
+        <div class="action-meta">
+          <div class="meta-left">
+            <span class="assigned-to">
+              <i class="fas fa-user"></i>
+              Assigned to: {{ action.assignedTo }}
+            </span>
+            <span class="due-date" [class.overdue]="action.status === 'overdue'">
+              <i class="fas fa-calendar"></i>
+              {{ formatDate(action.dueDate) }}
+              <span *ngIf="action.status === 'overdue'" class="overdue-text">
+                {{ getOverdueText(action) }}
+              </span>
+            </span>
+            <span *ngIf="action.completedDate" class="completed-date">
+              <i class="fas fa-check"></i>
+              Completed: {{ formatDate(action.completedDate) }}
+            </span>
+          </div>
+          <div class="meta-right">
+            <span [class]="getPriorityBadgeClass(action.priority)">
+              {{ action.priority | titlecase }} Priority
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- No Actions Message -->
+    <ng-template #noActions>
+      <div class="no-actions">
+        <i class="fas fa-tasks"></i>
+        <p>No actions found matching the current filter.</p>
+      </div>
+    </ng-template>
+  </div>
+</div>

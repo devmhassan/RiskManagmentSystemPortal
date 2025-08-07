@@ -23,6 +23,13 @@ function configureRoutes(routes: RoutesService) {
         layout: eLayoutType.application
       },
       {
+        path: '/action-tracker',
+        name: 'Action Tracker',
+        iconClass: 'fas fa-tasks',
+        order: 3,
+        layout: eLayoutType.application
+      },
+      {
         path: '/risk/new',
         name: 'Add New Risk',
         parentName: 'Risk Management',
