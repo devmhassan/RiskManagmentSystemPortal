@@ -353,7 +353,7 @@ export class RiskListComponent implements OnInit {
     event.stopPropagation();
     console.log('Edit risk:', risk.id);
     this.openDropdownId = null;
-    // Navigate to edit risk
+    this.router.navigate(['/risk', risk.id, 'edit']);
   }
 
   deleteRisk(event: Event, risk: Risk): void {

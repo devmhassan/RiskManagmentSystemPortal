@@ -320,9 +320,7 @@ export class RiskDetailComponent implements OnInit {
   }
 
   editRisk(): void {
-    // Toggle edit mode for diagram
-    this.isEditMode = !this.isEditMode;
-    console.log('Edit mode:', this.isEditMode);
+    this.router.navigate(['/risk', this.riskId, 'edit']);
   }
 
   toggleEditMode(): void {

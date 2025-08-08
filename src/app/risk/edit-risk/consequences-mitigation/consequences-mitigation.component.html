@@ -1,0 +1,209 @@
+<div class="row" *ngIf="risk">
+  <div class="col-12">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h4 class="mb-0">Risk Consequences</h4>
+      <button class="btn btn-outline-primary" (click)="addConsequence()">
+        <i class="bi bi-plus-circle me-1"></i>
+        Add Consequence
+      </button>
+    </div>
+
+    <!-- Consequences List -->
+    <div class="row g-3" *ngIf="risk.consequences && risk.consequences.length > 0">
+      <div class="col-12" *ngFor="let consequence of risk.consequences">
+        <div class="card border">
+          <div class="card-header bg-light">
+            <div class="row align-items-center">
+              <div class="col">
+                <h6 class="mb-0">Consequence</h6>
+              </div>
+              <div class="col-auto">
+                <button class="btn btn-outline-danger btn-sm" (click)="removeConsequence(consequence.id)">
+                  <i class="bi bi-trash"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label class="form-label fw-bold">Description</label>
+                <textarea 
+                  class="form-control" 
+                  rows="2" 
+                  [(ngModel)]="consequence.name"
+                  (ngModelChange)="updateRisk()"
+                  placeholder="Regulatory penalties"></textarea>
+              </div>
+              <div class="col-md-3">
+                <label class="form-label fw-bold">Severity (1-5)</label>
+                <select 
+                  class="form-select"
+                  [(ngModel)]="consequence.severity"
+                  (ngModelChange)="updateRisk()">
+                  <option value="S1">1 - Very Low</option>
+                  <option value="S2">2 - Low</option>
+                  <option value="S3">3 - Medium</option>
+                  <option value="S4">4 - High</option>
+                  <option value="S5">5 - Very High</option>
+                </select>
+              </div>
+              <div class="col-md-3">
+                <label class="form-label fw-bold">Potential Cost</label>
+                <input 
+                  type="number" 
+                  class="form-control" 
+                  [(ngModel)]="consequence.cost"
+                  (ngModelChange)="updateRisk()"
+                  placeholder="250000">
+              </div>
+            </div>
+
+            <!-- Mitigation Actions -->
+            <div class="border-top pt-3">
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <h6 class="mb-0">Mitigation Actions</h6>
+                <button class="btn btn-outline-success btn-sm" (click)="addAction(consequence.id)">
+                  <i class="bi bi-plus me-1"></i>
+                  Add Action
+                </button>
+              </div>
+
+              <div class="row g-3" *ngIf="consequence.mitigationActions && consequence.mitigationActions.length > 0">
+                <div class="col-12" *ngFor="let action of consequence.mitigationActions">
+                  <div class="border rounded p-3 bg-light">
+                    <div class="row align-items-start mb-2">
+                      <div class="col">
+                        <h6 class="mb-0">Action Details</h6>
+                      </div>
+                      <div class="col-auto">
+                        <button class="btn btn-outline-danger btn-sm" (click)="removeAction(consequence.id, action.id)">
+                          <i class="bi bi-trash"></i>
+                        </button>
+                      </div>
+                    </div>
+
+                    <div class="row mb-3">
+                      <div class="col-md-12">
+                        <label class="form-label">Description</label>
+                        <textarea 
+                          class="form-control" 
+                          rows="2" 
+                          [(ngModel)]="action.name"
+                          (ngModelChange)="updateRisk()"
+                          placeholder="Compliance documentation"></textarea>
+                      </div>
+                    </div>
+
+                    <div class="row mb-3">
+                      <div class="col-md-4">
+                        <label class="form-label">Estimated Cost</label>
+                        <input 
+                          type="number" 
+                          class="form-control" 
+                          [(ngModel)]="action.cost"
+                          (ngModelChange)="updateRisk()"
+                          placeholder="10000">
+                      </div>
+                      <div class="col-md-4">
+                        <label class="form-label">Priority</label>
+                        <select 
+                          class="form-select"
+                          [(ngModel)]="action.priority"
+                          (ngModelChange)="updateRisk()">
+                          <option value="low">Low</option>
+                          <option value="medium">Medium</option>
+                          <option value="high">High</option>
+                          <option value="highest">Highest</option>
+                        </select>
+                      </div>
+                      <div class="col-md-4">
+                        <label class="form-label">Implementation</label>
+                        <select 
+                          class="form-select"
+                          [(ngModel)]="action.status"
+                          (ngModelChange)="updateRisk()">
+                          <option value="open">Open</option>
+                          <option value="in-progress">In Progress</option>
+                          <option value="completed">Completed</option>
+                          <option value="disabled">Disabled</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <div class="row">
+                      <div class="col-md-8">
+                        <label class="form-label">Assigned To</label>
+                        <input 
+                          type="text" 
+                          class="form-control" 
+                          [(ngModel)]="action.assignedTo"
+                          (ngModelChange)="updateRisk()"
+                          placeholder="Jessica Lee (Legal)">
+                      </div>
+                      <div class="col-md-4">
+                        <label class="form-label">Due Date</label>
+                        <input 
+                          type="date" 
+                          class="form-control" 
+                          [(ngModel)]="action.dueDate"
+                          (ngModelChange)="updateRisk()">
+                      </div>
+                    </div>
+
+                    <!-- Status Indicators -->
+                    <div class="row mt-3">
+                      <div class="col-12">
+                        <div class="d-flex gap-2">
+                          <span class="badge bg-{{ getPriorityBadgeClass(action.priority) }}">
+                            {{ action.priority | titlecase }}
+                          </span>
+                          <span class="badge bg-{{ getStatusBadgeClass(action.status) }}">
+                            {{ action.status | titlecase }}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div *ngIf="!consequence.mitigationActions || consequence.mitigationActions.length === 0" class="text-muted text-center py-3">
+                No mitigation actions defined. Click "Add Action" to create one.
+              </div>
+            </div>
+
+            <!-- Consequence Info Display -->
+            <div class="row mt-3 pt-3 border-top">
+              <div class="col-12">
+                <div class="d-flex gap-2 align-items-center">
+                  <span class="badge bg-{{ getSeverityBadgeClass(consequence.severity) }}">
+                    Severity: {{ consequence.severity }}
+                  </span>
+                  <span class="badge bg-info">
+                    Cost: ${{ consequence.cost | number }}
+                  </span>
+                  <span class="badge bg-{{ getPriorityBadgeClass(consequence.priority) }}">
+                    Priority: {{ consequence.priority | titlecase }}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="!risk.consequences || risk.consequences.length === 0" class="text-center py-5">
+      <div class="text-muted mb-3">
+        <i class="bi bi-exclamation-diamond fs-1"></i>
+      </div>
+      <h5 class="text-muted">No consequences defined</h5>
+      <p class="text-muted">Add risk consequences to identify potential impacts.</p>
+      <button class="btn btn-primary" (click)="addConsequence()">
+        <i class="bi bi-plus-circle me-1"></i>
+        Add First Consequence
+      </button>
+    </div>
+  </div>
+</div>

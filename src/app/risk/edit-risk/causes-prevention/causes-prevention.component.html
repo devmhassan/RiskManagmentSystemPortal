@@ -1,0 +1,183 @@
+<div class="row" *ngIf="risk">
+  <div class="col-12">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h4 class="mb-0">Risk Causes</h4>
+      <button class="btn btn-outline-primary" (click)="addCause()">
+        <i class="bi bi-plus-circle me-1"></i>
+        Add Cause
+      </button>
+    </div>
+
+    <!-- Causes List -->
+    <div class="row g-3" *ngIf="risk.causes && risk.causes.length > 0">
+      <div class="col-12" *ngFor="let cause of risk.causes">
+        <div class="card border">
+          <div class="card-header bg-light">
+            <div class="row align-items-center">
+              <div class="col">
+                <h6 class="mb-0">Cause</h6>
+              </div>
+              <div class="col-auto">
+                <button class="btn btn-outline-danger btn-sm" (click)="removeCause(cause.id)">
+                  <i class="bi bi-trash"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="row mb-3">
+              <div class="col-md-8">
+                <label class="form-label fw-bold">Description</label>
+                <textarea 
+                  class="form-control" 
+                  rows="2" 
+                  [(ngModel)]="cause.name"
+                  (ngModelChange)="updateRisk()"
+                  placeholder="Weak password policies"></textarea>
+              </div>
+              <div class="col-md-4">
+                <label class="form-label fw-bold">Likelihood (1-5)</label>
+                <select 
+                  class="form-select"
+                  [(ngModel)]="cause.likelihood"
+                  (ngModelChange)="updateRisk()">
+                  <option value="L1">1 - Very Low</option>
+                  <option value="L2">2 - Low</option>
+                  <option value="L3">3 - Medium</option>
+                  <option value="L4">4 - High</option>
+                  <option value="L5">5 - Very High</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Preventive Actions -->
+            <div class="border-top pt-3">
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <h6 class="mb-0">Preventive Actions</h6>
+                <button class="btn btn-outline-success btn-sm" (click)="addAction(cause.id)">
+                  <i class="bi bi-plus me-1"></i>
+                  Add Action
+                </button>
+              </div>
+
+              <div class="row g-3" *ngIf="cause.preventiveActions && cause.preventiveActions.length > 0">
+                <div class="col-12" *ngFor="let action of cause.preventiveActions">
+                  <div class="border rounded p-3 bg-light">
+                    <div class="row align-items-start mb-2">
+                      <div class="col">
+                        <h6 class="mb-0">Action Details</h6>
+                      </div>
+                      <div class="col-auto">
+                        <button class="btn btn-outline-danger btn-sm" (click)="removeAction(cause.id, action.id)">
+                          <i class="bi bi-trash"></i>
+                        </button>
+                      </div>
+                    </div>
+
+                    <div class="row mb-3">
+                      <div class="col-md-12">
+                        <label class="form-label">Description</label>
+                        <textarea 
+                          class="form-control" 
+                          rows="2" 
+                          [(ngModel)]="action.name"
+                          (ngModelChange)="updateRisk()"
+                          placeholder="Implement strong password requirements"></textarea>
+                      </div>
+                    </div>
+
+                    <div class="row mb-3">
+                      <div class="col-md-4">
+                        <label class="form-label">Estimated Cost</label>
+                        <input 
+                          type="number" 
+                          class="form-control" 
+                          [(ngModel)]="action.cost"
+                          (ngModelChange)="updateRisk()"
+                          placeholder="5000">
+                      </div>
+                      <div class="col-md-4">
+                        <label class="form-label">Priority</label>
+                        <select 
+                          class="form-select"
+                          [(ngModel)]="action.priority"
+                          (ngModelChange)="updateRisk()">
+                          <option value="low">Low</option>
+                          <option value="medium">Medium</option>
+                          <option value="high">High</option>
+                          <option value="highest">Highest</option>
+                        </select>
+                      </div>
+                      <div class="col-md-4">
+                        <label class="form-label">Implementation</label>
+                        <select 
+                          class="form-select"
+                          [(ngModel)]="action.status"
+                          (ngModelChange)="updateRisk()">
+                          <option value="open">Open</option>
+                          <option value="in-progress">In Progress</option>
+                          <option value="completed">Completed</option>
+                          <option value="disabled">Disabled</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <div class="row">
+                      <div class="col-md-8">
+                        <label class="form-label">Assigned To</label>
+                        <input 
+                          type="text" 
+                          class="form-control" 
+                          [(ngModel)]="action.assignedTo"
+                          (ngModelChange)="updateRisk()"
+                          placeholder="John Smith (IT Security)">
+                      </div>
+                      <div class="col-md-4">
+                        <label class="form-label">Due Date</label>
+                        <input 
+                          type="date" 
+                          class="form-control" 
+                          [(ngModel)]="action.dueDate"
+                          (ngModelChange)="updateRisk()">
+                      </div>
+                    </div>
+
+                    <!-- Status Indicators -->
+                    <div class="row mt-3">
+                      <div class="col-12">
+                        <div class="d-flex gap-2">
+                          <span class="badge bg-{{ getPriorityBadgeClass(action.priority) }}">
+                            {{ action.priority | titlecase }}
+                          </span>
+                          <span class="badge bg-{{ getStatusBadgeClass(action.status) }}">
+                            {{ action.status | titlecase }}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div *ngIf="!cause.preventiveActions || cause.preventiveActions.length === 0" class="text-muted text-center py-3">
+                No preventive actions defined. Click "Add Action" to create one.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="!risk.causes || risk.causes.length === 0" class="text-center py-5">
+      <div class="text-muted mb-3">
+        <i class="bi bi-exclamation-triangle fs-1"></i>
+      </div>
+      <h5 class="text-muted">No causes defined</h5>
+      <p class="text-muted">Add risk causes to identify what could trigger this risk.</p>
+      <button class="btn btn-primary" (click)="addCause()">
+        <i class="bi bi-plus-circle me-1"></i>
+        Add First Cause
+      </button>
+    </div>
+  </div>
+</div>

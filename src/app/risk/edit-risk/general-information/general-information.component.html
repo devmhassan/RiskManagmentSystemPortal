@@ -1,0 +1,86 @@
+<div class="row" *ngIf="risk">
+  <div class="col-12">
+    <div class="card shadow-sm">
+      <div class="card-header bg-light">
+        <h5 class="mb-0">Risk Details</h5>
+      </div>
+      <div class="card-body">
+        <div class="row mb-4">
+          <div class="col-md-12">
+            <label for="riskDescription" class="form-label fw-bold">Risk Description</label>
+            <textarea 
+              id="riskDescription" 
+              class="form-control" 
+              rows="3" 
+              [(ngModel)]="risk.description"
+              (ngModelChange)="updateRisk()"
+              placeholder="Describe the risk...">{{ risk.description }}</textarea>
+          </div>
+        </div>
+
+        <div class="row mb-4">
+          <div class="col-md-6">
+            <label for="riskOwner" class="form-label fw-bold">Risk Owner</label>
+            <input 
+              type="text" 
+              id="riskOwner" 
+              class="form-control" 
+              [(ngModel)]="risk.owner"
+              (ngModelChange)="updateRisk()"
+              placeholder="Security Team">
+          </div>
+          <div class="col-md-6">
+            <label for="status" class="form-label fw-bold">Status</label>
+            <select 
+              id="status" 
+              class="form-select"
+              [(ngModel)]="risk.status"
+              (ngModelChange)="updateRisk()">
+              <option value="Open">Open</option>
+              <option value="In Progress">In Progress</option>
+              <option value="Mitigated">Mitigated</option>
+              <option value="Closed">Closed</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="row mb-4">
+          <div class="col-md-6">
+            <label for="initialRisk" class="form-label fw-bold">Initial Risk Level (1-25)</label>
+            <input 
+              type="number" 
+              id="initialRisk" 
+              class="form-control" 
+              min="1" 
+              max="25"
+              value="20"
+              placeholder="20">
+          </div>
+          <div class="col-md-6">
+            <label for="residualRisk" class="form-label fw-bold">Residual Risk Level (1-25)</label>
+            <input 
+              type="number" 
+              id="residualRisk" 
+              class="form-control" 
+              min="1" 
+              max="25"
+              value="8"
+              placeholder="8">
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-6">
+            <label for="reviewDate" class="form-label fw-bold">Review Date</label>
+            <input 
+              type="date" 
+              id="reviewDate" 
+              class="form-control" 
+              [(ngModel)]="risk.reviewDate"
+              (ngModelChange)="updateRisk()">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

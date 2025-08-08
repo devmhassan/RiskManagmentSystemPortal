@@ -1,0 +1,94 @@
+<div class="container-fluid p-0" *ngIf="risk">
+  <!-- Header Section -->
+  <div class="bg-white border-bottom shadow-sm sticky-top">
+    <div class="container-fluid px-4 py-3">
+      <div class="row align-items-center">
+        <div class="col-md-8">
+          <div class="d-flex align-items-center">
+            <button class="btn btn-outline-secondary btn-sm me-3" (click)="goBack()">
+              <i class="bi bi-arrow-left"></i>
+            </button>
+            <h1 class="h4 mb-0 me-3">Edit Risk: {{ risk.id }}</h1>
+          </div>
+        </div>
+        <div class="col-md-4 text-end">
+          <button class="btn btn-dark" (click)="saveChanges()">
+            <i class="bi bi-floppy me-1"></i>
+            Save Changes
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tab Navigation -->
+  <div class="bg-white border-bottom">
+    <div class="container-fluid px-4">
+      <nav class="nav nav-pills nav-justified">
+        <button 
+          class="nav-link flex-fill text-center py-3 border-0 rounded-0"
+          [class.active]="activeTab === 'general'"
+          (click)="setActiveTab('general')"
+          type="button">
+          General Information
+        </button>
+        <button 
+          class="nav-link flex-fill text-center py-3 border-0 rounded-0"
+          [class.active]="activeTab === 'causes'"
+          (click)="setActiveTab('causes')"
+          type="button">
+          Causes & Prevention
+        </button>
+        <button 
+          class="nav-link flex-fill text-center py-3 border-0 rounded-0"
+          [class.active]="activeTab === 'consequences'"
+          (click)="setActiveTab('consequences')"
+          type="button">
+          Consequences & Mitigation
+        </button>
+        <button 
+          class="nav-link flex-fill text-center py-3 border-0 rounded-0"
+          [class.active]="activeTab === 'triggers'"
+          (click)="setActiveTab('triggers')"
+          type="button">
+          Trigger Events
+        </button>
+      </nav>
+    </div>
+  </div>
+
+  <!-- Tab Content -->
+  <div class="container-fluid p-4">
+    <!-- General Information Tab -->
+    <div *ngIf="activeTab === 'general'">
+      <app-general-information 
+        [risk]="risk" 
+        (riskUpdated)="onRiskUpdated($event)">
+      </app-general-information>
+    </div>
+
+    <!-- Causes & Prevention Tab -->
+    <div *ngIf="activeTab === 'causes'">
+      <app-causes-prevention 
+        [risk]="risk" 
+        (riskUpdated)="onRiskUpdated($event)">
+      </app-causes-prevention>
+    </div>
+
+    <!-- Consequences & Mitigation Tab -->
+    <div *ngIf="activeTab === 'consequences'">
+      <app-consequences-mitigation 
+        [risk]="risk" 
+        (riskUpdated)="onRiskUpdated($event)">
+      </app-consequences-mitigation>
+    </div>
+
+    <!-- Trigger Events Tab -->
+    <div *ngIf="activeTab === 'triggers'">
+      <app-trigger-events 
+        [risk]="risk" 
+        (riskUpdated)="onRiskUpdated($event)">
+      </app-trigger-events>
+    </div>
+  </div>
+</div>

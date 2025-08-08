@@ -1,0 +1,78 @@
+<div class="row" *ngIf="risk">
+  <div class="col-12">
+    <div class="mb-4">
+      <h4 class="mb-2">Trigger Events</h4>
+      <p class="text-muted">Trigger events are specific conditions or occurrences that could activate this risk.</p>
+    </div>
+
+    <!-- Existing Trigger Events -->
+    <div class="row g-3 mb-4" *ngIf="triggerEvents && triggerEvents.length > 0">
+      <div class="col-md-6" *ngFor="let triggerEvent of triggerEvents">
+        <div class="card h-100">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+              <h6 class="card-title mb-0">{{ triggerEvent.name }}</h6>
+              <button class="btn btn-outline-danger btn-sm" (click)="removeTriggerEvent(triggerEvent.id)">
+                <i class="bi bi-trash"></i>
+              </button>
+            </div>
+            <p class="card-text text-muted small" *ngIf="triggerEvent.description">
+              {{ triggerEvent.description }}
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Add New Trigger Event -->
+    <div class="card">
+      <div class="card-header bg-light">
+        <h6 class="mb-0">
+          <i class="bi bi-plus-circle me-2"></i>
+          Add Trigger Event
+        </h6>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-md-12 mb-3">
+            <label for="triggerEventName" class="form-label fw-bold">Trigger Event Name</label>
+            <input 
+              type="text" 
+              id="triggerEventName"
+              class="form-control" 
+              [(ngModel)]="newTriggerEvent.name"
+              placeholder="e.g., Unusual login patterns">
+          </div>
+          <div class="col-md-12 mb-3">
+            <label for="triggerEventDescription" class="form-label fw-bold">Description (Optional)</label>
+            <textarea 
+              id="triggerEventDescription"
+              class="form-control" 
+              rows="3" 
+              [(ngModel)]="newTriggerEvent.description"
+              placeholder="Describe the specific conditions that would trigger this risk..."></textarea>
+          </div>
+        </div>
+        <div class="d-flex gap-2">
+          <button class="btn btn-primary" (click)="addTriggerEvent()" [disabled]="!newTriggerEvent.name.trim()">
+            <i class="bi bi-plus me-1"></i>
+            Add Trigger Event
+          </button>
+          <button class="btn btn-outline-secondary" (click)="resetNewTriggerEvent()">
+            <i class="bi bi-x me-1"></i>
+            Clear
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="!triggerEvents || triggerEvents.length === 0" class="text-center py-5 mb-4">
+      <div class="text-muted mb-3">
+        <i class="bi bi-lightning fs-1"></i>
+      </div>
+      <h5 class="text-muted">No trigger events defined</h5>
+      <p class="text-muted">Add trigger events to identify what could activate this risk.</p>
+    </div>
+  </div>
+</div>
