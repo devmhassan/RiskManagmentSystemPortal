@@ -160,6 +160,16 @@ export class ActionTrackerComponent implements OnInit {
     }
   }
 
+  getBootstrapStatusBadgeClass(status: string): string {
+    switch (status) {
+      case 'open': return 'badge bg-primary';
+      case 'in-progress': return 'badge bg-warning';
+      case 'completed': return 'badge bg-success';
+      case 'overdue': return 'badge bg-danger';
+      default: return 'badge bg-secondary';
+    }
+  }
+
   getPriorityBadgeClass(priority: string): string {
     switch (priority) {
       case 'low': return 'priority-badge low';
@@ -167,6 +177,16 @@ export class ActionTrackerComponent implements OnInit {
       case 'high': return 'priority-badge high';
       case 'critical': return 'priority-badge critical';
       default: return 'priority-badge';
+    }
+  }
+
+  getBootstrapPriorityBadgeClass(priority: string): string {
+    switch (priority) {
+      case 'low': return 'badge bg-success-subtle text-success';
+      case 'medium': return 'badge bg-warning-subtle text-warning';
+      case 'high': return 'badge bg-danger-subtle text-danger';
+      case 'critical': return 'badge bg-danger text-white';
+      default: return 'badge bg-secondary';
     }
   }
 
