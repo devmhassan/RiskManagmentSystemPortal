@@ -10,6 +10,59 @@ export interface Risk {
   status: string;
   statusColor: 'open' | 'mitigated' | 'closed';
   reviewDate: string;
+  initialRisk?: string;
+  residualRisk?: string;
+  initialRiskColor?: 'critical' | 'high' | 'medium' | 'low';
+  residualRiskColor?: 'critical' | 'high' | 'medium' | 'low';
+  causes?: RiskCause[];
+  consequences?: RiskConsequence[];
+  discussions?: RiskDiscussion[];
+}
+
+export interface RiskCause {
+  id: string;
+  name: string;
+  likelihood: string;
+  priority: 'highest' | 'high' | 'medium' | 'low';
+  preventiveActions: PreventiveAction[];
+}
+
+export interface PreventiveAction {
+  id: string;
+  name: string;
+  cost: number;
+  priority: 'highest' | 'high' | 'medium' | 'low';
+  status: 'completed' | 'in-progress' | 'open' | 'disabled';
+  assignedTo: string;
+  dueDate: string;
+}
+
+export interface RiskConsequence {
+  id: string;
+  name: string;
+  severity: string;
+  cost: number;
+  priority: 'highest' | 'high' | 'medium' | 'low';
+  mitigationActions: MitigationAction[];
+}
+
+export interface MitigationAction {
+  id: string;
+  name: string;
+  cost: number;
+  priority: 'highest' | 'high' | 'medium' | 'low';
+  status: 'completed' | 'in-progress' | 'open' | 'disabled';
+  assignedTo: string;
+  dueDate: string;
+}
+
+export interface RiskDiscussion {
+  id: string;
+  author: string;
+  authorInitials: string;
+  message: string;
+  timestamp: string;
+  time: string;
 }
 
 export interface RiskSearchFilter {

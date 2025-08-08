@@ -1,0 +1,925 @@
+<div class="container-fluid" *ngIf="risk">
+  <!-- Header Section -->
+  <div class="card shadow-sm mb-4">
+    <div class="card-header bg-white border-bottom">
+      <div class="row align-items-center">
+        <div class="col-md-8">
+          <div class="d-flex align-items-center mb-2">
+            <button class="btn btn-outline-secondary btn-sm me-3" (click)="goBack()">
+              <i class="bi bi-arrow-left"></i>
+            </button>
+            <h1 class="h4 mb-0 me-3">{{ risk.id }}: {{ risk.description }}</h1>
+            <span class="badge" [ngClass]="'bg-' + getStatusBadgeClass(risk.statusColor)">{{ risk.status }}</span>
+          </div>
+        </div>
+        <div class="col-md-4 text-end">
+          <button class="btn btn-primary btn-sm" (click)="editRisk()">
+            <i class="bi bi-pencil me-1"></i>
+            Edit Risk
+          </button>
+        </div>
+      </div>
+      
+      <div class="row mt-3">
+        <div class="col-md-3">
+          <small class="text-muted">Owner:</small>
+          <div class="fw-medium">{{ risk.owner }}</div>
+        </div>
+        <div class="col-md-3">
+          <small class="text-muted">Review Date:</small>
+          <div class="fw-medium">{{ risk.reviewDate }}</div>
+        </div>
+        <div class="col-md-3">
+          <small class="text-muted">Initial Risk:</small>
+          <div>
+            <span class="badge" [ngClass]="'bg-' + getRiskBadgeClass(risk.initialRiskColor)">{{ risk.initialRisk }}</span>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <small class="text-muted">Residual Risk:</small>
+          <div>
+            <span class="badge" [ngClass]="'bg-' + getRiskBadgeClass(risk.residualRiskColor)">{{ risk.residualRisk }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="row">
+    <!-- Left Panel - Bowtie Diagram & Analysis -->
+    <div class="col-lg-8">
+      <div class="card shadow-sm">
+        <div class="card-header bg-white border-bottom">
+          <div class="d-flex justify-content-between align-items-center">
+            <h5 class="card-title mb-0">Bowtie Diagram & Risk Analysis</h5>
+            <button class="btn btn-outline-primary btn-sm" (click)="toggleEditMode()">
+              <i class="bi bi-{{ isEditMode ? 'floppy' : 'pencil' }} me-1"></i>
+              {{ isEditMode ? 'Save Changes' : 'Edit Diagram' }}
+            </button>
+          </div>
+          
+          <!-- Tab Navigation -->
+          <ul class="nav nav-tabs mt-3" role="tablist">
+            <li class="nav-item" role="presentation">
+              <button 
+                class="nav-link" 
+                [class.active]="activeTab === 'bowtie'"
+                (click)="setActiveTab('bowtie')"
+                type="button">
+                <i class="bi bi-diagram-3 me-1"></i>
+                Bowtie Diagram
+              </button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button 
+                class="nav-link" 
+                [class.active]="activeTab === 'analysis'"
+                (click)="setActiveTab('analysis')"
+                type="button">
+                <i class="bi bi-graph-up me-1"></i>
+                Risk Analysis
+              </button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button 
+                class="nav-link" 
+                [class.active]="activeTab === 'tracker'"
+                (click)="setActiveTab('tracker')"
+                type="button">
+                <i class="bi bi-list-check me-1"></i>
+                Action Tracker
+              </button>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Tab Content -->
+        <div class="card-body">
+          <!-- Bowtie Diagram Tab -->
+          <div *ngIf="activeTab === 'bowtie'" class="tab-pane fade show active">
+            <div class="row">
+              <!-- Causes & Preventive Actions -->
+              <div class="col-md-5">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                  <h6 class="mb-0">Causes & Preventive Actions</h6>
+                  <button class="btn btn-outline-secondary btn-sm" (click)="sortCausesByPriority()">
+                    <i class="bi bi-sort-{{ causesSortDirection === 'desc' ? 'down' : 'up' }}-alt"></i>
+                  </button>
+                </div>
+                
+                <div class="causes-list">
+                  <div *ngFor="let cause of risk.causes" class="card mb-3 border-start border-4" [class]="'border-' + getPriorityBorderClass(cause.priority)">
+                    <div class="card-header bg-light p-2">
+                      <div class="row align-items-center">
+                        <div class="col">
+                          <h6 class="mb-0">{{ cause.name }}</h6>
+                        </div>
+                        <div class="col-auto">
+                          <span class="badge bg-secondary me-1">{{ cause.likelihood }}</span>
+                          <button *ngIf="isEditMode" class="btn btn-outline-secondary btn-sm me-1" (click)="openLikelihoodModal(cause.id)">
+                            <i class="bi bi-exclamation-triangle me-1"></i>
+                            Set Likelihood
+                          </button>
+                          <span class="badge" [ngClass]="'bg-' + getPriorityBadgeClass(cause.priority)">{{ cause.priority | titlecase }}</span>
+                          <button *ngIf="isEditMode" class="btn btn-outline-danger btn-sm ms-2" (click)="deleteCause(cause.id)">
+                            <i class="bi bi-x"></i>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div class="card-body p-2">
+                      <div *ngFor="let action of cause.preventiveActions" class="mb-3 p-2 rounded border" [ngClass]="getActionCardClass(action.status)">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                          <div class="d-flex align-items-center">
+                            <span class="me-2" [ngSwitch]="action.status">
+                              <i *ngSwitchCase="'completed'" class="bi bi-check-circle-fill text-success"></i>
+                              <i *ngSwitchCase="'in-progress'" class="bi bi-clock-fill text-warning"></i>
+                              <i *ngSwitchCase="'disabled'" class="bi bi-x-circle-fill text-secondary"></i>
+                              <i *ngSwitchDefault class="bi bi-circle text-warning"></i>
+                            </span>
+                            <h6 class="mb-0" [class.text-decoration-line-through]="action.status === 'disabled'">{{ action.name }}</h6>
+                          </div>
+                          <div class="d-flex align-items-center gap-1">
+                            <select 
+                              [value]="action.status" 
+                              (change)="updateActionStatus(action.id, $event)"
+                              class="form-select form-select-sm">
+                              <option value="open">Open</option>
+                              <option value="in-progress">In Progress</option>
+                              <option value="completed">Completed</option>
+                              <option value="disabled">Disabled</option>
+                            </select>
+                            <button *ngIf="isEditMode" class="btn btn-outline-danger btn-sm" (click)="deletePreventiveAction(cause.id, action.id)">
+                              <i class="bi bi-x"></i>
+                            </button>
+                          </div>
+                        </div>
+                        
+                        <div class="row align-items-center mb-2">
+                          <div class="col">
+                            <small class="text-muted">Cost:</small> <span class="fw-medium">{{ formatCurrency(action.cost) }}</span>
+                          </div>
+                          <div class="col-auto">
+                            <span class="badge" [ngClass]="'bg-' + getPriorityBadgeClass(action.priority)">{{ action.priority | titlecase }}</span>
+                          </div>
+                        </div>
+                        
+                        <div class="row align-items-center mb-2">
+                          <div class="col">
+                            <small class="text-muted">Assigned to:</small> <span class="fw-medium">{{ action.assignedTo }}</span>
+                          </div>
+                          <div class="col-auto">
+                            <small class="text-muted">Due: {{ action.dueDate }}</small>
+                          </div>
+                        </div>
+                        
+                        <div class="d-flex gap-2">
+                          <button class="btn btn-outline-primary btn-sm" (click)="reassignAction(action.id)">
+                            <i class="bi bi-person-plus me-1"></i>
+                            Reassign
+                          </button>
+                          <button *ngIf="isEditMode" class="btn btn-outline-secondary btn-sm" (click)="openPriorityModal(action.id)">
+                            Priority
+                          </button>
+                          <button *ngIf="isEditMode && action.status !== 'disabled'" class="btn btn-outline-warning btn-sm" (click)="disableAction(action.id)">
+                            Disable
+                          </button>
+                          <button *ngIf="isEditMode && action.status === 'disabled'" class="btn btn-outline-success btn-sm" (click)="enableAction(action.id)">
+                            Enable
+                          </button>
+                        </div>
+                      </div>
+                      
+                  
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Add Cause button for left side -->
+                     <div *ngIf="isEditMode" class="mt-3 pt-2 border-top">
+                        <button class="btn btn-outline-primary btn-sm" (click)="openAddPreventiveActionModal(cause.id)">
+                          <i class="bi bi-plus"></i>
+                          Add Preventive Action
+                        </button>
+                      </div>
+                <div *ngIf="isEditMode" class="mt-3">
+                  <button class="btn btn-outline-primary" (click)="openAddCauseModal()">
+                    <i class="bi bi-plus"></i>
+                    Add Cause
+                  </button>
+                </div>
+              </div>
+
+              <!-- Central Hazardous Event -->
+              <div class="col-md-2 d-flex align-items-center justify-content-center">
+                <div class="text-center">
+                  <div class="hazard-circle mx-auto mb-2 d-flex align-items-center justify-content-center">
+                    <div>
+                      <div class="fw-bold text-white mb-2">Hazardous Event</div>
+                      <div class="small text-white mb-3">{{ risk.description }}</div>
+                      <div class="risk-calculation text-white">
+                        <span class="text-white me-1">L{{ risk.likelihood }}</span>
+                        <span class="text-white">×</span>
+                        <span class="text-white mx-1">S{{ risk.severity }}</span>
+                        <span class="text-white">=</span>
+                        <span class="text-white ms-1">{{ risk.riskScore }}</span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <!-- Bottom text outside the circle -->
+                  <div class="mt-3">
+                    <div class="small text-muted">{{ risk.description }}</div>
+                    <div class="fw-bold mt-1">
+                      <span class="text-warning">L{{ risk.likelihood }}</span>
+                      <span class="mx-1">×</span>
+                      <span class="text-danger">S{{ risk.severity }}</span>
+                      <span class="mx-1">=</span>
+                      <span class="text-dark">{{ risk.riskScore }}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Consequences & Mitigation Actions -->
+              <div class="col-md-5">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                  <h6 class="mb-0">Consequences & Mitigation Actions</h6>
+                  <button class="btn btn-outline-secondary btn-sm" (click)="sortConsequencesByPriority()">
+                    <i class="bi bi-sort-{{ consequencesSortDirection === 'desc' ? 'down' : 'up' }}-alt"></i>
+                  </button>
+                </div>
+                
+                <div class="consequences-list">
+                  <div *ngFor="let consequence of risk.consequences" class="card mb-3 border-start border-4" [class]="'border-' + getPriorityBorderClass(consequence.priority)">
+                    <div class="card-header bg-light p-2">
+                      <div class="row align-items-center">
+                        <div class="col">
+                          <h6 class="mb-0">{{ consequence.name }}</h6>
+                        </div>
+                        <div class="col-auto">
+                          <span class="badge bg-danger me-1">{{ consequence.severity }}</span>
+                          <button *ngIf="isEditMode" class="btn btn-outline-secondary btn-sm me-1" (click)="openSeverityModal(consequence.id)">
+                            Set Severity
+                          </button>
+                          <span class="badge bg-warning text-dark me-1">{{ formatCurrency(consequence.cost) }}</span>
+                          <button *ngIf="isEditMode" class="btn btn-outline-secondary btn-sm me-1" (click)="openCostModal(consequence.id)">
+                            <i class="bi bi-currency-dollar"></i>
+                            Set Cost
+                          </button>
+                          <span class="badge" [ngClass]="'bg-' + getPriorityBadgeClass(consequence.priority)">{{ consequence.priority | titlecase }}</span>
+                          <button *ngIf="isEditMode" class="btn btn-outline-danger btn-sm ms-2" (click)="deleteConsequence(consequence.id)">
+                            <i class="bi bi-x"></i>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div class="card-body p-2">
+                      <div *ngFor="let action of consequence.mitigationActions" class="mb-3 p-2 rounded border" [ngClass]="getActionCardClass(action.status)">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                          <div class="d-flex align-items-center">
+                            <span class="me-2" [ngSwitch]="action.status">
+                              <i *ngSwitchCase="'completed'" class="bi bi-check-circle-fill text-success"></i>
+                              <i *ngSwitchCase="'in-progress'" class="bi bi-clock-fill text-warning"></i>
+                              <i *ngSwitchCase="'disabled'" class="bi bi-x-circle-fill text-secondary"></i>
+                              <i *ngSwitchDefault class="bi bi-circle text-warning"></i>
+                            </span>
+                            <h6 class="mb-0" [class.text-decoration-line-through]="action.status === 'disabled'">{{ action.name }}</h6>
+                          </div>
+                          <div class="d-flex align-items-center gap-1">
+                            <select 
+                              [value]="action.status" 
+                              (change)="updateActionStatus(action.id, $event)"
+                              class="form-select form-select-sm">
+                              <option value="open">Open</option>
+                              <option value="in-progress">In Progress</option>
+                              <option value="completed">Completed</option>
+                              <option value="disabled">Disabled</option>
+                            </select>
+                            <button *ngIf="isEditMode" class="btn btn-outline-danger btn-sm" (click)="deleteMitigationAction(consequence.id, action.id)">
+                              <i class="bi bi-x"></i>
+                            </button>
+                          </div>
+                        </div>
+                        
+                        <div class="row align-items-center mb-2">
+                          <div class="col">
+                            <small class="text-muted">Cost:</small> <span class="fw-medium">{{ formatCurrency(action.cost) }}</span>
+                          </div>
+                          <div class="col-auto">
+                            <span class="badge" [ngClass]="'bg-' + getPriorityBadgeClass(action.priority)">{{ action.priority | titlecase }}</span>
+                          </div>
+                        </div>
+                        
+                        <div class="row align-items-center mb-2">
+                          <div class="col">
+                            <small class="text-muted">Assigned to:</small> <span class="fw-medium">{{ action.assignedTo }}</span>
+                          </div>
+                          <div class="col-auto">
+                            <small class="text-muted">Due: {{ action.dueDate }}</small>
+                          </div>
+                        </div>
+                        
+                        <div class="d-flex gap-2">
+                          <button class="btn btn-outline-primary btn-sm" (click)="reassignAction(action.id)">
+                            <i class="bi bi-person-plus me-1"></i>
+                            Reassign
+                          </button>
+                          <button *ngIf="isEditMode" class="btn btn-outline-secondary btn-sm" (click)="openPriorityModal(action.id)">
+                            Priority
+                          </button>
+                          <button *ngIf="isEditMode && action.status !== 'disabled'" class="btn btn-outline-warning btn-sm" (click)="disableAction(action.id)">
+                            Disable
+                          </button>
+                          <button *ngIf="isEditMode && action.status === 'disabled'" class="btn btn-outline-success btn-sm" (click)="enableAction(action.id)">
+                            Enable
+                          </button>
+                        </div>
+                      </div>
+                      
+                    
+                    </div>
+                  </div>
+                </div>
+                  <div *ngIf="isEditMode" class="mt-3 pt-2 border-top">
+                        <button class="btn btn-outline-primary btn-sm" (click)="openAddMitigationActionModal(consequence.id)">
+                          <i class="bi bi-plus"></i>
+                          Add Mitigation Action
+                        </button>
+                      </div>
+                <!-- Add Consequence button for right side -->
+                <div *ngIf="isEditMode" class="mt-3">
+                  <button class="btn btn-outline-primary" (click)="openAddConsequenceModal()">
+                    <i class="bi bi-plus"></i>
+                    Add Consequence
+                  </button>
+                </div>
+              </div>
+            </div>
+            
+            <div class="mt-3 pt-3 border-top">
+              <div class="row">
+                <div class="col">
+                  <small class="text-muted">Drag items from the chat to add them to the diagram</small>
+                </div>
+                <div class="col-auto">
+                  <small class="text-muted">Last updated: 8/8/2025</small>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Risk Analysis Tab -->
+          <div *ngIf="activeTab === 'analysis'" class="tab-pane fade show active">
+            <app-risk-analysis [risk]="risk"></app-risk-analysis>
+          </div>
+
+          <!-- Action Tracker Tab -->
+          <div *ngIf="activeTab === 'tracker'" class="tab-pane fade show active">
+            <app-action-tracker [risk]="risk"></app-action-tracker>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Panel - Risk Discussion -->
+    <div class="col-lg-4">
+      <div class="card shadow-sm">
+        <div class="card-header bg-white border-bottom">
+          <h5 class="card-title mb-0">Risk Discussion</h5>
+        </div>
+        
+        <div class="card-body p-0" style="height: 400px; overflow-y: auto;">
+          <div class="discussion-list">
+            <div *ngFor="let discussion of risk.discussions" class="d-flex p-3 border-bottom">
+              <div class="flex-shrink-0 me-3">
+                <div class="avatar-circle">{{ discussion.authorInitials }}</div>
+              </div>
+              <div class="flex-grow-1">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                  <h6 class="mb-0">{{ discussion.author }}</h6>
+                  <div class="dropdown">
+                    <button class="btn btn-sm btn-ghost" data-bs-toggle="dropdown">
+                      <i class="bi bi-three-dots"></i>
+                    </button>
+                    <ul class="dropdown-menu">
+                      <li><a class="dropdown-item" href="#" (click)="addToBowtie(discussion.message)">Add to Bowtie</a></li>
+                      <li><a class="dropdown-item" href="#" (click)="replyToMessage(discussion.id)">Reply</a></li>
+                    </ul>
+                  </div>
+                </div>
+                <small class="text-muted">{{ discussion.time }}</small>
+                <p class="mb-2 mt-2">{{ discussion.message }}</p>
+                <div class="d-flex gap-2">
+                  <button class="btn btn-outline-primary btn-sm" (click)="addToBowtie(discussion.message)">
+                    Add to Bowtie
+                  </button>
+                  <button class="btn btn-outline-secondary btn-sm" (click)="replyToMessage(discussion.id)">
+                    Reply
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="card-footer bg-white">
+          <div class="input-group">
+            <input 
+              type="text" 
+              [(ngModel)]="newMessage" 
+              placeholder="Type your message..."
+              (keyup.enter)="sendMessage()"
+              class="form-control">
+            <button class="btn btn-primary" (click)="sendMessage()" [disabled]="!newMessage.trim()">
+              <i class="bi bi-send"></i>
+            </button>
+          </div>
+          <small class="text-muted mt-1 d-block">Drag messages to the Bowtie diagram or use the "Add to Bowtie" option</small>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Reassign Action Modal -->
+<div class="modal fade" [class.show]="showReassignModal" [style.display]="showReassignModal ? 'block' : 'none'" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content" *ngIf="showReassignModal">
+      <div class="modal-header">
+        <h5 class="modal-title">Assign Preventive Action</h5>
+        <button type="button" class="btn-close" (click)="closeReassignModal()"></button>
+      </div>
+      
+      <div class="modal-body">
+        <p class="text-muted mb-4">Assign this action to a team member and set tracking details.</p>
+        
+        <form class="reassign-form">
+          <div class="mb-3">
+            <label for="actionDescription" class="form-label">Action Description</label>
+            <textarea 
+              id="actionDescription" 
+              [(ngModel)]="reassignData.description" 
+              name="description"
+              rows="3"
+              class="form-control">{{ reassignData.description }}</textarea>
+          </div>
+          
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="assignedTo" class="form-label">Assigned To</label>
+              <select 
+                id="assignedTo" 
+                [(ngModel)]="reassignData.assignedTo" 
+                name="assignedTo"
+                class="form-select">
+                <option value="">Select team member</option>
+                <option value="David Wilson">David Wilson</option>
+                <option value="John Smith">John Smith</option>
+                <option value="Sarah Johnson">Sarah Johnson</option>
+                <option value="Michael Chen">Michael Chen</option>
+                <option value="Emily Rodriguez">Emily Rodriguez</option>
+                <option value="Robert Taylor">Robert Taylor</option>
+              </select>
+            </div>
+            
+            <div class="col-md-6 mb-3">
+              <label for="businessUnit" class="form-label">Business Unit</label>
+              <select 
+                id="businessUnit" 
+                [(ngModel)]="reassignData.businessUnit" 
+                name="businessUnit"
+                class="form-select">
+                <option value="">Select business unit</option>
+                <option value="IT Security">IT Security</option>
+                <option value="Risk Management">Risk Management</option>
+                <option value="Operations">Operations</option>
+                <option value="Compliance">Compliance</option>
+                <option value="HR">Human Resources</option>
+              </select>
+            </div>
+          </div>
+          
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="priority" class="form-label">Priority</label>
+              <select 
+                id="priority" 
+                [(ngModel)]="reassignData.priority" 
+                name="priority"
+                class="form-select">
+                <option value="low">Low Priority</option>
+                <option value="medium">Medium Priority</option>
+                <option value="high">High Priority</option>
+                <option value="highest">Highest Priority</option>
+              </select>
+            </div>
+            
+            <div class="col-md-6 mb-3">
+              <label for="estimatedCost" class="form-label">Estimated Cost</label>
+              <div class="input-group">
+                <span class="input-group-text">$</span>
+                <input 
+                  type="number" 
+                  id="estimatedCost" 
+                  [(ngModel)]="reassignData.estimatedCost" 
+                  name="estimatedCost"
+                  placeholder="0"
+                  class="form-control">
+              </div>
+            </div>
+          </div>
+          
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="startDate" class="form-label">Start Date</label>
+              <input 
+                type="date" 
+                id="startDate" 
+                [(ngModel)]="reassignData.startDate" 
+                name="startDate"
+                class="form-control">
+            </div>
+            
+            <div class="col-md-6 mb-3">
+              <label for="dueDate" class="form-label">Due Date</label>
+              <input 
+                type="date" 
+                id="dueDate" 
+                [(ngModel)]="reassignData.dueDate" 
+                name="dueDate"
+                class="form-control">
+            </div>
+          </div>
+          
+          <div class="mb-3">
+            <label for="comments" class="form-label">Comments</label>
+            <textarea 
+              id="comments" 
+              [(ngModel)]="reassignData.comments" 
+              name="comments"
+              rows="3"
+              placeholder="Add any additional comments or context..."
+              class="form-control"></textarea>
+          </div>
+        </form>
+      </div>
+      
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeReassignModal()">Cancel</button>
+        <button type="button" class="btn btn-primary" (click)="saveReassignment()">Assign Action</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal-backdrop fade" [class.show]="showReassignModal" *ngIf="showReassignModal"></div>
+
+<!-- Set Likelihood Modal -->
+<div class="modal fade" [class.show]="showLikelihoodModal" [style.display]="showLikelihoodModal ? 'block' : 'none'" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content" *ngIf="showLikelihoodModal">
+      <div class="modal-header">
+        <h5 class="modal-title">Set Likelihood for Cause</h5>
+        <button type="button" class="btn-close" (click)="closeLikelihoodModal()"></button>
+      </div>
+      
+      <div class="modal-body">
+        <div class="mb-3">
+          <label for="likelihood" class="form-label">Likelihood (1-5)</label>
+          <select 
+            id="likelihood" 
+            [(ngModel)]="currentLikelihood" 
+            class="form-select">
+            <option value="L1">1 - Very Unlikely</option>
+            <option value="L2">2 - Unlikely</option>
+            <option value="L3">3 - Possible</option>
+            <option value="L4">4 - Likely</option>
+            <option value="L5">5 - Very Likely</option>
+          </select>
+        </div>
+      </div>
+      
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeLikelihoodModal()">Cancel</button>
+        <button type="button" class="btn btn-primary" (click)="saveLikelihood()">Save</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal-backdrop fade" [class.show]="showLikelihoodModal" *ngIf="showLikelihoodModal"></div>
+
+<!-- Set Priority Modal -->
+<div class="modal fade" [class.show]="showPriorityModal" [style.display]="showPriorityModal ? 'block' : 'none'" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content" *ngIf="showPriorityModal">
+      <div class="modal-header">
+        <h5 class="modal-title">Set Priority for Action</h5>
+        <button type="button" class="btn-close" (click)="closePriorityModal()"></button>
+      </div>
+      
+      <div class="modal-body">
+        <div class="mb-3">
+          <label for="actionPriority" class="form-label">Priority Level</label>
+          <select 
+            id="actionPriority" 
+            [(ngModel)]="currentPriority" 
+            class="form-select">
+            <option value="low">Low Priority</option>
+            <option value="medium">Medium Priority</option>
+            <option value="high">High Priority</option>
+            <option value="highest">Highest Priority</option>
+          </select>
+        </div>
+      </div>
+      
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closePriorityModal()">Cancel</button>
+        <button type="button" class="btn btn-primary" (click)="savePriority()">Save</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal-backdrop fade" [class.show]="showPriorityModal" *ngIf="showPriorityModal"></div>
+
+<!-- Set Severity Modal -->
+<div class="modal fade" [class.show]="showSeverityModal" [style.display]="showSeverityModal ? 'block' : 'none'" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content" *ngIf="showSeverityModal">
+      <div class="modal-header">
+        <h5 class="modal-title">Set Severity for Consequence</h5>
+        <button type="button" class="btn-close" (click)="closeSeverityModal()"></button>
+      </div>
+      
+      <div class="modal-body">
+        <div class="mb-3">
+          <label for="severity" class="form-label">Severity (1-5)</label>
+          <select 
+            id="severity" 
+            [(ngModel)]="currentSeverity" 
+            class="form-select">
+            <option value="S1">1 - Negligible</option>
+            <option value="S2">2 - Minor</option>
+            <option value="S3">3 - Major</option>
+            <option value="S4">4 - Critical</option>
+            <option value="S5">5 - Catastrophic</option>
+          </select>
+        </div>
+      </div>
+      
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeSeverityModal()">Cancel</button>
+        <button type="button" class="btn btn-primary" (click)="saveSeverity()">Save</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal-backdrop fade" [class.show]="showSeverityModal" *ngIf="showSeverityModal"></div>
+
+<!-- Set Cost Modal -->
+<div class="modal fade" [class.show]="showCostModal" [style.display]="showCostModal ? 'block' : 'none'" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content" *ngIf="showCostModal">
+      <div class="modal-header">
+        <h5 class="modal-title">Set Cost for Consequence</h5>
+        <button type="button" class="btn-close" (click)="closeCostModal()"></button>
+      </div>
+      
+      <div class="modal-body">
+        <div class="mb-3">
+          <label for="consequenceCost" class="form-label">Estimated Cost</label>
+          <div class="input-group">
+            <span class="input-group-text">$</span>
+            <input 
+              type="number" 
+              id="consequenceCost" 
+              [(ngModel)]="currentCost" 
+              placeholder="0"
+              class="form-control">
+          </div>
+        </div>
+      </div>
+      
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeCostModal()">Cancel</button>
+        <button type="button" class="btn btn-primary" (click)="saveCost()">Save</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal-backdrop fade" [class.show]="showCostModal" *ngIf="showCostModal"></div>
+
+<!-- Add New Preventive Action Modal -->
+<div class="modal fade" [class.show]="showAddPreventiveActionModal" [style.display]="showAddPreventiveActionModal ? 'block' : 'none'" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content" *ngIf="showAddPreventiveActionModal">
+      <div class="modal-header">
+        <h5 class="modal-title">Add New Preventive Action</h5>
+        <button type="button" class="btn-close" (click)="closeAddPreventiveActionModal()"></button>
+      </div>
+      
+      <div class="modal-body">
+        <div class="mb-3">
+          <label for="preventiveActionDescription" class="form-label">Description</label>
+          <textarea 
+            id="preventiveActionDescription" 
+            [(ngModel)]="newPreventiveAction.description" 
+            placeholder="Enter new preventive action..."
+            rows="4"
+            class="form-control"></textarea>
+        </div>
+        
+        <div class="mb-3">
+          <label for="preventiveActionCost" class="form-label">Estimated Cost</label>
+          <div class="input-group">
+            <span class="input-group-text">$</span>
+            <input 
+              type="number" 
+              id="preventiveActionCost" 
+              [(ngModel)]="newPreventiveAction.estimatedCost" 
+              placeholder="0"
+              class="form-control">
+          </div>
+        </div>
+        
+        <div class="mb-3">
+          <label for="preventiveActionPriority" class="form-label">Priority</label>
+          <select 
+            id="preventiveActionPriority" 
+            [(ngModel)]="newPreventiveAction.priority" 
+            class="form-select">
+            <option value="low">Low</option>
+            <option value="medium">Medium</option>
+            <option value="high">High</option>
+            <option value="highest">Highest</option>
+          </select>
+        </div>
+      </div>
+      
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeAddPreventiveActionModal()">Cancel</button>
+        <button type="button" class="btn btn-primary" (click)="savePreventiveAction()">Add to Diagram</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal-backdrop fade" [class.show]="showAddPreventiveActionModal" *ngIf="showAddPreventiveActionModal"></div>
+
+<!-- Add New Cause Modal -->
+<div class="modal fade" [class.show]="showAddCauseModal" [style.display]="showAddCauseModal ? 'block' : 'none'" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content" *ngIf="showAddCauseModal">
+      <div class="modal-header">
+        <h5 class="modal-title">Add New Cause</h5>
+        <button type="button" class="btn-close" (click)="closeAddCauseModal()"></button>
+      </div>
+      
+      <div class="modal-body">
+        <div class="mb-3">
+          <label for="causeDescription" class="form-label">Description</label>
+          <textarea 
+            id="causeDescription" 
+            [(ngModel)]="newCause.description" 
+            placeholder="Enter new cause..."
+            rows="4"
+            class="form-control"></textarea>
+        </div>
+        
+        <div class="mb-3">
+          <label for="causeLikelihood" class="form-label">Likelihood (1-5)</label>
+          <select 
+            id="causeLikelihood" 
+            [(ngModel)]="newCause.likelihood" 
+            class="form-select">
+            <option value="1">1 - Very Unlikely</option>
+            <option value="2">2 - Unlikely</option>
+            <option value="3">3 - Possible</option>
+            <option value="4">4 - Likely</option>
+            <option value="5">5 - Very Likely</option>
+          </select>
+        </div>
+      </div>
+      
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeAddCauseModal()">Cancel</button>
+        <button type="button" class="btn btn-primary" (click)="saveCause()">Add to Diagram</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal-backdrop fade" [class.show]="showAddCauseModal" *ngIf="showAddCauseModal"></div>
+
+<!-- Add New Mitigation Action Modal -->
+<div class="modal fade" [class.show]="showAddMitigationActionModal" [style.display]="showAddMitigationActionModal ? 'block' : 'none'" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content" *ngIf="showAddMitigationActionModal">
+      <div class="modal-header">
+        <h5 class="modal-title">Add New Mitigation Action</h5>
+        <button type="button" class="btn-close" (click)="closeAddMitigationActionModal()"></button>
+      </div>
+      
+      <div class="modal-body">
+        <div class="mb-3">
+          <label for="mitigationActionDescription" class="form-label">Description</label>
+          <textarea 
+            id="mitigationActionDescription" 
+            [(ngModel)]="newMitigationAction.description" 
+            placeholder="Enter new mitigation action..."
+            rows="4"
+            class="form-control"></textarea>
+        </div>
+        
+        <div class="mb-3">
+          <label for="mitigationActionCost" class="form-label">Estimated Cost</label>
+          <div class="input-group">
+            <span class="input-group-text">$</span>
+            <input 
+              type="number" 
+              id="mitigationActionCost" 
+              [(ngModel)]="newMitigationAction.estimatedCost" 
+              placeholder="0"
+              class="form-control">
+          </div>
+        </div>
+        
+        <div class="mb-3">
+          <label for="mitigationActionPriority" class="form-label">Priority</label>
+          <select 
+            id="mitigationActionPriority" 
+            [(ngModel)]="newMitigationAction.priority" 
+            class="form-select">
+            <option value="low">Low</option>
+            <option value="medium">Medium</option>
+            <option value="high">High</option>
+            <option value="highest">Highest</option>
+          </select>
+        </div>
+      </div>
+      
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeAddMitigationActionModal()">Cancel</button>
+        <button type="button" class="btn btn-primary" (click)="saveMitigationAction()">Add to Diagram</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal-backdrop fade" [class.show]="showAddMitigationActionModal" *ngIf="showAddMitigationActionModal"></div>
+
+<!-- Add New Consequence Modal -->
+<div class="modal fade" [class.show]="showAddConsequenceModal" [style.display]="showAddConsequenceModal ? 'block' : 'none'" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content" *ngIf="showAddConsequenceModal">
+      <div class="modal-header">
+        <h5 class="modal-title">Add New Consequence</h5>
+        <button type="button" class="btn-close" (click)="closeAddConsequenceModal()"></button>
+      </div>
+      
+      <div class="modal-body">
+        <div class="mb-3">
+          <label for="consequenceDescription" class="form-label">Description</label>
+          <textarea 
+            id="consequenceDescription" 
+            [(ngModel)]="newConsequence.description" 
+            placeholder="Enter new consequence..."
+            rows="4"
+            class="form-control"></textarea>
+        </div>
+        
+        <div class="mb-3">
+          <label for="consequenceSeverity" class="form-label">Severity (1-5)</label>
+          <select 
+            id="consequenceSeverity" 
+            [(ngModel)]="newConsequence.severity" 
+            class="form-select">
+            <option value="1">1 - Minor</option>
+            <option value="2">2 - Low</option>
+            <option value="3">3 - Moderate</option>
+            <option value="4">4 - High</option>
+            <option value="5">5 - Critical</option>
+          </select>
+        </div>
+        
+        <div class="mb-3">
+          <label for="consequenceCost" class="form-label">Potential Cost</label>
+          <div class="input-group">
+            <span class="input-group-text">$</span>
+            <input 
+              type="number" 
+              id="consequenceCost" 
+              [(ngModel)]="newConsequence.potentialCost" 
+              placeholder="0"
+              class="form-control">
+          </div>
+        </div>
+      </div>
+      
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeAddConsequenceModal()">Cancel</button>
+        <button type="button" class="btn btn-primary" (click)="saveConsequence()">Add to Diagram</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal-backdrop fade" [class.show]="showAddConsequenceModal" *ngIf="showAddConsequenceModal"></div>

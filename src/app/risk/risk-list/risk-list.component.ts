@@ -333,8 +333,8 @@ export class RiskListComponent implements OnInit {
   }
 
   onRiskClick(risk: Risk): void {
-    // Navigate to risk details or bowtie diagram
-    console.log('Navigate to risk:', risk.id);
+    // Navigate to risk details
+    this.router.navigate(['/risk', risk.id]);
   }
 
   toggleDropdown(event: Event, riskId: string): void {
@@ -344,9 +344,9 @@ export class RiskListComponent implements OnInit {
 
   viewBowtie(event: Event, risk: Risk): void {
     event.stopPropagation();
-    console.log('View Bowtie for:', risk.id);
     this.openDropdownId = null;
-    // Navigate to bowtie view
+    // Navigate to risk detail view
+    this.router.navigate(['/risk', risk.id]);
   }
 
   editRisk(event: Event, risk: Risk): void {

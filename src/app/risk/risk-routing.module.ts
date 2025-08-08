@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { NewRiskComponent } from './new-risk/new-risk.component';
 import { RiskListComponent } from './risk-list/risk-list.component';
+import { RiskDetailComponent } from './risk-detail/risk-detail.component';
 
 const routes: Routes = [
   {
@@ -11,6 +12,10 @@ const routes: Routes = [
   {
     path: 'new',
     component: NewRiskComponent
+  },
+  {
+    path: ':id',
+    component: RiskDetailComponent
   }
 ];
 

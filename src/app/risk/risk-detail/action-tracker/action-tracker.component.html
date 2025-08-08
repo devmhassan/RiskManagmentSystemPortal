@@ -1,0 +1,378 @@
+<div class="action-tracker-container" *ngIf="risk">
+  <!-- Action Statistics Cards -->
+  <div class="row g-3 mb-4">
+    <!-- Open Actions -->
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm h-100">
+        <div class="card-body text-center">
+          <div class="text-primary mb-2">
+            <i class="bi bi-circle display-6"></i>
+          </div>
+          <h6 class="text-muted mb-1">Open</h6>
+          <h2 class="text-primary mb-0">{{ getActionsByStatus('open').length }}</h2>
+        </div>
+      </div>
+    </div>
+
+    <!-- In Progress Actions -->
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm h-100">
+        <div class="card-body text-center">
+          <div class="text-warning mb-2">
+            <i class="bi bi-clock display-6"></i>
+          </div>
+          <h6 class="text-muted mb-1">In Progress</h6>
+          <h2 class="text-warning mb-0">{{ getActionsByStatus('in-progress').length }}</h2>
+        </div>
+      </div>
+    </div>
+
+    <!-- Completed Actions -->
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm h-100">
+        <div class="card-body text-center">
+          <div class="text-success mb-2">
+            <i class="bi bi-check-circle display-6"></i>
+          </div>
+          <h6 class="text-muted mb-1">Completed</h6>
+          <h2 class="text-success mb-0">{{ getActionsByStatus('completed').length }}</h2>
+        </div>
+      </div>
+    </div>
+
+    <!-- Overdue Actions -->
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm h-100">
+        <div class="card-body text-center">
+          <div class="text-danger mb-2">
+            <i class="bi bi-exclamation-triangle display-6"></i>
+          </div>
+          <h6 class="text-muted mb-1">Overdue</h6>
+          <h2 class="text-danger mb-0">{{ getOverdueActions().length }}</h2>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Completion Progress -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="card border-0 shadow-sm">
+        <div class="card-body">
+          <div class="row align-items-center">
+            <div class="col-md-8">
+              <h6 class="mb-2">Completion Progress</h6>
+              <div class="progress" style="height: 12px;">
+                <div class="progress-bar bg-success" 
+                     role="progressbar" 
+                     [style.width.%]="getCompletionPercentage()"
+                     [attr.aria-valuenow]="getCompletionPercentage()"
+                     aria-valuemin="0" 
+                     aria-valuemax="100">
+                </div>
+              </div>
+              <small class="text-muted mt-2 d-block">
+                {{ getActionsByStatus('completed').length }} of {{ getAllActions().length }} actions completed
+              </small>
+            </div>
+            <div class="col-md-4 text-end">
+              <h3 class="text-success mb-0">{{ getCompletionPercentage() }}%</h3>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Action Tracker Table -->
+  <div class="card border-0 shadow-sm">
+    <div class="card-header bg-white border-bottom">
+      <h6 class="card-title mb-0">
+        <i class="bi bi-list-check me-2"></i>
+        Action Tracker
+      </h6>
+    </div>
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table table-hover mb-0">
+          <thead class="table-light">
+            <tr>
+              <th scope="col" class="border-0">Action</th>
+              <th scope="col" class="border-0">Type</th>
+              <th scope="col" class="border-0">Related To</th>
+              <th scope="col" class="border-0">Assigned To</th>
+              <th scope="col" class="border-0">Due Date</th>
+              <th scope="col" class="border-0">Status</th>
+              <th scope="col" class="border-0">Priority</th>
+              <th scope="col" class="border-0">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let action of getAllActions(); trackBy: trackByActionId" 
+                [class.table-warning]="isActionOverdue(action)">
+              <td>
+                <div class="fw-medium">{{ action.name }}</div>
+              </td>
+              <td>
+                <span class="badge" [class]="'bg-' + getTypeBadgeClass(action.type)">
+                  {{ action.type }}
+                </span>
+              </td>
+              <td>
+                <small class="text-muted">{{ action.relatedTo }}</small>
+              </td>
+              <td>
+                <div class="d-flex align-items-center">
+                  <i class="bi bi-person-circle me-2 text-muted"></i>
+                  <span>{{ action.assignedTo }}</span>
+                </div>
+              </td>
+              <td>
+                <div class="d-flex align-items-center">
+                  <i class="bi bi-calendar3 me-2 text-muted"></i>
+                  <span [class.text-danger]="isActionOverdue(action)">
+                    {{ formatDate(action.dueDate) }}
+                  </span>
+                </div>
+              </td>
+              <td>
+                <div class="status-indicator-container">
+                  <div class="status-circle" [class]="'status-' + action.status"></div>
+                  <span class="status-text ms-2">{{ action.status | titlecase }}</span>
+                </div>
+              </td>
+              <td>
+                <span class="badge" [class]="'bg-' + getPriorityBadgeClass(action.priority)">
+                  {{ action.priority | titlecase }}
+                </span>
+              </td>
+              <td>
+                <div class="d-flex gap-2 align-items-center">
+                  <!-- Status Select -->
+                  <select class="form-select form-select-sm status-select-actions" 
+                          [value]="action.status" 
+                          (change)="updateActionStatus(action.id, $any($event.target).value)">
+                    <option value="open">Open</option>
+                    <option value="in-progress">In Progress</option>
+                    <option value="completed">Completed</option>
+                    <option value="disabled">Disabled</option>
+                  </select>
+                  
+                  <!-- Reassign Button -->
+                  <button type="button" 
+                          class="btn btn-outline-primary btn-sm" 
+                          (click)="reassignAction(action.id)"
+                          title="Reassign">
+                    Reassign
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Summary Information -->
+  <div class="row mt-4">
+    <div class="col-md-6">
+      <div class="card border-0 bg-light">
+        <div class="card-body">
+          <h6 class="card-title">
+            <i class="bi bi-info-circle me-2"></i>
+            Action Summary
+          </h6>
+          <ul class="list-unstyled mb-0">
+            <li class="mb-2">
+              <strong>Total Actions:</strong> 
+              <span class="badge bg-secondary ms-2">{{ getAllActions().length }}</span>
+            </li>
+            <li class="mb-2">
+              <strong>Preventive Actions:</strong> 
+              <span class="badge bg-primary ms-2">{{ getTotalPreventiveActions() }}</span>
+            </li>
+            <li class="mb-2">
+              <strong>Mitigation Actions:</strong> 
+              <span class="badge bg-info ms-2">{{ getTotalMitigationActions() }}</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="card border-0 bg-light">
+        <div class="card-body">
+          <h6 class="card-title">
+            <i class="bi bi-clock-history me-2"></i>
+            Timeline Status
+          </h6>
+          <ul class="list-unstyled mb-0">
+            <li class="mb-2">
+              <strong>On Track:</strong> 
+              <span class="badge bg-success ms-2">{{ getOnTrackActions() }}</span>
+            </li>
+            <li class="mb-2">
+              <strong>Overdue:</strong> 
+              <span class="badge bg-danger ms-2">{{ getOverdueActions().length }}</span>
+            </li>
+            <li class="mb-2">
+              <strong>Completion Rate:</strong> 
+              <span class="badge bg-success ms-2">{{ getCompletionPercentage() }}%</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer Information -->
+  <div class="row mt-3">
+    <div class="col">
+      <small class="text-muted">
+        <i class="bi bi-info-circle me-1"></i>
+        Actions are automatically tracked based on their assignment and due dates
+      </small>
+    </div>
+    <div class="col-auto">
+      <small class="text-muted">Last updated: 8/8/2025</small>
+    </div>
+  </div>
+</div>
+
+<!-- Reassign Action Modal -->
+<div class="modal fade" [class.show]="showReassignModal" [style.display]="showReassignModal ? 'block' : 'none'" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content" *ngIf="showReassignModal">
+      <div class="modal-header">
+        <h5 class="modal-title">Assign Preventive Action</h5>
+        <button type="button" class="btn-close" (click)="closeReassignModal()"></button>
+      </div>
+      
+      <div class="modal-body">
+        <p class="text-muted mb-4">Assign this action to a team member and set tracking details.</p>
+        
+        <form class="reassign-form">
+          <div class="mb-3">
+            <label for="actionDescription" class="form-label">Action Description</label>
+            <textarea 
+              id="actionDescription" 
+              [(ngModel)]="reassignData.description" 
+              name="description"
+              rows="3"
+              class="form-control">{{ reassignData.description }}</textarea>
+          </div>
+          
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="assignedTo" class="form-label">Assigned To</label>
+              <select 
+                id="assignedTo" 
+                [(ngModel)]="reassignData.assignedTo" 
+                name="assignedTo"
+                class="form-select"
+                [class.is-invalid]="!reassignData.assignedTo">
+                <option value="">Select team member</option>
+                <option *ngFor="let member of teamMembers" [value]="member">{{ member }}</option>
+              </select>
+              <div class="invalid-feedback" *ngIf="!reassignData.assignedTo">
+                Assignee is required
+              </div>
+            </div>
+            
+            <div class="col-md-6 mb-3">
+              <label for="businessUnit" class="form-label">Business Unit</label>
+              <select 
+                id="businessUnit" 
+                [(ngModel)]="reassignData.businessUnit" 
+                name="businessUnit"
+                class="form-select"
+                [class.is-invalid]="!reassignData.businessUnit">
+                <option value="">Select business unit</option>
+                <option *ngFor="let unit of businessUnits" [value]="unit">{{ unit }}</option>
+              </select>
+              <div class="invalid-feedback" *ngIf="!reassignData.businessUnit">
+                Business unit is required
+              </div>
+            </div>
+          </div>
+          
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="priority" class="form-label">Priority</label>
+              <select 
+                id="priority" 
+                [(ngModel)]="reassignData.priority" 
+                name="priority"
+                class="form-select">
+                <option value="low">Low Priority</option>
+                <option value="medium">Medium Priority</option>
+                <option value="high">High Priority</option>
+                <option value="highest">Highest Priority</option>
+              </select>
+            </div>
+            
+            <div class="col-md-6 mb-3">
+              <label for="estimatedCost" class="form-label">Estimated Cost</label>
+              <div class="input-group">
+                <span class="input-group-text">$</span>
+                <input 
+                  type="number" 
+                  id="estimatedCost" 
+                  [(ngModel)]="reassignData.estimatedCost" 
+                  name="estimatedCost"
+                  class="form-control"
+                  min="0"
+                  step="100">
+              </div>
+            </div>
+          </div>
+          
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="startDate" class="form-label">Start Date</label>
+              <input 
+                type="date" 
+                id="startDate" 
+                [(ngModel)]="reassignData.startDate" 
+                name="startDate"
+                class="form-control">
+            </div>
+            
+            <div class="col-md-6 mb-3">
+              <label for="dueDate" class="form-label">Due Date</label>
+              <input 
+                type="date" 
+                id="dueDate" 
+                [(ngModel)]="reassignData.dueDate" 
+                name="dueDate"
+                class="form-control">
+            </div>
+          </div>
+          
+          <div class="mb-3">
+            <label for="comments" class="form-label">Comments</label>
+            <textarea 
+              id="comments" 
+              [(ngModel)]="reassignData.comments" 
+              name="comments"
+              rows="3"
+              class="form-control"
+              placeholder="Add any additional comments or context..."></textarea>
+          </div>
+        </form>
+      </div>
+      
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeReassignModal()">Cancel</button>
+        <button type="button" 
+                class="btn btn-primary" 
+                (click)="saveReassignment()"
+                [disabled]="!reassignData.assignedTo || !reassignData.businessUnit">
+          Assign Action
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal-backdrop fade" [class.show]="showReassignModal" *ngIf="showReassignModal"></div>

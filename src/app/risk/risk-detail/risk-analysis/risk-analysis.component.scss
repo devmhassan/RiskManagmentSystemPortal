@@ -1,0 +1,207 @@
+// Risk Analysis Component Styles using Bootstrap 5
+
+.risk-analysis-container {
+  padding: 1rem 0;
+}
+
+// Card enhancements
+.card {
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+  }
+}
+
+// Cost breakdown styling
+.cost-breakdown {
+  .border-bottom {
+    border-color: #e9ecef !important;
+  }
+  
+  .border-top {
+    border-color: #dee2e6 !important;
+  }
+}
+
+.consequences-breakdown {
+  .border-bottom {
+    border-color: #e9ecef !important;
+  }
+  
+  .border-top {
+    border-color: #dee2e6 !important;
+  }
+}
+
+.analysis-summary {
+  .border-bottom {
+    border-color: #e9ecef !important;
+  }
+  
+  .border-top {
+    border-color: #dee2e6 !important;
+  }
+}
+
+// Header styling
+.card-header {
+  border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+  
+  &.bg-primary {
+    background: linear-gradient(135deg, #0d6efd, #6f42c1) !important;
+  }
+  
+  &.bg-warning {
+    background: linear-gradient(135deg, #ffc107, #fd7e14) !important;
+  }
+  
+  &.bg-success {
+    background: linear-gradient(135deg, #198754, #20c997) !important;
+  }
+  
+  .card-title {
+    font-weight: 600;
+    
+    i {
+      opacity: 0.9;
+    }
+  }
+}
+
+// Badge styling
+.badge {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.375rem 0.75rem;
+  
+  &.bg-danger {
+    background: linear-gradient(135deg, #dc3545, #c13c4b) !important;
+  }
+  
+  &.bg-warning {
+    background: linear-gradient(135deg, #ffc107, #fd7e14) !important;
+    color: #212529 !important;
+  }
+  
+  &.bg-info {
+    background: linear-gradient(135deg, #0dcaf0, #0aa8cc) !important;
+  }
+  
+  &.bg-secondary {
+    background: linear-gradient(135deg, #6c757d, #5a6268) !important;
+  }
+}
+
+// Alert styling
+.alert {
+  border: none;
+  border-radius: 0.5rem;
+  
+  &.alert-success {
+    background: linear-gradient(135deg, rgba(25, 135, 84, 0.1), rgba(32, 201, 151, 0.1));
+    border-left: 4px solid #198754;
+  }
+  
+  &.alert-warning {
+    background: linear-gradient(135deg, rgba(255, 193, 7, 0.1), rgba(253, 126, 20, 0.1));
+    border-left: 4px solid #ffc107;
+  }
+}
+
+// Typography enhancements
+.h5 {
+  font-weight: 700;
+}
+
+.fw-bold {
+  font-weight: 600 !important;
+}
+
+// Color utilities
+.text-primary {
+  color: #0d6efd !important;
+}
+
+.text-warning {
+  color: #f59f00 !important;
+}
+
+.text-success {
+  color: #198754 !important;
+}
+
+.text-danger {
+  color: #dc3545 !important;
+}
+
+.text-info {
+  color: #0dcaf0 !important;
+}
+
+// Spacing adjustments
+.mb-3 {
+  margin-bottom: 1rem !important;
+}
+
+.pb-2 {
+  padding-bottom: 0.5rem !important;
+}
+
+.pt-3 {
+  padding-top: 1rem !important;
+}
+
+// List styling
+.list-unstyled {
+  li {
+    padding: 0.25rem 0;
+    transition: background-color 0.2s ease-in-out;
+    border-radius: 0.25rem;
+    padding-left: 0.5rem;
+    margin-left: -0.5rem;
+    
+    &:hover {
+      background-color: rgba(0, 0, 0, 0.02);
+    }
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  .risk-analysis-container {
+    padding: 0.5rem 0;
+  }
+  
+  .card-header {
+    .card-title {
+      font-size: 1rem;
+    }
+  }
+  
+  .h5 {
+    font-size: 1.1rem;
+  }
+}
+
+// Animation for value changes
+.fw-bold {
+  transition: color 0.3s ease-in-out;
+}
+
+// Icon styling
+.bi {
+  font-size: 1rem;
+  vertical-align: -0.125em;
+}
+
+// Enhanced card borders
+.border-0 {
+  border: 1px solid rgba(0, 0, 0, 0.05) !important;
+}
+
+// Shadow utilities
+.shadow-sm {
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075) !important;
+}

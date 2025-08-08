@@ -1,0 +1,158 @@
+// Minimal custom styles for Risk Detail Component using Bootstrap 5
+
+// Hazard Circle for Bowtie Diagram
+.hazard-circle {
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #dc3545, #6f42c1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+  border: 3px solid #fff;
+  
+  .risk-calculation {
+    font-size: 0.9rem;
+    font-weight: 600;
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  .hazard-circle {
+    width: 120px;
+    height: 120px;
+    font-size: 0.875rem;
+  }
+}
+
+// Disabled action styles
+.disabled-action {
+  opacity: 0.6;
+  text-decoration: line-through;
+}
+
+// Action card styles
+.border-2 {
+  border-width: 2px !important;
+}
+
+// Action status specific styles
+.border-success {
+  border-left-width: 4px !important;
+}
+
+.border-primary {
+  border-left-width: 4px !important;
+}
+
+.border-warning {
+  border-left-width: 4px !important;
+}
+
+.border-secondary {
+  border-left-width: 4px !important;
+}
+
+// Edit mode styles
+.edit-mode {
+  .causes-list, .consequences-list {
+    .card {
+      position: relative;
+      
+      &:hover {
+        .delete-btn {
+          opacity: 1;
+        }
+      }
+    }
+  }
+}
+
+// Delete button styles
+.delete-btn {
+  opacity: 0.7;
+  transition: opacity 0.2s ease-in-out;
+  
+  &:hover {
+    opacity: 1;
+  }
+}
+
+// Modal backdrop z-index fix
+.modal-backdrop {
+  z-index: 1040;
+}
+
+.modal {
+  z-index: 1050;
+}
+
+// Avatar Circle for Discussion
+.avatar-circle {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #6f42c1, #0d6efd);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 0.875rem;
+}
+
+// Custom button styles
+.btn-ghost {
+  background: none;
+  border: none;
+  color: #6c757d;
+  &:hover {
+    background-color: #f8f9fa;
+    color: #495057;
+  }
+}
+
+// Custom tab navigation override
+.nav-tabs {
+  border-bottom: 2px solid #dee2e6;
+  
+  .nav-link {
+    border: none;
+    border-bottom: 2px solid transparent;
+    color: #6c757d;
+    font-weight: 500;
+    
+    &:hover {
+      border-color: transparent;
+      color: #495057;
+      background-color: #f8f9fa;
+    }
+    
+    &.active {
+      background-color: transparent;
+      border-bottom-color: #0d6efd;
+      color: #0d6efd;
+    }
+  }
+}
+
+// Card hover effects
+.card {
+  transition: box-shadow 0.15s ease-in-out;
+  
+  &:hover {
+    box-shadow: 0 0.125rem 0.5rem rgba(0, 0, 0, 0.15) !important;
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  .hazard-circle {
+    width: 120px;
+    height: 120px;
+    font-size: 0.875rem;
+  }
+}

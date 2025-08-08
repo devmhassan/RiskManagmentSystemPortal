@@ -1,0 +1,494 @@
+// Action Tracker Component Styles using Bootstrap 5
+
+.action-tracker-container {
+  padding: 1rem 0;
+}
+
+// Card enhancements
+.card {
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+  }
+}
+
+// Statistics cards styling
+.card-body {
+  .display-6 {
+    font-size: 2.5rem;
+    opacity: 0.8;
+  }
+}
+
+// Progress bar enhancements
+.progress {
+  border-radius: 0.5rem;
+  background-color: #f8f9fa;
+  
+  .progress-bar {
+    border-radius: 0.5rem;
+    transition: width 0.6s ease;
+  }
+}
+
+// Table styling
+.table {
+  font-size: 0.9rem;
+  
+  th {
+    font-weight: 600;
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #6c757d;
+    padding: 1rem 0.75rem;
+  }
+  
+  td {
+    padding: 1rem 0.75rem;
+    vertical-align: middle;
+  }
+  
+  .table-warning {
+    background-color: rgba(255, 193, 7, 0.1);
+    
+    &:hover {
+      background-color: rgba(255, 193, 7, 0.15);
+    }
+  }
+}
+
+// Badge styling
+.badge {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.375rem 0.75rem;
+  
+  &.bg-primary {
+    background: linear-gradient(135deg, #0d6efd, #6f42c1) !important;
+  }
+  
+  &.bg-info {
+    background: linear-gradient(135deg, #0dcaf0, #0aa8cc) !important;
+  }
+  
+  &.bg-success {
+    background: linear-gradient(135deg, #198754, #20c997) !important;
+  }
+  
+  &.bg-warning {
+    background: linear-gradient(135deg, #ffc107, #fd7e14) !important;
+    color: #212529 !important;
+  }
+  
+  &.bg-danger {
+    background: linear-gradient(135deg, #dc3545, #c13c4b) !important;
+  }
+  
+  &.bg-secondary {
+    background: linear-gradient(135deg, #6c757d, #5a6268) !important;
+  }
+}
+
+// Button group styling
+.btn-group {
+  .btn {
+    font-size: 0.8rem;
+    padding: 0.375rem 0.75rem;
+    
+    &.btn-outline-primary {
+      border-color: #0d6efd;
+      color: #0d6efd;
+      
+      &:hover {
+        background-color: #0d6efd;
+        border-color: #0d6efd;
+      }
+    }
+    
+    &.btn-outline-success {
+      border-color: #198754;
+      color: #198754;
+      
+      &:hover {
+        background-color: #198754;
+        border-color: #198754;
+      }
+    }
+    
+    &.btn-outline-secondary {
+      border-color: #6c757d;
+      color: #6c757d;
+    }
+  }
+}
+
+// Icon styling
+.bi {
+  font-size: 1rem;
+  vertical-align: -0.125em;
+}
+
+// Text color utilities
+.text-primary {
+  color: #0d6efd !important;
+}
+
+.text-warning {
+  color: #f59f00 !important;
+}
+
+.text-success {
+  color: #198754 !important;
+}
+
+.text-danger {
+  color: #dc3545 !important;
+}
+
+.text-muted {
+  color: #6c757d !important;
+}
+
+// Typography enhancements
+.fw-medium {
+  font-weight: 500 !important;
+}
+
+.fw-bold {
+  font-weight: 600 !important;
+}
+
+// Card header styling
+.card-header {
+  border-bottom: 2px solid #f8f9fa;
+  background-color: #fff !important;
+  
+  .card-title {
+    font-weight: 600;
+    color: #495057;
+    
+    i {
+      opacity: 0.7;
+    }
+  }
+}
+
+// Summary cards
+.bg-light {
+  background-color: #f8f9fa !important;
+  
+  .card-title {
+    color: #495057;
+    font-weight: 600;
+    margin-bottom: 1rem;
+  }
+}
+
+// List styling
+.list-unstyled {
+  li {
+    padding: 0.25rem 0;
+    transition: background-color 0.2s ease-in-out;
+    border-radius: 0.25rem;
+    padding-left: 0.5rem;
+    margin-left: -0.5rem;
+    
+    &:hover {
+      background-color: rgba(0, 0, 0, 0.02);
+    }
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  .action-tracker-container {
+    padding: 0.5rem 0;
+  }
+  
+  .card-body {
+    padding: 1rem;
+    
+    .display-6 {
+      font-size: 2rem;
+    }
+  }
+  
+  .table {
+    font-size: 0.8rem;
+    
+    th, td {
+      padding: 0.75rem 0.5rem;
+    }
+  }
+  
+  .btn-group .btn {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+  }
+}
+
+// Animation for status changes
+.badge {
+  transition: all 0.3s ease-in-out;
+}
+
+// Hover effects for table rows
+.table tbody tr {
+  transition: background-color 0.2s ease-in-out;
+  
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.02);
+  }
+}
+
+// Enhanced shadows
+.shadow-sm {
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075) !important;
+}
+
+// Custom spacing
+.g-3 > * {
+  padding: 0.75rem;
+}
+
+// Border utilities
+.border-0 {
+  border: 1px solid rgba(0, 0, 0, 0.05) !important;
+}
+
+// Modal styling
+.modal {
+  z-index: 1050;
+  
+  .modal-content {
+    border-radius: 0.5rem;
+    border: none;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+  }
+  
+  .modal-header {
+    border-bottom: 2px solid #f8f9fa;
+    padding: 1.5rem;
+    
+    .modal-title {
+      font-weight: 600;
+      color: #495057;
+    }
+    
+    .btn-close {
+      font-size: 1.2rem;
+    }
+  }
+  
+  .modal-body {
+    padding: 1.5rem;
+  }
+  
+  .modal-footer {
+    border-top: 2px solid #f8f9fa;
+    padding: 1.5rem;
+  }
+}
+
+.modal-backdrop {
+  z-index: 1040;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+// Form styling
+.reassign-form {
+  .form-label {
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 0.5rem;
+  }
+  
+  .form-control, .form-select {
+    border-radius: 0.375rem;
+    border: 1px solid #ced4da;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    
+    &:focus {
+      border-color: #0d6efd;
+      box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+    }
+    
+    &.is-invalid {
+      border-color: #dc3545;
+      
+      &:focus {
+        border-color: #dc3545;
+        box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+      }
+    }
+  }
+  
+  .input-group-text {
+    background-color: #f8f9fa;
+    border: 1px solid #ced4da;
+    color: #6c757d;
+    font-weight: 500;
+  }
+  
+  .invalid-feedback {
+    font-size: 0.875rem;
+    color: #dc3545;
+    margin-top: 0.25rem;
+  }
+}
+
+// Status select styling
+.form-select-sm {
+  font-size: 0.8rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  min-width: 120px;
+  
+  &:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+  }
+}
+
+// Circular Status Indicator Styling
+.status-indicator-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.status-text {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #495057;
+  white-space: nowrap;
+}
+
+.status-circle {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid;
+  flex-shrink: 0;
+  transition: all 0.3s ease;
+  
+  &.status-open {
+    background-color: #e9ecef;
+    border-color: #6c757d;
+  }
+  
+  &.status-in-progress {
+    background-color: #fff3cd;
+    border-color: #ffc107;
+    position: relative;
+    
+    &::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 6px;
+      height: 6px;
+      background-color: #ffc107;
+      border-radius: 50%;
+    }
+  }
+  
+  &.status-completed {
+    background-color: #d1e7dd;
+    border-color: #198754;
+    position: relative;
+    
+    &::after {
+      content: '✓';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: #198754;
+      font-size: 10px;
+      font-weight: bold;
+      line-height: 1;
+    }
+  }
+  
+  &.status-disabled {
+    background-color: #f8f9fa;
+    border-color: #dee2e6;
+    position: relative;
+    
+    &::after {
+      content: '×';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: #6c757d;
+      font-size: 12px;
+      font-weight: bold;
+      line-height: 1;
+    }
+  }
+}
+
+.status-select {
+  font-size: 0.8rem;
+  padding: 0.25rem 0.5rem;
+  border: 1px solid #ced4da;
+  border-radius: 0.25rem;
+  background-color: #fff;
+  min-width: 120px;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  
+  &:focus {
+    outline: none;
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+  }
+  
+  &:hover {
+    border-color: #adb5bd;
+  }
+}
+
+// Action select dropdown styling
+.action-select {
+  min-width: 140px;
+  cursor: pointer;
+  
+  &:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+  }
+  
+  option {
+    padding: 0.375rem 0.5rem;
+  }
+}
+
+// Status select in actions column
+.status-select-actions {
+  min-width: 120px;
+  font-size: 0.8rem;
+  
+  &:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+  }
+}
+
+// Actions column flex layout
+.d-flex.gap-2 {
+  gap: 0.5rem !important;
+  flex-wrap: nowrap;
+  
+  .btn {
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+}

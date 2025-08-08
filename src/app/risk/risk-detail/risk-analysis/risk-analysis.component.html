@@ -1,0 +1,195 @@
+<div class="risk-analysis-container" *ngIf="risk">
+  <div class="row g-4">
+    <!-- Implementation Costs Card -->
+    <div class="col-lg-4">
+      <div class="card h-100 border-0 shadow-sm">
+        <div class="card-header bg-primary text-white">
+          <h5 class="card-title mb-0">
+            <i class="bi bi-currency-dollar me-2"></i>
+            Implementation Costs
+          </h5>
+        </div>
+        <div class="card-body">
+          <div class="cost-breakdown">
+            <!-- Preventive Actions Cost -->
+            <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
+              <span class="text-muted">Preventive Actions:</span>
+              <span class="fw-bold text-primary">{{ formatCurrency(getTotalPreventiveCost()) }}</span>
+            </div>
+            
+            <!-- Mitigation Actions Cost -->
+            <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
+              <span class="text-muted">Mitigation Actions:</span>
+              <span class="fw-bold text-primary">{{ formatCurrency(getTotalMitigationCost()) }}</span>
+            </div>
+            
+            <!-- Total Implementation Cost -->
+            <div class="mt-4 pt-3 border-top border-2">
+              <div class="d-flex justify-content-between align-items-center">
+                <span class="fw-bold text-dark">Total Implementation Cost:</span>
+                <span class="h5 mb-0 text-primary fw-bold">{{ formatCurrency(getTotalImplementationCost()) }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Potential Consequence Costs Card -->
+    <div class="col-lg-4">
+      <div class="card h-100 border-0 shadow-sm">
+        <div class="card-header bg-warning text-dark">
+          <h5 class="card-title mb-0">
+            <i class="bi bi-exclamation-triangle me-2"></i>
+            Potential Consequence Costs
+          </h5>
+        </div>
+        <div class="card-body">
+          <div class="consequences-breakdown">
+            <!-- Individual Consequence Costs -->
+            <div *ngFor="let item of getPotentialConsequenceCosts(); let i = index" 
+                 class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
+              <div class="d-flex align-items-center">
+                <span class="badge me-2" 
+                      [class]="'bg-' + getSeverityBadgeClass(item.severity)">
+                  {{ item.severity }}
+                </span>
+                <span class="text-muted">{{ item.id }}:</span>
+              </div>
+              <span class="fw-bold" 
+                    [class]="item.cost > 0 ? 'text-warning' : 'text-muted'">
+                {{ formatCurrency(item.cost) }}
+              </span>
+            </div>
+            
+            <!-- Total Potential Cost -->
+            <div class="mt-4 pt-3 border-top border-2">
+              <div class="d-flex justify-content-between align-items-center">
+                <span class="fw-bold text-dark">Total Potential Cost:</span>
+                <span class="h5 mb-0 text-warning fw-bold">{{ formatCurrency(getTotalPotentialCost()) }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Cost-Benefit Analysis Card -->
+    <div class="col-lg-4">
+      <div class="card h-100 border-0 shadow-sm">
+        <div class="card-header bg-success text-white">
+          <h5 class="card-title mb-0">
+            <i class="bi bi-graph-up me-2"></i>
+            Cost-Benefit Analysis
+          </h5>
+        </div>
+        <div class="card-body">
+          <div class="analysis-summary">
+            <!-- Implementation Cost -->
+            <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
+              <span class="text-muted">Implementation Cost:</span>
+              <span class="fw-bold text-primary">{{ formatCurrency(getTotalImplementationCost()) }}</span>
+            </div>
+            
+            <!-- Potential Consequence Cost -->
+            <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
+              <span class="text-muted">Potential Consequence Cost:</span>
+              <span class="fw-bold text-warning">{{ formatCurrency(getTotalPotentialCost()) }}</span>
+            </div>
+            
+            <!-- Net Benefit -->
+            <div class="mt-4 pt-3 border-top border-2">
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <span class="fw-bold text-dark">Net Benefit:</span>
+                <span class="h5 mb-0 fw-bold" 
+                      [class]="getNetBenefit() > 0 ? 'text-success' : 'text-danger'">
+                  {{ formatCurrency(getNetBenefit()) }}
+                </span>
+              </div>
+              
+              <!-- Cost Effectiveness Text -->
+              <div class="alert" 
+                   [class]="getNetBenefit() > 0 ? 'alert-success' : 'alert-warning'" 
+                   role="alert">
+                <small>{{ getCostEffectivenessText() }}</small>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Additional Analysis Section -->
+  <div class="row mt-4">
+    <div class="col-12">
+      <div class="card border-0 shadow-sm">
+        <div class="card-header bg-light">
+          <h6 class="card-title mb-0">
+            <i class="bi bi-info-circle me-2"></i>
+            Risk Analysis Summary
+          </h6>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-6">
+              <h6 class="text-muted mb-3">Key Metrics</h6>
+              <ul class="list-unstyled">
+                <li class="mb-2">
+                  <strong>Risk Level:</strong> 
+                  <span class="badge bg-danger ms-2">{{ risk.riskLevel }}</span>
+                </li>
+                <li class="mb-2">
+                  <strong>Risk Score:</strong> 
+                  <span class="badge bg-dark ms-2">{{ risk.riskScore }}</span>
+                </li>
+                <li class="mb-2">
+                  <strong>Total Controls:</strong> 
+                  <span class="badge bg-info ms-2">
+                    {{ (risk.causes?.length || 0) + (risk.consequences?.length || 0) }}
+                  </span>
+                </li>
+              </ul>
+            </div>
+            <div class="col-md-6">
+              <h6 class="text-muted mb-3">Investment Analysis</h6>
+              <ul class="list-unstyled">
+                <li class="mb-2">
+                  <strong>Cost per Risk Point:</strong> 
+                  <span class="text-primary ms-2">
+                    {{ formatCurrency(getTotalImplementationCost() / risk.riskScore) }}
+                  </span>
+                </li>
+                <li class="mb-2">
+                  <strong>ROI Ratio:</strong> 
+                  <span class="text-success ms-2">
+                    {{ (getTotalPotentialCost() / getTotalImplementationCost()).toFixed(2) }}:1
+                  </span>
+                </li>
+                <li class="mb-2">
+                  <strong>Break-even Point:</strong> 
+                  <span class="text-info ms-2">
+                    {{ ((getTotalImplementationCost() / getTotalPotentialCost()) * 100).toFixed(1) }}%
+                  </span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer Information -->
+  <div class="row mt-3">
+    <div class="col">
+      <small class="text-muted">
+        <i class="bi bi-info-circle me-1"></i>
+        Drag items from the chat to add them to the diagram
+      </small>
+    </div>
+    <div class="col-auto">
+      <small class="text-muted">Last updated: 8/8/2025</small>
+    </div>
+  </div>
+</div>
