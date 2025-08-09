@@ -207,6 +207,11 @@ export class BowtieComponentsComponent implements OnInit, OnDestroy {
         preventionActions.push(actionGroup);
       });
 
+      // Ensure at least one prevention action exists
+      if (preventionActions.length === 0) {
+        preventionActions.push(this.createPreventionActionFormGroup());
+      }
+
       this.causes.push(causeGroup);
     });
 
@@ -227,6 +232,11 @@ export class BowtieComponentsComponent implements OnInit, OnDestroy {
         mitigationActions.push(actionGroup);
       });
 
+      // Ensure at least one mitigation action exists
+      if (mitigationActions.length === 0) {
+        mitigationActions.push(this.createMitigationActionFormGroup());
+      }
+
       this.consequences.push(consequenceGroup);
     });
   }
@@ -239,9 +249,8 @@ export class BowtieComponentsComponent implements OnInit, OnDestroy {
       likelihood: cause.likelihood,
       severity: cause.severity,
       preventionActions: cause.preventionActions
-        .filter((action: any) => action.description && action.description.trim().length > 0)
         .map((action: any) => ({
-          description: action.description,
+          description: action.description || '',
           cost: action.cost,
           priority: action.priority
         }))
@@ -252,9 +261,8 @@ export class BowtieComponentsComponent implements OnInit, OnDestroy {
       severity: consequence.severity,
       potentialCost: consequence.potentialCost,
       mitigationActions: consequence.mitigationActions
-        .filter((action: any) => action.description && action.description.trim().length > 0)
         .map((action: any) => ({
-          description: action.description,
+          description: action.description || '',
           priority: action.priority,
           dueDate: action.dueDate
         }))
