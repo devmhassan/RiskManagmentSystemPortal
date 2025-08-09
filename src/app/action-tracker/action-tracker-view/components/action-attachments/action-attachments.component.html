@@ -1,0 +1,80 @@
+<!-- Attachments List -->
+<div class="mb-4">
+  <div *ngIf="mockAttachments.length === 0" class="text-center py-5">
+    <i class="bi bi-paperclip text-muted" style="font-size: 3rem;"></i>
+    <h6 class="mt-3 text-muted">No Attachments</h6>
+    <p class="text-muted">Upload documents, images, or other files related to this action.</p>
+  </div>
+  
+  <div class="row g-3">
+    <div *ngFor="let attachment of mockAttachments" class="col-md-6">
+      <div class="card border-0 bg-light attachment-card">
+        <div class="card-body">
+          <div class="d-flex align-items-start">
+            <div class="me-3 file-icon">
+              <i class="bi bi-file-earmark-pdf text-danger" 
+                 style="font-size: 2rem;" 
+                 *ngIf="attachment.type === 'pdf'"></i>
+              <i class="bi bi-file-earmark-excel text-success" 
+                 style="font-size: 2rem;" 
+                 *ngIf="attachment.type === 'excel'"></i>
+              <i class="bi bi-file-earmark-word text-primary" 
+                 style="font-size: 2rem;" 
+                 *ngIf="attachment.type === 'document'"></i>
+              <i class="bi bi-file-earmark-image text-info" 
+                 style="font-size: 2rem;" 
+                 *ngIf="attachment.type === 'image'"></i>
+              <i class="bi bi-file-earmark text-secondary" 
+                 style="font-size: 2rem;" 
+                 *ngIf="!['pdf', 'excel', 'document', 'image'].includes(attachment.type)"></i>
+            </div>
+            <div class="flex-grow-1">
+              <h6 class="mb-1 fw-semibold file-name">{{ attachment.name }}</h6>
+              <p class="text-muted small mb-2 file-details">
+                <span>{{ attachment.size }}</span> • 
+                <span>Uploaded by {{ attachment.uploadedBy }}</span> • 
+                <span>{{ attachment.uploadDate }}</span>
+              </p>
+              <div class="d-flex gap-2">
+                <button class="btn btn-sm btn-outline-primary" (click)="downloadAttachment(attachment)">
+                  <i class="bi bi-download me-1"></i>
+                  Download
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Upload Attachment -->
+<div class="card border-0 bg-light">
+  <div class="card-body">
+    <h6 class="card-title mb-3">
+      <i class="bi bi-cloud-upload me-2"></i>
+      Upload Attachment
+    </h6>
+    <div class="mb-3">
+      <label for="fileUpload" class="form-label">File</label>
+      <input class="form-control file-input" 
+             type="file" 
+             id="fileUpload" 
+             #fileInput
+             (change)="onFileSelected($event)"
+             accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg">
+      <div class="form-text">Supported formats: PDF, DOC, DOCX, XLS, XLSX, PNG, JPG, JPEG (Max: 10MB)</div>
+    </div>
+    <div *ngIf="selectedFile" class="alert alert-info">
+      <i class="bi bi-file-earmark me-2"></i>
+      Selected file: <strong>{{ selectedFile.name }}</strong> ({{ formatFileSize(selectedFile.size) }})
+    </div>
+    <div class="d-flex justify-content-end">
+      <button class="btn btn-dark" (click)="uploadFile()" [disabled]="!selectedFile">
+        <i class="bi bi-upload me-2"></i>
+        Upload
+      </button>
+    </div>
+  </div>
+</div>

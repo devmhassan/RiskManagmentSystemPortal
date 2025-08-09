@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import { ActionItem, ActionStatusSummary } from './models/action.interface';
 import { RiskService } from '../proxy/risk-managment-system/risks/risk.service';
 import { ActionTrackerStatsDto, ActionItemDto } from '../proxy/risk-managment-system/risks/dtos/models';
@@ -18,6 +19,7 @@ export class ActionTrackerComponent implements OnInit {
   searchQuery = '';
   loading = false;
   error: string | null = null;
+  selectedAction: ActionItemDto | null = null;
   
   // Backend data
   actionTrackerStats = {
@@ -42,7 +44,7 @@ export class ActionTrackerComponent implements OnInit {
     };
   }
 
-  constructor(private riskService: RiskService) {}
+  constructor(private riskService: RiskService, private router: Router) {}
 
   ngOnInit() {
     this.loadActionTrackerStats();
@@ -255,5 +257,16 @@ export class ActionTrackerComponent implements OnInit {
       case 'overdue': return 'Overdue';
       default: return 'Unknown';
     }
+  }
+
+  selectAction(action: ActionItemDto): void {
+    // Navigate to the action tracker view with the action ID
+    this.router.navigate(['/action-tracker/view', action.actionId]);
+  }
+
+  clearSelectedAction(): void {
+    // This method is no longer needed for navigation approach
+    // but keeping it for backward compatibility
+    this.selectedAction = null;
   }
 }

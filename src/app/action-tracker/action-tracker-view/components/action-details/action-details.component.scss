@@ -1,0 +1,16 @@
+/* Action Details Component Styles */
+.progress {
+  border-radius: 10px;
+}
+
+.badge {
+  font-size: 0.75em;
+}
+
+.card {
+  transition: box-shadow 0.3s ease;
+}
+
+.card:hover {
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
