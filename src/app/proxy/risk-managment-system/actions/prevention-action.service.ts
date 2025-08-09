@@ -1,12 +1,21 @@
 import { RestService, Rest } from '@abp/ng.core';
 import { Injectable } from '@angular/core';
-import type { PreventionActionDto, UpdatePreventionActionDto } from '../risks/dtos/models';
+import type { CreatePreventionActionForCauseDto, PreventionActionDto, UpdatePreventionActionDto } from '../risks/dtos/models';
 
 @Injectable({
   providedIn: 'root',
 })
 export class PreventionActionService {
   apiName = 'Default';
+  
+
+  create = (input: CreatePreventionActionForCauseDto, config?: Partial<Rest.Config>) =>
+    this.restService.request<any, PreventionActionDto>({
+      method: 'POST',
+      url: '/api/app/prevention-action',
+      body: input,
+    },
+    { apiName: this.apiName,...config });
   
 
   get = (id: number, config?: Partial<Rest.Config>) =>

@@ -1,5 +1,6 @@
 export interface Risk {
-  id: string;
+  riskId: string; // The string RiskId from the backend
+  id?: number; // The integer ID from the database
   description: string;
   likelihood: string;
   severity: string;

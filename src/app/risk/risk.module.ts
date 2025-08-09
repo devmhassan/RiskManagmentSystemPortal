@@ -5,8 +5,6 @@ import { SharedModule } from '../shared/shared.module';
 import { RiskRoutingModule } from './risk-routing.module';
 import { CoreModule } from '@abp/ng.core';
 import { ThemeSharedModule } from '@abp/ng.theme.shared';
-import { RiskListComponent } from './risk-list/risk-list.component';
-import { RiskDetailComponent } from './risk-detail/risk-detail.component';
 
 // Import the proxy services
 import { RiskService } from '../proxy/risk-managment-system/risks/risk.service';
@@ -20,9 +18,7 @@ import { RiskService } from '../proxy/risk-managment-system/risks/risk.service';
     CoreModule,
     ThemeSharedModule,
     SharedModule,
-    RiskRoutingModule,
-    RiskListComponent,
-    RiskDetailComponent
+    RiskRoutingModule
   ]
 })
 export class RiskModule { }

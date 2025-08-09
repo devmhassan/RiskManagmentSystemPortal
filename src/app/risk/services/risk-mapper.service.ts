@@ -14,7 +14,7 @@ export class RiskMapperService {
 
   mapRiskDtoToRisk(riskDto: RiskDto): Risk {
     return {
-      id: riskDto.riskId || '',
+      riskId: riskDto.riskId || '',
       description: riskDto.description || '',
       likelihood: this.mapLikelihoodToString(riskDto.residualLikelihood || riskDto.initialLikelihood),
       severity: this.mapSeverityToString(riskDto.residualSeverity || riskDto.initialSeverity),

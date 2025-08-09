@@ -5,24 +5,42 @@ import { FormsModule } from '@angular/forms';
 import { Risk, RiskDiscussion } from '../models/risk.interface';
 import { RiskAnalysisComponent } from './risk-analysis/risk-analysis.component';
 import { ActionTrackerComponent } from './action-tracker/action-tracker.component';
+import { RiskService } from '../../proxy/risk-managment-system/risks/risk.service';
+import { MitigationActionService } from '../../proxy/risk-managment-system/actions/mitigation-action.service';
+import { PreventionActionService } from '../../proxy/risk-managment-system/actions/prevention-action.service';
+import { RiskCausesService } from '../../proxy/risk-managment-system/risks/risk-causes.service';
+import { RiskConsequencesService } from '../../proxy/risk-managment-system/risks/risk-consequences.service';
+import { RiskDto, CauseDto, ConsequenceDto, CreateMitigationActionForConsequenceDto, CreatePreventionActionForCauseDto, CreateCauseForRiskDto, CreateConsequenceForRiskDto, UpdateCauseForRiskDto, UpdateConsequenceForRiskDto, UpdateMitigationActionDto, UpdatePreventionActionDto } from '../../proxy/risk-managment-system/risks/dtos/models';
+import { ActionStatus, ActionPriority, Likelihood, Severity } from '../../proxy/risk-managment-system/domain/shared/enums';
+import { finalize } from 'rxjs/operators';
 
 @Component({
   selector: 'app-risk-detail',
   templateUrl: './risk-detail.component.html',
   styleUrls: ['./risk-detail.component.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule, RiskAnalysisComponent, ActionTrackerComponent]
+  imports: [CommonModule, FormsModule, RiskAnalysisComponent, ActionTrackerComponent],
+  providers: [
+    RiskService,
+    MitigationActionService,
+    PreventionActionService,
+    RiskCausesService,
+    RiskConsequencesService
+  ]
 })
 export class RiskDetailComponent implements OnInit {
   riskId: string = '';
   risk: Risk | null = null;
   activeTab: string = 'bowtie';
+  isLoading = false;
+  loadError: string | null = null;
   newMessage: string = '';
   showReassignModal: boolean = false;
   showLikelihoodModal: boolean = false;
   showPriorityModal: boolean = false;
   showSeverityModal: boolean = false;
   showCostModal: boolean = false;
+  showActionCostModal: boolean = false;
   showAddPreventiveActionModal: boolean = false;
   showAddCauseModal: boolean = false;
   showAddMitigationActionModal: boolean = false;
@@ -35,6 +53,7 @@ export class RiskDetailComponent implements OnInit {
   currentPriority: string = '';
   currentSeverity: string = '';
   currentCost: number = 0;
+  currentActionCost: number = 0;
   causesSortDirection: 'asc' | 'desc' = 'desc';
   consequencesSortDirection: 'asc' | 'desc' = 'desc';
   
@@ -78,7 +97,8 @@ export class RiskDetailComponent implements OnInit {
 
   // Mock data - in real app this would come from a service
   mockRisk: Risk = {
-    id: 'RISK-001',
+    riskId: 'RISK-001',
+    id: 1, // Mock integer ID
     description: 'Data breach due to unauthorized access',
     likelihood: 'L5',
     severity: 'S5',
@@ -286,7 +306,12 @@ export class RiskDetailComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private riskService: RiskService,
+    private mitigationActionService: MitigationActionService,
+    private preventionActionService: PreventionActionService,
+    private riskCausesService: RiskCausesService,
+    private riskConsequencesService: RiskConsequencesService
   ) {}
 
   ngOnInit(): void {
@@ -297,18 +322,281 @@ export class RiskDetailComponent implements OnInit {
   }
 
   loadRiskData(): void {
-    // In a real application, you would fetch data from a service
-    // For now, we'll use mock data
+    if (!this.riskId) {
+      this.loadError = 'No risk ID provided';
+      return;
+    }
+
+    this.isLoading = true;
+    this.loadError = null;
+
+    this.riskService.getByRiskId(this.riskId)
+      .pipe(
+        finalize(() => {
+          this.isLoading = false;
+        })
+      )
+      .subscribe({
+        next: (riskDto: RiskDto) => {
+          console.log('Loaded RiskDto:', riskDto); // Debug log
+          console.log('Integer ID:', riskDto.id, 'String RiskId:', riskDto.riskId); // Debug log
+          this.risk = this.mapRiskDtoToRisk(riskDto);
+          console.log('Mapped Risk:', this.risk); // Debug log
+          // Initialize sorting after data is loaded
+          this.sortCausesByPriority();
+          this.sortConsequencesByPriority();
+        },
+        error: (error) => {
+          console.error('Error loading risk data:', error);
+          this.loadError = 'Failed to load risk data. Please try again.';
+          // Fallback to mock data for development
+          this.loadMockData();
+        }
+      });
+  }
+
+  /**
+   * Fallback method for development/testing
+   */
+  private loadMockData(): void {
     if (this.riskId === 'RISK-001') {
       this.risk = this.mockRisk;
     } else {
-      // Handle other risk IDs or show not found
-      this.risk = { ...this.mockRisk, id: this.riskId };
+      this.risk = { ...this.mockRisk, riskId: this.riskId };
     }
-    
-    // Initialize sorting - sort by priority (highest to lowest)
     this.sortCausesByPriority();
     this.sortConsequencesByPriority();
+  }
+
+  /**
+   * Map backend RiskDto to frontend Risk interface
+   */
+  private mapRiskDtoToRisk(riskDto: RiskDto): Risk {
+    return {
+      riskId: riskDto.riskId || '', // String RiskId from backend
+      id: riskDto.id, // Integer ID from the database
+      description: riskDto.description || '',
+      likelihood: this.mapLikelihoodToString(riskDto.initialLikelihood),
+      severity: this.mapSeverityToString(riskDto.initialSeverity),
+      riskLevel: this.calculateRiskLevel(riskDto.initialLikelihood, riskDto.initialSeverity),
+      riskLevelColor: this.getRiskLevelColor(riskDto.initialLikelihood, riskDto.initialSeverity),
+      riskScore: riskDto.initialRiskLevel || 0,
+      owner: riskDto.riskOwner || '',
+      status: this.mapStatusToString(riskDto.status),
+      statusColor: this.getStatusColor(riskDto.status),
+      reviewDate: riskDto.reviewDate ? new Date(riskDto.reviewDate).toLocaleDateString() : '',
+      initialRisk: `${this.calculateRiskLevel(riskDto.initialLikelihood, riskDto.initialSeverity)} (${riskDto.initialRiskLevel})`,
+      residualRisk: `${this.calculateRiskLevel(riskDto.residualLikelihood, riskDto.residualSeverity)} (${riskDto.residualRiskLevel})`,
+      initialRiskColor: this.getRiskLevelColor(riskDto.initialLikelihood, riskDto.initialSeverity),
+      residualRiskColor: this.getRiskLevelColor(riskDto.residualLikelihood, riskDto.residualSeverity),
+      causes: this.mapCausesToRiskCauses(riskDto.causes || []),
+      consequences: this.mapConsequencesToRiskConsequences(riskDto.consequences || []),
+      discussions: [] // Initialize empty discussions array
+    };
+  }
+
+  /**
+   * Map backend causes to frontend format
+   */
+  private mapCausesToRiskCauses(causes: CauseDto[]): any[] {
+    return causes.map(cause => ({
+      id: cause.id?.toString() || '',
+      name: cause.description || '',
+      likelihood: this.mapLikelihoodToString(cause.likelihood),
+      priority: this.calculatePriorityFromLikelihoodSeverity(cause.likelihood, cause.severity),
+      preventiveActions: (cause.preventionActions || []).map(action => ({
+        id: action.id?.toString() || '',
+        name: action.description || '',
+        cost: action.cost || 0,
+        priority: this.mapActionPriorityToString(action.priority),
+        status: this.mapActionStatusToString(action.status),
+        assignedTo: action.assignedTo || 'Unassigned',
+        dueDate: action.dueDate ? new Date(action.dueDate).toLocaleDateString() : 'TBD'
+      }))
+    }));
+  }
+
+  /**
+   * Map backend consequences to frontend format
+   */
+  private mapConsequencesToRiskConsequences(consequences: ConsequenceDto[]): any[] {
+    return consequences.map(consequence => ({
+      id: consequence.id?.toString() || '',
+      name: consequence.description || '',
+      severity: this.mapSeverityToString(consequence.severity),
+      cost: consequence.potentialCost || 0,
+      priority: this.calculatePriorityFromSeverity(consequence.severity),
+      mitigationActions: (consequence.mitigationActions || []).map(action => ({
+        id: action.id?.toString() || '',
+        name: action.description || '',
+        cost: action.estimatedCost || 0,
+        priority: this.mapActionPriorityToString(action.priority),
+        status: this.mapActionStatusToString(action.status),
+        assignedTo: action.assignedTo || 'Unassigned',
+        dueDate: action.dueDate ? new Date(action.dueDate).toLocaleDateString() : 'TBD'
+      }))
+    }));
+  }
+
+  /**
+   * Helper mapping methods
+   */
+  private mapLikelihoodToString(likelihood?: Likelihood): string {
+    if (likelihood === undefined || likelihood === null) return 'L3';
+    return `L${likelihood}`;
+  }
+
+  private mapSeverityToString(severity?: Severity): string {
+    if (severity === undefined || severity === null) return 'S3';
+    return `S${severity}`;
+  }
+
+  private mapStatusToString(status?: number): string {
+    // Assuming status enum: Identified=0, Assessed=1, Mitigated=2, etc.
+    const statusMap: { [key: number]: string } = {
+      0: 'Identified',
+      1: 'Assessed',
+      2: 'Mitigated',
+      3: 'Accepted',
+      4: 'Transferred',
+      5: 'Avoided',
+      6: 'Reviewed'
+    };
+    return statusMap[status || 0] || 'Open';
+  }
+
+  private mapActionStatusToString(status?: ActionStatus): string {
+    const statusMap: { [key in ActionStatus]: string } = {
+      [ActionStatus.NotStarted]: 'open',
+      [ActionStatus.InProgress]: 'in-progress',
+      [ActionStatus.Completed]: 'completed',
+      [ActionStatus.Delayed]: 'delayed',
+      [ActionStatus.OnHold]: 'on-hold',
+      [ActionStatus.Cancelled]: 'cancelled'
+    };
+    return statusMap[status || ActionStatus.NotStarted];
+  }
+
+  private mapActionPriorityToString(priority?: ActionPriority): string {
+    const priorityMap: { [key in ActionPriority]: string } = {
+      [ActionPriority.Low]: 'low',
+      [ActionPriority.Medium]: 'medium',
+      [ActionPriority.High]: 'high',
+      [ActionPriority.Urgent]: 'highest',
+      [ActionPriority.Immediate]: 'highest'
+    };
+    return priorityMap[priority || ActionPriority.Medium];
+  }
+
+  private mapStringToActionPriority(priority: string): ActionPriority {
+    const priorityMap: { [key: string]: ActionPriority } = {
+      'low': ActionPriority.Low,
+      'medium': ActionPriority.Medium,
+      'high': ActionPriority.High,
+      'highest': ActionPriority.Urgent
+    };
+    return priorityMap[priority] || ActionPriority.Medium;
+  }
+
+  private mapStringToActionStatus(status: string): ActionStatus {
+    const statusMap: { [key: string]: ActionStatus } = {
+      'open': ActionStatus.NotStarted,
+      'in-progress': ActionStatus.InProgress,
+      'completed': ActionStatus.Completed,
+      'delayed': ActionStatus.Delayed,
+      'on-hold': ActionStatus.OnHold,
+      'cancelled': ActionStatus.Cancelled
+    };
+    return statusMap[status] || ActionStatus.NotStarted;
+  }
+
+  private mapStringToLikelihood(likelihood: string): Likelihood {
+    const likelihoodValue = parseInt(likelihood, 10);
+    return (likelihoodValue >= 1 && likelihoodValue <= 5) ? likelihoodValue as Likelihood : 3 as Likelihood;
+  }
+
+  private mapStringToSeverity(severity: string): Severity {
+    const severityValue = parseInt(severity, 10);
+    return (severityValue >= 1 && severityValue <= 5) ? severityValue as Severity : 3 as Severity;
+  }
+
+  private calculateRiskLevel(likelihood?: Likelihood, severity?: Severity): string {
+    const l = likelihood || 3;
+    const s = severity || 3;
+    const score = l * s;
+    
+    if (score >= 20) return 'Critical';
+    if (score >= 12) return 'High';
+    if (score >= 6) return 'Medium';
+    return 'Low';
+  }
+
+  private getRiskLevelColor(likelihood?: Likelihood, severity?: Severity): 'critical' | 'high' | 'medium' | 'low' {
+    const level = this.calculateRiskLevel(likelihood, severity);
+    return level.toLowerCase() as 'critical' | 'high' | 'medium' | 'low';
+  }
+
+  private getStatusColor(status?: number): 'open' | 'mitigated' | 'closed' {
+    if (status === 2) return 'mitigated'; // Mitigated
+    if (status === 1) return 'open'; // Assessed
+    return 'open'; // Default
+  }
+
+  private calculatePriorityFromLikelihoodSeverity(likelihood?: Likelihood, severity?: Severity): string {
+    const l = likelihood || 3;
+    const s = severity || 3;
+    const score = l * s;
+    
+    if (score >= 20) return 'highest';
+    if (score >= 12) return 'high';
+    if (score >= 6) return 'medium';
+    return 'low';
+  }
+
+  private calculatePriorityFromSeverity(severity?: Severity): string {
+    const s = severity || 3;
+    
+    if (s >= 5) return 'highest';
+    if (s >= 4) return 'high';
+    if (s >= 3) return 'medium';
+    return 'low';
+  }
+
+  /**
+   * Convert date from display format to ISO string for backend API
+   */
+  private convertDateToISOString(dateString: string): string {
+    if (!dateString || dateString === 'TBD') {
+      return new Date().toISOString().split('T')[0]; // Return today's date as fallback
+    }
+    
+    try {
+      // Handle different date formats
+      if (dateString.includes('/')) {
+        // Format like "9/15/2023" or "12/10/2023"
+        const parts = dateString.split('/');
+        if (parts.length === 3) {
+          const month = parts[0].padStart(2, '0');
+          const day = parts[1].padStart(2, '0');
+          const year = parts[2];
+          return `${year}-${month}-${day}`;
+        }
+      } else if (dateString.includes('-')) {
+        // Already in ISO format like "2023-09-15"
+        return dateString;
+      }
+      
+      // Fallback: try to parse the date
+      const date = new Date(dateString);
+      if (!isNaN(date.getTime())) {
+        return date.toISOString().split('T')[0];
+      }
+    } catch (error) {
+      console.warn('Error converting date:', dateString, error);
+    }
+    
+    // Ultimate fallback
+    return new Date().toISOString().split('T')[0];
   }
 
   setActiveTab(tab: string): void {
@@ -321,6 +609,13 @@ export class RiskDetailComponent implements OnInit {
 
   editRisk(): void {
     this.router.navigate(['/risk', this.riskId, 'edit']);
+  }
+
+  /**
+   * Refresh risk data from backend
+   */
+  refreshData(): void {
+    this.loadRiskData();
   }
 
   toggleEditMode(): void {
@@ -374,12 +669,46 @@ export class RiskDetailComponent implements OnInit {
 
   saveLikelihood(): void {
     if (this.risk && this.currentCauseId && this.currentLikelihood) {
-      const cause = this.risk.causes.find(c => c.id === this.currentCauseId);
+      const cause = this.risk.causes?.find(c => c.id === this.currentCauseId);
       if (cause) {
-        cause.likelihood = this.currentLikelihood;
+        // Create DTO for backend API update
+        const updateCauseDto: UpdateCauseForRiskDto = {
+          description: cause.name,
+          likelihood: this.mapStringToLikelihood(this.currentLikelihood),
+          severity: 3 as Severity // Default severity - could be extracted from cause if available
+        };
+
+        console.log('Updating cause likelihood with DTO:', updateCauseDto); // Debug log
+        console.log('Cause ID:', this.currentCauseId, 'New likelihood:', this.currentLikelihood); // Debug log
+
+        // Call backend API to update cause
+        this.riskCausesService.update(parseInt(this.currentCauseId, 10), updateCauseDto).subscribe({
+          next: (result) => {
+            console.log('Cause likelihood updated successfully:', result);
+            
+            // Update local data after successful save
+            cause.likelihood = this.currentLikelihood;
+            // Update priority based on new likelihood
+            cause.priority = this.calculatePriorityFromLikelihoodSeverity(
+              this.mapStringToLikelihood(this.currentLikelihood), 
+              3 as Severity
+            ) as 'medium' | 'high' | 'low' | 'highest';
+            
+            this.closeLikelihoodModal();
+          },
+          error: (error) => {
+            console.error('Error updating cause likelihood:', error);
+            // Show user-friendly error message
+            alert('Failed to update likelihood. Please try again.');
+            this.closeLikelihoodModal();
+          }
+        });
+      } else {
+        this.closeLikelihoodModal();
       }
+    } else {
+      this.closeLikelihoodModal();
     }
-    this.closeLikelihoodModal();
   }
 
   openPriorityModal(actionId: string): void {
@@ -422,8 +751,33 @@ export class RiskDetailComponent implements OnInit {
     for (const cause of this.risk?.causes || []) {
       const action = cause.preventiveActions.find(a => a.id === this.currentActionId);
       if (action) {
-        action.priority = this.currentPriority as any;
-        this.closePriorityModal();
+        // Create DTO for backend API update
+        const updatePreventionActionDto: UpdatePreventionActionDto = {
+          description: action.name,
+          cost: action.cost,
+          priority: this.mapStringToActionPriority(this.currentPriority),
+          assignedTo: action.assignedTo,
+          dueDate: this.convertDateToISOString(action.dueDate),
+          status: this.mapStringToActionStatus(action.status)
+        };
+
+        console.log('Updating prevention action priority with DTO:', updatePreventionActionDto); // Debug log
+
+        // Call backend API to update prevention action
+        this.preventionActionService.update(parseInt(this.currentActionId, 10), updatePreventionActionDto).subscribe({
+          next: (result) => {
+            console.log('Prevention action priority updated successfully:', result);
+            // Update local data after successful save
+            action.priority = this.currentPriority as any;
+            this.closePriorityModal();
+          },
+          error: (error) => {
+            console.error('Error updating prevention action priority:', error);
+            // Show user-friendly error message
+            alert('Failed to update action priority. Please try again.');
+            this.closePriorityModal();
+          }
+        });
         return;
       }
     }
@@ -432,8 +786,33 @@ export class RiskDetailComponent implements OnInit {
     for (const consequence of this.risk?.consequences || []) {
       const action = consequence.mitigationActions.find(a => a.id === this.currentActionId);
       if (action) {
-        action.priority = this.currentPriority as any;
-        this.closePriorityModal();
+        // Create DTO for backend API update
+        const updateMitigationActionDto: UpdateMitigationActionDto = {
+          description: action.name,
+          priority: this.mapStringToActionPriority(this.currentPriority),
+          estimatedCost: action.cost,
+          assignedTo: action.assignedTo,
+          dueDate: this.convertDateToISOString(action.dueDate),
+          status: this.mapStringToActionStatus(action.status)
+        };
+
+        console.log('Updating mitigation action priority with DTO:', updateMitigationActionDto); // Debug log
+
+        // Call backend API to update mitigation action
+        this.mitigationActionService.update(parseInt(this.currentActionId, 10), updateMitigationActionDto).subscribe({
+          next: (result) => {
+            console.log('Mitigation action priority updated successfully:', result);
+            // Update local data after successful save
+            action.priority = this.currentPriority as any;
+            this.closePriorityModal();
+          },
+          error: (error) => {
+            console.error('Error updating mitigation action priority:', error);
+            // Show user-friendly error message
+            alert('Failed to update action priority. Please try again.');
+            this.closePriorityModal();
+          }
+        });
         return;
       }
     }
@@ -496,12 +875,44 @@ export class RiskDetailComponent implements OnInit {
 
   saveSeverity(): void {
     if (this.risk && this.currentConsequenceId && this.currentSeverity) {
-      const consequence = this.risk.consequences.find(c => c.id === this.currentConsequenceId);
+      const consequence = this.risk.consequences?.find(c => c.id === this.currentConsequenceId);
       if (consequence) {
-        consequence.severity = this.currentSeverity;
+        // Create DTO for backend API update
+        const updateConsequenceDto: UpdateConsequenceForRiskDto = {
+          description: consequence.name,
+          potentialCost: consequence.cost
+        };
+
+        console.log('Updating consequence severity with DTO:', updateConsequenceDto); // Debug log
+        console.log('Consequence ID:', this.currentConsequenceId, 'New severity:', this.currentSeverity); // Debug log
+
+        // Call backend API to update consequence
+        this.riskConsequencesService.update(parseInt(this.currentConsequenceId, 10), updateConsequenceDto).subscribe({
+          next: (result) => {
+            console.log('Consequence severity updated successfully:', result);
+            
+            // Update local data after successful save
+            consequence.severity = this.currentSeverity;
+            // Update priority based on new severity
+            consequence.priority = this.calculatePriorityFromSeverity(
+              this.mapStringToSeverity(this.currentSeverity)
+            ) as 'medium' | 'high' | 'low' | 'highest';
+            
+            this.closeSeverityModal();
+          },
+          error: (error) => {
+            console.error('Error updating consequence severity:', error);
+            // Show user-friendly error message
+            alert('Failed to update severity. Please try again.');
+            this.closeSeverityModal();
+          }
+        });
+      } else {
+        this.closeSeverityModal();
       }
+    } else {
+      this.closeSeverityModal();
     }
-    this.closeSeverityModal();
   }
 
   openCostModal(consequenceId: string): void {
@@ -521,12 +932,148 @@ export class RiskDetailComponent implements OnInit {
 
   saveCost(): void {
     if (this.risk && this.currentConsequenceId && this.currentCost >= 0) {
-      const consequence = this.risk.consequences.find(c => c.id === this.currentConsequenceId);
+      const consequence = this.risk.consequences?.find(c => c.id === this.currentConsequenceId);
       if (consequence) {
-        consequence.cost = this.currentCost;
+        // Create DTO for backend API update
+        const updateConsequenceDto: UpdateConsequenceForRiskDto = {
+          description: consequence.name,
+          potentialCost: this.currentCost
+        };
+
+        console.log('Updating consequence cost with DTO:', updateConsequenceDto); // Debug log
+        console.log('Consequence ID:', this.currentConsequenceId, 'New cost:', this.currentCost); // Debug log
+
+        // Call backend API to update consequence
+        this.riskConsequencesService.update(parseInt(this.currentConsequenceId, 10), updateConsequenceDto).subscribe({
+          next: (result) => {
+            console.log('Consequence cost updated successfully:', result);
+            
+            // Update local data after successful save
+            consequence.cost = this.currentCost;
+            
+            this.closeCostModal();
+          },
+          error: (error) => {
+            console.error('Error updating consequence cost:', error);
+            // Show user-friendly error message
+            alert('Failed to update cost. Please try again.');
+            this.closeCostModal();
+          }
+        });
+      } else {
+        this.closeCostModal();
+      }
+    } else {
+      this.closeCostModal();
+    }
+  }
+
+  // Action cost modal methods
+  openActionCostModal(actionId: string): void {
+    this.currentActionId = actionId;
+    
+    // Find the action in preventive actions
+    for (const cause of this.risk?.causes || []) {
+      const action = cause.preventiveActions.find(a => a.id === actionId);
+      if (action) {
+        this.currentActionCost = action.cost;
+        this.showActionCostModal = true;
+        return;
       }
     }
-    this.closeCostModal();
+    
+    // Find the action in mitigation actions
+    for (const consequence of this.risk?.consequences || []) {
+      const action = consequence.mitigationActions.find(a => a.id === actionId);
+      if (action) {
+        this.currentActionCost = action.cost;
+        this.showActionCostModal = true;
+        return;
+      }
+    }
+  }
+
+  closeActionCostModal(): void {
+    this.showActionCostModal = false;
+    this.currentActionId = '';
+    this.currentActionCost = 0;
+  }
+
+  saveActionCost(): void {
+    if (!this.currentActionId || this.currentActionCost < 0) {
+      this.closeActionCostModal();
+      return;
+    }
+    
+    // Update in preventive actions
+    for (const cause of this.risk?.causes || []) {
+      const action = cause.preventiveActions.find(a => a.id === this.currentActionId);
+      if (action) {
+        // Create DTO for backend API update
+        const updatePreventionActionDto: UpdatePreventionActionDto = {
+          description: action.name,
+          cost: this.currentActionCost,
+          priority: this.mapStringToActionPriority(action.priority),
+          assignedTo: action.assignedTo,
+          dueDate: this.convertDateToISOString(action.dueDate),
+          status: this.mapStringToActionStatus(action.status)
+        };
+
+        console.log('Updating prevention action cost with DTO:', updatePreventionActionDto); // Debug log
+
+        // Call backend API to update prevention action
+        this.preventionActionService.update(parseInt(this.currentActionId, 10), updatePreventionActionDto).subscribe({
+          next: (result) => {
+            console.log('Prevention action cost updated successfully:', result);
+            // Update local data after successful save
+            action.cost = this.currentActionCost;
+            this.closeActionCostModal();
+          },
+          error: (error) => {
+            console.error('Error updating prevention action cost:', error);
+            // Show user-friendly error message
+            alert('Failed to update action cost. Please try again.');
+            this.closeActionCostModal();
+          }
+        });
+        return;
+      }
+    }
+    
+    // Update in mitigation actions
+    for (const consequence of this.risk?.consequences || []) {
+      const action = consequence.mitigationActions.find(a => a.id === this.currentActionId);
+      if (action) {
+        // Create DTO for backend API update
+        const updateMitigationActionDto: UpdateMitigationActionDto = {
+          description: action.name,
+          priority: this.mapStringToActionPriority(action.priority),
+          estimatedCost: this.currentActionCost,
+          assignedTo: action.assignedTo,
+          dueDate: this.convertDateToISOString(action.dueDate),
+          status: this.mapStringToActionStatus(action.status)
+        };
+
+        console.log('Updating mitigation action cost with DTO:', updateMitigationActionDto); // Debug log
+
+        // Call backend API to update mitigation action
+        this.mitigationActionService.update(parseInt(this.currentActionId, 10), updateMitigationActionDto).subscribe({
+          next: (result) => {
+            console.log('Mitigation action cost updated successfully:', result);
+            // Update local data after successful save
+            action.cost = this.currentActionCost;
+            this.closeActionCostModal();
+          },
+          error: (error) => {
+            console.error('Error updating mitigation action cost:', error);
+            // Show user-friendly error message
+            alert('Failed to update action cost. Please try again.');
+            this.closeActionCostModal();
+          }
+        });
+        return;
+      }
+    }
   }
 
   // Add new item modal methods
@@ -543,25 +1090,58 @@ export class RiskDetailComponent implements OnInit {
   closeAddPreventiveActionModal(): void {
     this.showAddPreventiveActionModal = false;
     this.selectedCauseForAction = '';
+    // Reset the form
+    this.newPreventiveAction = {
+      description: '',
+      estimatedCost: 0,
+      priority: 'medium'
+    };
   }
 
   savePreventiveAction(): void {
     if (this.risk && this.selectedCauseForAction && this.newPreventiveAction.description.trim()) {
-      const cause = this.risk.causes.find(c => c.id === this.selectedCauseForAction);
-      if (cause) {
-        const newAction = {
-          id: 'PA' + (Date.now()), // Simple ID generation
-          name: this.newPreventiveAction.description.trim(),
-          cost: this.newPreventiveAction.estimatedCost,
-          priority: this.newPreventiveAction.priority as 'medium' | 'high' | 'low' | 'highest',
-          status: 'open' as const,
-          assignedTo: 'Unassigned',
-          dueDate: 'TBD'
-        };
-        cause.preventiveActions.push(newAction);
-      }
+      // Create DTO for backend API
+      const preventionActionDto: CreatePreventionActionForCauseDto = {
+        causeId: parseInt(this.selectedCauseForAction, 10),
+        description: this.newPreventiveAction.description.trim(),
+        priority: this.mapStringToActionPriority(this.newPreventiveAction.priority),
+        cost: this.newPreventiveAction.estimatedCost || 0,
+        assignedTo: 'Unassigned', // Mock default value as requested
+        dueDate: new Date().toISOString().split('T')[0], // Mock default value as requested
+        status: ActionStatus.NotStarted // Mock default value as requested
+      };
+
+      // Call backend API to save prevention action
+      this.preventionActionService.create(preventionActionDto).subscribe({
+        next: (result) => {
+          console.log('Prevention action saved successfully:', result);
+          
+          // Update local data after successful save
+          const cause = this.risk!.causes.find(c => c.id === this.selectedCauseForAction);
+          if (cause) {
+            const newAction = {
+              id: result.id ? result.id.toString() : 'PA' + (Date.now()), // Convert to string
+              name: preventionActionDto.description,
+              cost: preventionActionDto.cost,
+              priority: this.mapActionPriorityToString(preventionActionDto.priority) as 'medium' | 'high' | 'low' | 'highest',
+              status: 'open' as const,
+              assignedTo: preventionActionDto.assignedTo || 'Unassigned',
+              dueDate: preventionActionDto.dueDate || 'TBD'
+            };
+            cause.preventiveActions.push(newAction);
+          }
+          
+          this.closeAddPreventiveActionModal();
+        },
+        error: (error) => {
+          console.error('Error saving prevention action:', error);
+          // Show user-friendly error message
+          alert('Failed to save prevention action. Please try again.');
+        }
+      });
+    } else {
+      this.closeAddPreventiveActionModal();
     }
-    this.closeAddPreventiveActionModal();
   }
 
   openAddCauseModal(): void {
@@ -574,20 +1154,52 @@ export class RiskDetailComponent implements OnInit {
 
   closeAddCauseModal(): void {
     this.showAddCauseModal = false;
+    // Reset the form
+    this.newCause = {
+      description: '',
+      likelihood: '3'
+    };
   }
 
   saveCause(): void {
     if (this.risk && this.newCause.description.trim()) {
-      const newCause = {
-        id: 'C' + (Date.now()), // Simple ID generation
-        name: this.newCause.description.trim(),
-        likelihood: 'L' + this.newCause.likelihood,
-        priority: 'medium' as const,
-        preventiveActions: []
+      // Create DTO for backend API
+      const causeDto: CreateCauseForRiskDto = {
+        riskId: this.risk.id || parseInt(this.riskId, 10), // Use integer ID from loaded risk data
+        description: this.newCause.description.trim(),
+        likelihood: this.mapStringToLikelihood(this.newCause.likelihood),
+        severity: 3 as Severity // Mock default value as requested
       };
-      this.risk.causes.push(newCause);
+
+      console.log('Saving cause with DTO:', causeDto); // Debug log
+      console.log('Risk id:', this.risk.id, 'riskId string:', this.riskId); // Debug log
+
+      // Call backend API to save cause
+      this.riskCausesService.create(causeDto).subscribe({
+        next: (result) => {
+          console.log('Cause saved successfully:', result);
+          
+          // Update local data after successful save
+          const newCause = {
+            id: result.id ? result.id.toString() : 'C' + (Date.now()), // Convert to string
+            name: causeDto.description,
+            likelihood: this.mapLikelihoodToString(causeDto.likelihood),
+            priority: this.calculatePriorityFromLikelihoodSeverity(causeDto.likelihood, causeDto.severity) as 'medium' | 'high' | 'low' | 'highest',
+            preventiveActions: []
+          };
+          this.risk!.causes.push(newCause);
+          
+          this.closeAddCauseModal();
+        },
+        error: (error) => {
+          console.error('Error saving cause:', error);
+          // Show user-friendly error message
+          alert('Failed to save cause. Please try again.');
+        }
+      });
+    } else {
+      this.closeAddCauseModal();
     }
-    this.closeAddCauseModal();
   }
 
   openAddMitigationActionModal(consequenceId: string): void {
@@ -603,25 +1215,58 @@ export class RiskDetailComponent implements OnInit {
   closeAddMitigationActionModal(): void {
     this.showAddMitigationActionModal = false;
     this.selectedConsequenceForAction = '';
+    // Reset the form
+    this.newMitigationAction = {
+      description: '',
+      estimatedCost: 0,
+      priority: 'medium'
+    };
   }
 
   saveMitigationAction(): void {
     if (this.risk && this.selectedConsequenceForAction && this.newMitigationAction.description.trim()) {
-      const consequence = this.risk.consequences.find(c => c.id === this.selectedConsequenceForAction);
-      if (consequence) {
-        const newAction = {
-          id: 'MA' + (Date.now()), // Simple ID generation
-          name: this.newMitigationAction.description.trim(),
-          cost: this.newMitigationAction.estimatedCost,
-          priority: this.newMitigationAction.priority as 'medium' | 'high' | 'low' | 'highest',
-          status: 'open' as const,
-          assignedTo: 'Unassigned',
-          dueDate: 'TBD'
-        };
-        consequence.mitigationActions.push(newAction);
-      }
+      // Create DTO for backend API
+      const mitigationActionDto: CreateMitigationActionForConsequenceDto = {
+        consequenceId: parseInt(this.selectedConsequenceForAction, 10),
+        description: this.newMitigationAction.description.trim(),
+        priority: this.mapStringToActionPriority(this.newMitigationAction.priority),
+        estimatedCost: this.newMitigationAction.estimatedCost || 0,
+        assignedTo: 'Unassigned', // Mock default value as requested
+        dueDate: new Date().toISOString().split('T')[0], // Mock default value as requested
+        status: ActionStatus.NotStarted // Mock default value as requested
+      };
+
+      // Call backend API to save mitigation action
+      this.mitigationActionService.create(mitigationActionDto).subscribe({
+        next: (result) => {
+          console.log('Mitigation action saved successfully:', result);
+          
+          // Update local data after successful save
+          const consequence = this.risk!.consequences.find(c => c.id === this.selectedConsequenceForAction);
+          if (consequence) {
+            const newAction = {
+              id: result.id ? result.id.toString() : 'MA' + (Date.now()), // Convert to string
+              name: mitigationActionDto.description,
+              cost: mitigationActionDto.estimatedCost,
+              priority: this.mapActionPriorityToString(mitigationActionDto.priority) as 'medium' | 'high' | 'low' | 'highest',
+              status: 'open' as const,
+              assignedTo: mitigationActionDto.assignedTo || 'Unassigned',
+              dueDate: mitigationActionDto.dueDate || 'TBD'
+            };
+            consequence.mitigationActions.push(newAction);
+          }
+          
+          this.closeAddMitigationActionModal();
+        },
+        error: (error) => {
+          console.error('Error saving mitigation action:', error);
+          // Show user-friendly error message
+          alert('Failed to save mitigation action. Please try again.');
+        }
+      });
+    } else {
+      this.closeAddMitigationActionModal();
     }
-    this.closeAddMitigationActionModal();
   }
 
   openAddConsequenceModal(): void {
@@ -635,21 +1280,53 @@ export class RiskDetailComponent implements OnInit {
 
   closeAddConsequenceModal(): void {
     this.showAddConsequenceModal = false;
+    // Reset the form
+    this.newConsequence = {
+      description: '',
+      severity: '3',
+      potentialCost: 0
+    };
   }
 
   saveConsequence(): void {
     if (this.risk && this.newConsequence.description.trim()) {
-      const newConsequence = {
-        id: 'CON' + (Date.now()), // Simple ID generation
-        name: this.newConsequence.description.trim(),
-        severity: 'S' + this.newConsequence.severity,
-        cost: this.newConsequence.potentialCost,
-        priority: 'medium' as const,
-        mitigationActions: []
+      // Create DTO for backend API
+      const consequenceDto: CreateConsequenceForRiskDto = {
+        riskId: this.risk.id || parseInt(this.riskId, 10), // Use integer ID from loaded risk data
+        description: this.newConsequence.description.trim(),
+        potentialCost: this.newConsequence.potentialCost || 0
       };
-      this.risk.consequences.push(newConsequence);
+
+      console.log('Saving consequence with DTO:', consequenceDto); // Debug log
+      console.log('Risk id:', this.risk.id, 'riskId string:', this.riskId); // Debug log
+
+      // Call backend API to save consequence
+      this.riskConsequencesService.create(consequenceDto).subscribe({
+        next: (result) => {
+          console.log('Consequence saved successfully:', result);
+          
+          // Update local data after successful save
+          const newConsequence = {
+            id: result.id ? result.id.toString() : 'CON' + (Date.now()), // Convert to string
+            name: consequenceDto.description,
+            severity: this.mapSeverityToString(this.mapStringToSeverity(this.newConsequence.severity)),
+            cost: consequenceDto.potentialCost,
+            priority: this.calculatePriorityFromSeverity(this.mapStringToSeverity(this.newConsequence.severity)) as 'medium' | 'high' | 'low' | 'highest',
+            mitigationActions: []
+          };
+          this.risk!.consequences.push(newConsequence);
+          
+          this.closeAddConsequenceModal();
+        },
+        error: (error) => {
+          console.error('Error saving consequence:', error);
+          // Show user-friendly error message
+          alert('Failed to save consequence. Please try again.');
+        }
+      });
+    } else {
+      this.closeAddConsequenceModal();
     }
-    this.closeAddConsequenceModal();
   }
 
   sendMessage(): void {
@@ -790,7 +1467,31 @@ export class RiskDetailComponent implements OnInit {
     for (const cause of this.risk?.causes || []) {
       const action = cause.preventiveActions.find(a => a.id === actionId);
       if (action) {
-        action.status = newStatus;
+        // Create DTO for backend API update
+        const updatePreventionActionDto: UpdatePreventionActionDto = {
+          description: action.name,
+          cost: action.cost,
+          priority: this.mapStringToActionPriority(action.priority),
+          assignedTo: action.assignedTo,
+          dueDate: this.convertDateToISOString(action.dueDate),
+          status: this.mapStringToActionStatus(newStatus)
+        };
+
+        console.log('Updating prevention action status with DTO:', updatePreventionActionDto); // Debug log
+
+        // Call backend API to update prevention action
+        this.preventionActionService.update(parseInt(actionId, 10), updatePreventionActionDto).subscribe({
+          next: (result) => {
+            console.log('Prevention action status updated successfully:', result);
+            // Update local data after successful save
+            action.status = newStatus;
+          },
+          error: (error) => {
+            console.error('Error updating prevention action status:', error);
+            // Show user-friendly error message
+            alert('Failed to update action status. Please try again.');
+          }
+        });
         return;
       }
     }
@@ -799,7 +1500,31 @@ export class RiskDetailComponent implements OnInit {
     for (const consequence of this.risk?.consequences || []) {
       const action = consequence.mitigationActions.find(a => a.id === actionId);
       if (action) {
-        action.status = newStatus;
+        // Create DTO for backend API update
+        const updateMitigationActionDto: UpdateMitigationActionDto = {
+          description: action.name,
+          priority: this.mapStringToActionPriority(action.priority),
+          estimatedCost: action.cost,
+          assignedTo: action.assignedTo,
+          dueDate: this.convertDateToISOString(action.dueDate),
+          status: this.mapStringToActionStatus(newStatus)
+        };
+
+        console.log('Updating mitigation action status with DTO:', updateMitigationActionDto); // Debug log
+
+        // Call backend API to update mitigation action
+        this.mitigationActionService.update(parseInt(actionId, 10), updateMitigationActionDto).subscribe({
+          next: (result) => {
+            console.log('Mitigation action status updated successfully:', result);
+            // Update local data after successful save
+            action.status = newStatus;
+          },
+          error: (error) => {
+            console.error('Error updating mitigation action status:', error);
+            // Show user-friendly error message
+            alert('Failed to update action status. Please try again.');
+          }
+        });
         return;
       }
     }
