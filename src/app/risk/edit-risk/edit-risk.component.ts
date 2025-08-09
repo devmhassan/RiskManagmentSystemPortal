@@ -7,6 +7,7 @@ import { GeneralInformationComponent } from './general-information/general-infor
 import { CausesPreventionComponent } from './causes-prevention/causes-prevention.component';
 import { ConsequencesMitigationComponent } from './consequences-mitigation/consequences-mitigation.component';
 import { TriggerEventsComponent } from './trigger-events/trigger-events.component';
+import { BowtieComponentsComponent } from '../new-risk/bowtie-components/bowtie-components.component';
 
 @Component({
   selector: 'app-edit-risk',
@@ -19,7 +20,8 @@ import { TriggerEventsComponent } from './trigger-events/trigger-events.componen
     GeneralInformationComponent,
     CausesPreventionComponent,
     ConsequencesMitigationComponent,
-    TriggerEventsComponent
+    TriggerEventsComponent,
+    BowtieComponentsComponent
   ]
 })
 export class EditRiskComponent implements OnInit {

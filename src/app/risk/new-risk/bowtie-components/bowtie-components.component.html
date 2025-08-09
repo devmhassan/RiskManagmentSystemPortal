@@ -1,7 +1,16 @@
 <div class="form-container">
+  <!-- Loading indicator -->
+  <div *ngIf="isComponentLoading()" class="loading-container">
+    <div class="loading-spinner"></div>
+    <p>Loading risk data...</p>
+  </div>
+
   <div class="page-header">
     <h1>Bowtie Components</h1>
     <p class="subtitle">Define the causes, consequences, and controls for the risk</p>
+    <div *ngIf="isInEditMode()" class="edit-mode-indicator">
+      <span class="badge badge-info">Edit Mode - Risk ID: {{ riskId }}</span>
+    </div>
   </div>
 
   <form [formGroup]="bowtieForm">
@@ -82,6 +91,20 @@
                               {{ option.key }}
                             </option>
                           </select>
+                        </div>
+                        
+                        <!-- New fields for backend integration -->
+                        <div class="status-assignment-row" *ngIf="isInEditMode()">
+                          <select formControlName="status" class="status-select">
+                            <option *ngFor="let option of actionStatusOptions" [value]="option.value">
+                              {{ option.key }}
+                            </option>
+                          </select>
+                          <input formControlName="assignedTo" 
+                                 placeholder="Assigned to..." 
+                                 class="form-control">
+                          <input type="date" formControlName="dueDate" 
+                                 class="form-control">
                         </div>
                       </div>
                     </div>
@@ -183,6 +206,24 @@
                             </option>
                           </select>
                           <input type="date" formControlName="dueDate" class="date-input">
+                        </div>
+                        
+                        <!-- New fields for backend integration -->
+                        <div class="status-cost-assignment-row" *ngIf="isInEditMode()">
+                          <select formControlName="status" class="status-select">
+                            <option *ngFor="let option of actionStatusOptions" [value]="option.value">
+                              {{ option.key }}
+                            </option>
+                          </select>
+                          <div class="cost-input">
+                            <span class="currency">$</span>
+                            <input type="number" formControlName="estimatedCost" 
+                                   class="cost-value" placeholder="0.00" 
+                                   min="0" step="0.01">
+                          </div>
+                          <input formControlName="assignedTo" 
+                                 placeholder="Assigned to..." 
+                                 class="form-control">
                         </div>
                       </div>
                     </div>

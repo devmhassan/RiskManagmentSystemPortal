@@ -6117,6 +6117,30 @@
           "regex": null
         },
         {
+          "name": "Likelihood",
+          "jsonName": null,
+          "type": "RiskManagmentSystem.Domain.Shared.Enums.Likelihood",
+          "typeSimple": "enum",
+          "isRequired": false,
+          "minLength": null,
+          "maxLength": null,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        },
+        {
+          "name": "Severity",
+          "jsonName": null,
+          "type": "RiskManagmentSystem.Domain.Shared.Enums.Severity",
+          "typeSimple": "enum",
+          "isRequired": false,
+          "minLength": null,
+          "maxLength": null,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        },
+        {
           "name": "Probability",
           "jsonName": null,
           "type": "System.Decimal",
@@ -6194,6 +6218,30 @@
       "enumValues": null,
       "genericArguments": null,
       "properties": [
+        {
+          "name": "Description",
+          "jsonName": null,
+          "type": "System.String",
+          "typeSimple": "string",
+          "isRequired": false,
+          "minLength": null,
+          "maxLength": null,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        },
+        {
+          "name": "Severity",
+          "jsonName": null,
+          "type": "RiskManagmentSystem.Domain.Shared.Enums.Severity",
+          "typeSimple": "enum",
+          "isRequired": false,
+          "minLength": null,
+          "maxLength": null,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        },
         {
           "name": "PotentialCost",
           "jsonName": null,
@@ -7090,6 +7138,30 @@
           "jsonName": null,
           "type": "RiskManagmentSystem.Domain.Shared.Enums.ActionStatus",
           "typeSimple": "enum",
+          "isRequired": false,
+          "minLength": null,
+          "maxLength": null,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        },
+        {
+          "name": "AssignedTo",
+          "jsonName": null,
+          "type": "System.String",
+          "typeSimple": "string",
+          "isRequired": false,
+          "minLength": null,
+          "maxLength": null,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        },
+        {
+          "name": "DueDate",
+          "jsonName": null,
+          "type": "System.DateTime?",
+          "typeSimple": "string?",
           "isRequired": false,
           "minLength": null,
           "maxLength": null,

@@ -48,6 +48,13 @@
         </button>
         <button 
           class="nav-link flex-fill text-center py-3 border-0 rounded-0"
+          [class.active]="activeTab === 'bowtie'"
+          (click)="setActiveTab('bowtie')"
+          type="button">
+          Bowtie Analysis
+        </button>
+        <button 
+          class="nav-link flex-fill text-center py-3 border-0 rounded-0"
           [class.active]="activeTab === 'triggers'"
           (click)="setActiveTab('triggers')"
           type="button">
@@ -81,6 +88,13 @@
         [risk]="risk" 
         (riskUpdated)="onRiskUpdated($event)">
       </app-consequences-mitigation>
+    </div>
+
+    <!-- Bowtie Analysis Tab -->
+    <div *ngIf="activeTab === 'bowtie'">
+      <app-bowtie-components 
+        [riskId]="riskId">
+      </app-bowtie-components>
     </div>
 
     <!-- Trigger Events Tab -->

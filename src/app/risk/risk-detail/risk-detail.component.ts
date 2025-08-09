@@ -5,6 +5,10 @@ import { FormsModule } from '@angular/forms';
 import { Risk, RiskDiscussion } from '../models/risk.interface';
 import { RiskAnalysisComponent } from './risk-analysis/risk-analysis.component';
 import { ActionTrackerComponent } from './action-tracker/action-tracker.component';
+import { RiskService } from '../../proxy/risk-managment-system/risks/risk.service';
+import { RiskDto, CauseDto, ConsequenceDto } from '../../proxy/risk-managment-system/risks/dtos/models';
+import { ActionStatus, ActionPriority, Likelihood, Severity } from '../../proxy/risk-managment-system/domain/shared/enums';
+import { finalize } from 'rxjs/operators';
 
 @Component({
   selector: 'app-risk-detail',
@@ -17,6 +21,8 @@ export class RiskDetailComponent implements OnInit {
   riskId: string = '';
   risk: Risk | null = null;
   activeTab: string = 'bowtie';
+  isLoading = false;
+  loadError: string | null = null;
   newMessage: string = '';
   showReassignModal: boolean = false;
   showLikelihoodModal: boolean = false;
@@ -286,7 +292,8 @@ export class RiskDetailComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private riskService: RiskService
   ) {}
 
   ngOnInit(): void {
@@ -297,18 +304,208 @@ export class RiskDetailComponent implements OnInit {
   }
 
   loadRiskData(): void {
-    // In a real application, you would fetch data from a service
-    // For now, we'll use mock data
+    if (!this.riskId) {
+      this.loadError = 'No risk ID provided';
+      return;
+    }
+
+    this.isLoading = true;
+    this.loadError = null;
+
+    this.riskService.getByRiskId(this.riskId)
+      .pipe(
+        finalize(() => {
+          this.isLoading = false;
+        })
+      )
+      .subscribe({
+        next: (riskDto: RiskDto) => {
+          this.risk = this.mapRiskDtoToRisk(riskDto);
+          // Initialize sorting after data is loaded
+          this.sortCausesByPriority();
+          this.sortConsequencesByPriority();
+        },
+        error: (error) => {
+          console.error('Error loading risk data:', error);
+          this.loadError = 'Failed to load risk data. Please try again.';
+          // Fallback to mock data for development
+          this.loadMockData();
+        }
+      });
+  }
+
+  /**
+   * Fallback method for development/testing
+   */
+  private loadMockData(): void {
     if (this.riskId === 'RISK-001') {
       this.risk = this.mockRisk;
     } else {
-      // Handle other risk IDs or show not found
       this.risk = { ...this.mockRisk, id: this.riskId };
     }
-    
-    // Initialize sorting - sort by priority (highest to lowest)
     this.sortCausesByPriority();
     this.sortConsequencesByPriority();
+  }
+
+  /**
+   * Map backend RiskDto to frontend Risk interface
+   */
+  private mapRiskDtoToRisk(riskDto: RiskDto): Risk {
+    return {
+      id: riskDto.riskId || '',
+      description: riskDto.description || '',
+      likelihood: this.mapLikelihoodToString(riskDto.initialLikelihood),
+      severity: this.mapSeverityToString(riskDto.initialSeverity),
+      riskLevel: this.calculateRiskLevel(riskDto.initialLikelihood, riskDto.initialSeverity),
+      riskLevelColor: this.getRiskLevelColor(riskDto.initialLikelihood, riskDto.initialSeverity),
+      riskScore: riskDto.initialRiskLevel || 0,
+      owner: riskDto.riskOwner || '',
+      status: this.mapStatusToString(riskDto.status),
+      statusColor: this.getStatusColor(riskDto.status),
+      reviewDate: riskDto.reviewDate ? new Date(riskDto.reviewDate).toLocaleDateString() : '',
+      initialRisk: `${this.calculateRiskLevel(riskDto.initialLikelihood, riskDto.initialSeverity)} (${riskDto.initialRiskLevel})`,
+      residualRisk: `${this.calculateRiskLevel(riskDto.residualLikelihood, riskDto.residualSeverity)} (${riskDto.residualRiskLevel})`,
+      initialRiskColor: this.getRiskLevelColor(riskDto.initialLikelihood, riskDto.initialSeverity),
+      residualRiskColor: this.getRiskLevelColor(riskDto.residualLikelihood, riskDto.residualSeverity),
+      causes: this.mapCausesToRiskCauses(riskDto.causes || []),
+      consequences: this.mapConsequencesToRiskConsequences(riskDto.consequences || []),
+      discussions: [] // Initialize empty discussions array
+    };
+  }
+
+  /**
+   * Map backend causes to frontend format
+   */
+  private mapCausesToRiskCauses(causes: CauseDto[]): any[] {
+    return causes.map(cause => ({
+      id: cause.id?.toString() || '',
+      name: cause.description || '',
+      likelihood: this.mapLikelihoodToString(cause.likelihood),
+      priority: this.calculatePriorityFromLikelihoodSeverity(cause.likelihood, cause.severity),
+      preventiveActions: (cause.preventionActions || []).map(action => ({
+        id: action.id?.toString() || '',
+        name: action.description || '',
+        cost: action.cost || 0,
+        priority: this.mapActionPriorityToString(action.priority),
+        status: this.mapActionStatusToString(action.status),
+        assignedTo: action.assignedTo || 'Unassigned',
+        dueDate: action.dueDate ? new Date(action.dueDate).toLocaleDateString() : 'TBD'
+      }))
+    }));
+  }
+
+  /**
+   * Map backend consequences to frontend format
+   */
+  private mapConsequencesToRiskConsequences(consequences: ConsequenceDto[]): any[] {
+    return consequences.map(consequence => ({
+      id: consequence.id?.toString() || '',
+      name: consequence.description || '',
+      severity: this.mapSeverityToString(consequence.severity),
+      cost: consequence.potentialCost || 0,
+      priority: this.calculatePriorityFromSeverity(consequence.severity),
+      mitigationActions: (consequence.mitigationActions || []).map(action => ({
+        id: action.id?.toString() || '',
+        name: action.description || '',
+        cost: action.estimatedCost || 0,
+        priority: this.mapActionPriorityToString(action.priority),
+        status: this.mapActionStatusToString(action.status),
+        assignedTo: action.assignedTo || 'Unassigned',
+        dueDate: action.dueDate ? new Date(action.dueDate).toLocaleDateString() : 'TBD'
+      }))
+    }));
+  }
+
+  /**
+   * Helper mapping methods
+   */
+  private mapLikelihoodToString(likelihood?: Likelihood): string {
+    if (likelihood === undefined || likelihood === null) return 'L3';
+    return `L${likelihood}`;
+  }
+
+  private mapSeverityToString(severity?: Severity): string {
+    if (severity === undefined || severity === null) return 'S3';
+    return `S${severity}`;
+  }
+
+  private mapStatusToString(status?: number): string {
+    // Assuming status enum: Identified=0, Assessed=1, Mitigated=2, etc.
+    const statusMap: { [key: number]: string } = {
+      0: 'Identified',
+      1: 'Assessed',
+      2: 'Mitigated',
+      3: 'Accepted',
+      4: 'Transferred',
+      5: 'Avoided',
+      6: 'Reviewed'
+    };
+    return statusMap[status || 0] || 'Open';
+  }
+
+  private mapActionStatusToString(status?: ActionStatus): string {
+    const statusMap: { [key in ActionStatus]: string } = {
+      [ActionStatus.NotStarted]: 'open',
+      [ActionStatus.InProgress]: 'in-progress',
+      [ActionStatus.Completed]: 'completed',
+      [ActionStatus.Delayed]: 'delayed',
+      [ActionStatus.OnHold]: 'on-hold',
+      [ActionStatus.Cancelled]: 'cancelled'
+    };
+    return statusMap[status || ActionStatus.NotStarted];
+  }
+
+  private mapActionPriorityToString(priority?: ActionPriority): string {
+    const priorityMap: { [key in ActionPriority]: string } = {
+      [ActionPriority.Low]: 'low',
+      [ActionPriority.Medium]: 'medium',
+      [ActionPriority.High]: 'high',
+      [ActionPriority.Urgent]: 'highest',
+      [ActionPriority.Immediate]: 'highest'
+    };
+    return priorityMap[priority || ActionPriority.Medium];
+  }
+
+  private calculateRiskLevel(likelihood?: Likelihood, severity?: Severity): string {
+    const l = likelihood || 3;
+    const s = severity || 3;
+    const score = l * s;
+    
+    if (score >= 20) return 'Critical';
+    if (score >= 12) return 'High';
+    if (score >= 6) return 'Medium';
+    return 'Low';
+  }
+
+  private getRiskLevelColor(likelihood?: Likelihood, severity?: Severity): 'critical' | 'high' | 'medium' | 'low' {
+    const level = this.calculateRiskLevel(likelihood, severity);
+    return level.toLowerCase() as 'critical' | 'high' | 'medium' | 'low';
+  }
+
+  private getStatusColor(status?: number): 'open' | 'mitigated' | 'closed' {
+    if (status === 2) return 'mitigated'; // Mitigated
+    if (status === 1) return 'open'; // Assessed
+    return 'open'; // Default
+  }
+
+  private calculatePriorityFromLikelihoodSeverity(likelihood?: Likelihood, severity?: Severity): string {
+    const l = likelihood || 3;
+    const s = severity || 3;
+    const score = l * s;
+    
+    if (score >= 20) return 'highest';
+    if (score >= 12) return 'high';
+    if (score >= 6) return 'medium';
+    return 'low';
+  }
+
+  private calculatePriorityFromSeverity(severity?: Severity): string {
+    const s = severity || 3;
+    
+    if (s >= 5) return 'highest';
+    if (s >= 4) return 'high';
+    if (s >= 3) return 'medium';
+    return 'low';
   }
 
   setActiveTab(tab: string): void {
@@ -321,6 +518,13 @@ export class RiskDetailComponent implements OnInit {
 
   editRisk(): void {
     this.router.navigate(['/risk', this.riskId, 'edit']);
+  }
+
+  /**
+   * Refresh risk data from backend
+   */
+  refreshData(): void {
+    this.loadRiskData();
   }
 
   toggleEditMode(): void {

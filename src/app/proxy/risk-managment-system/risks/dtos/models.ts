@@ -21,6 +21,8 @@ export interface PreventionActionDto extends EntityDto<number> {
   cost: number;
   priority?: ActionPriority;
   status?: ActionStatus;
+  assignedTo?: string;
+  dueDate?: string;
 }
 
 export interface UpdateMitigationActionDto {
@@ -89,6 +91,8 @@ export interface ActionTrackerStatsDto {
 
 export interface CauseDto extends EntityDto<number> {
   description?: string;
+  likelihood?: Likelihood;
+  severity?: Severity;
   probability: number;
   preventionActions: PreventionActionDto[];
 }
@@ -100,6 +104,8 @@ export interface ConsequenceCostItemDto {
 }
 
 export interface ConsequenceDto extends EntityDto<number> {
+  description?: string;
+  severity?: Severity;
   potentialCost: number;
   mitigationActions: MitigationActionDto[];
 }
