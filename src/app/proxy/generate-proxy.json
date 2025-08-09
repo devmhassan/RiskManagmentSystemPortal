@@ -6812,6 +6812,42 @@
           "regex": null
         },
         {
+          "name": "OpenActions",
+          "jsonName": null,
+          "type": "[RiskManagmentSystem.Risks.Dtos.ActionItemDto]",
+          "typeSimple": "[RiskManagmentSystem.Risks.Dtos.ActionItemDto]",
+          "isRequired": false,
+          "minLength": null,
+          "maxLength": null,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        },
+        {
+          "name": "InProgressActions",
+          "jsonName": null,
+          "type": "[RiskManagmentSystem.Risks.Dtos.ActionItemDto]",
+          "typeSimple": "[RiskManagmentSystem.Risks.Dtos.ActionItemDto]",
+          "isRequired": false,
+          "minLength": null,
+          "maxLength": null,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        },
+        {
+          "name": "CompletedActions",
+          "jsonName": null,
+          "type": "[RiskManagmentSystem.Risks.Dtos.ActionItemDto]",
+          "typeSimple": "[RiskManagmentSystem.Risks.Dtos.ActionItemDto]",
+          "isRequired": false,
+          "minLength": null,
+          "maxLength": null,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        },
+        {
           "name": "OverdueActions",
           "jsonName": null,
           "type": "[RiskManagmentSystem.Risks.Dtos.ActionItemDto]",
