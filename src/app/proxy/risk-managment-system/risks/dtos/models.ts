@@ -1,10 +1,30 @@
-import type { EntityDto, FullAuditedEntityDto } from '@abp/ng.core';
 import type { ActionPriority } from '../../domain/shared/enums/action-priority.enum';
 import type { ActionStatus } from '../../domain/shared/enums/action-status.enum';
+import type { EntityDto, FullAuditedEntityDto } from '@abp/ng.core';
 import type { ActionType } from '../../domain/shared/enums/action-type.enum';
 import type { Likelihood } from '../../domain/shared/enums/likelihood.enum';
 import type { Severity } from '../../domain/shared/enums/severity.enum';
 import type { RiskStatus } from '../../domain/shared/enums/risk-status.enum';
+
+export interface CreateMitigationActionForConsequenceDto {
+  consequenceId: number;
+  description: string;
+  priority: ActionPriority;
+  estimatedCost: number;
+  assignedTo?: string;
+  dueDate?: string;
+  status?: ActionStatus;
+}
+
+export interface CreatePreventionActionForCauseDto {
+  causeId: number;
+  description: string;
+  priority: ActionPriority;
+  cost: number;
+  assignedTo?: string;
+  dueDate?: string;
+  status?: ActionStatus;
+}
 
 export interface MitigationActionDto extends EntityDto<number> {
   consequenceId: number;
@@ -124,11 +144,24 @@ export interface CreateCauseDto {
   preventionActions: CreatePreventionActionDto[];
 }
 
+export interface CreateCauseForRiskDto {
+  riskId: number;
+  description: string;
+  likelihood: Likelihood;
+  severity: Severity;
+}
+
 export interface CreateConsequenceDto {
   description: string;
   severity: Severity;
   potentialCost: number;
   mitigationActions: CreateMitigationActionDto[];
+}
+
+export interface CreateConsequenceForRiskDto {
+  riskId: number;
+  description: string;
+  potentialCost: number;
 }
 
 export interface CreateMitigationActionDto {
@@ -226,10 +259,21 @@ export interface UpdateCauseDto {
   preventionActions: UpdatePreventionActionDto[];
 }
 
+export interface UpdateCauseForRiskDto {
+  description: string;
+  likelihood: Likelihood;
+  severity: Severity;
+}
+
 export interface UpdateConsequenceDto {
   description: string;
   potentialCost: number;
   mitigationActions: UpdateMitigationActionDto[];
+}
+
+export interface UpdateConsequenceForRiskDto {
+  description: string;
+  potentialCost: number;
 }
 
 export interface UpdateRiskDto {

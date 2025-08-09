@@ -1,12 +1,21 @@
 import { RestService, Rest } from '@abp/ng.core';
 import { Injectable } from '@angular/core';
-import type { MitigationActionDto, UpdateMitigationActionDto } from '../risks/dtos/models';
+import type { CreateMitigationActionForConsequenceDto, MitigationActionDto, UpdateMitigationActionDto } from '../risks/dtos/models';
 
 @Injectable({
   providedIn: 'root',
 })
 export class MitigationActionService {
   apiName = 'Default';
+  
+
+  create = (input: CreateMitigationActionForConsequenceDto, config?: Partial<Rest.Config>) =>
+    this.restService.request<any, MitigationActionDto>({
+      method: 'POST',
+      url: '/api/app/mitigation-action',
+      body: input,
+    },
+    { apiName: this.apiName,...config });
   
 
   get = (id: number, config?: Partial<Rest.Config>) =>

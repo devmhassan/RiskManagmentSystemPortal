@@ -1,6 +1,6 @@
 <div class="form-container">
   <!-- Loading indicator -->
-  <div *ngIf="isComponentLoading()" class="loading-container">
+  <div *ngIf="isLoading" class="loading-container">
     <div class="loading-spinner"></div>
     <p>Loading risk data...</p>
   </div>
@@ -8,7 +8,7 @@
   <div class="page-header">
     <h1>Bowtie Components</h1>
     <p class="subtitle">Define the causes, consequences, and controls for the risk</p>
-    <div *ngIf="isInEditMode()" class="edit-mode-indicator">
+    <div *ngIf="isEditMode" class="edit-mode-indicator">
       <span class="badge badge-info">Edit Mode - Risk ID: {{ riskId }}</span>
     </div>
   </div>
@@ -19,7 +19,7 @@
       <!-- Causes Column -->
       <div class="col-lg-6">
         <div formArrayName="causes">
-          <div *ngFor="let causeControl of causes.controls; let causeIndex = index; trackBy: trackByCause" 
+          <div *ngFor="let causeControl of causes.controls; let causeIndex = index" 
                [formGroupName]="causeIndex" class="mb-4">
             
             <!-- Cause Card -->
@@ -71,7 +71,7 @@
                 <div class="mb-3">
                   <h6 class="fw-semibold mb-3">Preventive Actions</h6>
                   <div formArrayName="preventionActions">
-                    <div *ngFor="let actionControl of causeControl.get('preventionActions')?.controls; let actionIndex = index; trackBy: trackByPreventionAction" 
+                    <div *ngFor="let actionControl of causeControl.get('preventionActions')?.controls; let actionIndex = index" 
                          [formGroupName]="actionIndex" class="mb-3">
                       
                       <!-- Action Description -->
@@ -110,7 +110,7 @@
                         </div>
                         
                         <!-- New fields for backend integration -->
-                        <div class="status-assignment-row" *ngIf="isInEditMode()">
+                        <div class="status-assignment-row" *ngIf="isEditMode">
                           <select formControlName="status" class="status-select">
                             <option *ngFor="let option of actionStatusOptions" [value]="option.value">
                               {{ option.key }}
@@ -146,7 +146,7 @@
       <!-- Consequences Column -->
       <div class="col-lg-6">
         <div formArrayName="consequences">
-          <div *ngFor="let consequenceControl of consequences.controls; let consequenceIndex = index; trackBy: trackByConsequence" 
+          <div *ngFor="let consequenceControl of consequences.controls; let consequenceIndex = index" 
                [formGroupName]="consequenceIndex" class="mb-4">
             
             <!-- Consequence Card -->
@@ -211,7 +211,7 @@
                 <div class="mb-3">
                   <h6 class="fw-semibold mb-3">Mitigation Actions</h6>
                   <div formArrayName="mitigationActions">
-                    <div *ngFor="let actionControl of consequenceControl.get('mitigationActions')?.controls; let actionIndex = index; trackBy: trackByMitigationAction" 
+                    <div *ngFor="let actionControl of consequenceControl.get('mitigationActions')?.controls; let actionIndex = index" 
                          [formGroupName]="actionIndex" class="mb-3">
                       
                       <!-- Action Description -->
@@ -249,7 +249,7 @@
                         </div>
                         
                         <!-- New fields for backend integration -->
-                        <div class="status-cost-assignment-row" *ngIf="isInEditMode()">
+                        <div class="status-cost-assignment-row" *ngIf="isEditMode">
                           <select formControlName="status" class="status-select">
                             <option *ngFor="let option of actionStatusOptions" [value]="option.value">
                               {{ option.key }}

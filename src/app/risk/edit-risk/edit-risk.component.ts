@@ -42,7 +42,7 @@ export class EditRiskComponent implements OnInit {
   loadRisk(): void {
     // Mock data - in real app this would come from a service
     this.risk = {
-      id: 'RISK-001',
+      riskId: 'RISK-001',
       description: 'Data breach due to unauthorized access',
       likelihood: 'L5',
       severity: 'S5',

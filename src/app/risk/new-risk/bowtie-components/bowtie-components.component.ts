@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, OnDestroy, Input } from '@angular/core';
 import { FormBuilder, FormGroup, FormArray, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { RiskFormService } from '../../services/risk-form.service';
@@ -8,6 +8,8 @@ import { Likelihood, likelihoodOptions } from '../../../proxy/risk-managment-sys
 import { Severity, severityOptions } from '../../../proxy/risk-managment-system/domain/shared/enums/severity.enum';
 import { ActionPriority, actionPriorityOptions } from '../../../proxy/risk-managment-system/domain/shared/enums/action-priority.enum';
 import { ActionStatus, actionStatusOptions } from '../../../proxy/risk-managment-system/domain/shared/enums/action-status.enum';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-bowtie-components',
@@ -16,10 +18,11 @@ import { ActionStatus, actionStatusOptions } from '../../../proxy/risk-managment
   standalone: true,
   imports: [CommonModule, FormsModule, ReactiveFormsModule]
 })
-export class BowtieComponentsComponent implements OnInit {
+export class BowtieComponentsComponent implements OnInit, OnDestroy {
   @Input() riskId?: string; // Input to receive riskId for fetching existing data
   bowtieForm: FormGroup;
   private isUpdatingFromService = false; // Guard to prevent circular updates
+  private destroy$ = new Subject<void>();
   isLoading = false;
   isEditMode = false;
   
@@ -53,7 +56,9 @@ export class BowtieComponentsComponent implements OnInit {
       this.loadRiskData(this.riskId);
     } else {
       // Load existing form data if available from service (create mode)
-      this.riskFormService.riskFormData$.subscribe(data => {
+      this.riskFormService.riskFormData$.pipe(
+        takeUntil(this.destroy$)
+      ).subscribe(data => {
         if (data.causes && data.causes.length > 0) {
           this.isUpdatingFromService = true; // Set guard before loading data
           this.loadExistingData(data.causes, data.consequences || []);
@@ -67,7 +72,9 @@ export class BowtieComponentsComponent implements OnInit {
     }
 
     // Subscribe to form changes with guard to prevent circular updates
-    this.bowtieForm.valueChanges.subscribe(() => {
+    this.bowtieForm.valueChanges.pipe(
+      takeUntil(this.destroy$)
+    ).subscribe(() => {
       if (!this.isUpdatingFromService && !this.isEditMode) {
         this.updateFormData();
       }
@@ -79,7 +86,9 @@ export class BowtieComponentsComponent implements OnInit {
    */
   private loadRiskData(riskId: string) {
     this.isLoading = true;
-    this.riskService.getByRiskId(riskId).subscribe({
+    this.riskService.getByRiskId(riskId).pipe(
+      takeUntil(this.destroy$)
+    ).subscribe({
       next: (riskData: RiskDto) => {
         this.loadRiskDataToForm(riskData);
         this.isLoading = false;

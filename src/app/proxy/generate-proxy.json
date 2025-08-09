@@ -1755,6 +1755,23 @@
                     "type": "RiskManagmentSystem.Risks.Dtos.MitigationActionDto",
                     "typeSimple": "RiskManagmentSystem.Risks.Dtos.MitigationActionDto"
                   }
+                },
+                {
+                  "name": "CreateAsync",
+                  "parametersOnMethod": [
+                    {
+                      "name": "input",
+                      "typeAsString": "RiskManagmentSystem.Risks.Dtos.CreateMitigationActionForConsequenceDto, RiskManagmentSystem.Application.Contracts",
+                      "type": "RiskManagmentSystem.Risks.Dtos.CreateMitigationActionForConsequenceDto",
+                      "typeSimple": "RiskManagmentSystem.Risks.Dtos.CreateMitigationActionForConsequenceDto",
+                      "isOptional": false,
+                      "defaultValue": null
+                    }
+                  ],
+                  "returnValue": {
+                    "type": "RiskManagmentSystem.Risks.Dtos.MitigationActionDto",
+                    "typeSimple": "RiskManagmentSystem.Risks.Dtos.MitigationActionDto"
+                  }
                 }
               ]
             }
@@ -1890,6 +1907,43 @@
               },
               "allowAnonymous": null,
               "implementFrom": "RiskManagmentSystem.Risks.IMitigationActionAppService"
+            },
+            "CreateAsyncByInput": {
+              "uniqueName": "CreateAsyncByInput",
+              "name": "CreateAsync",
+              "httpMethod": "POST",
+              "url": "api/app/mitigation-action",
+              "supportedVersions": [],
+              "parametersOnMethod": [
+                {
+                  "name": "input",
+                  "typeAsString": "RiskManagmentSystem.Risks.Dtos.CreateMitigationActionForConsequenceDto, RiskManagmentSystem.Application.Contracts",
+                  "type": "RiskManagmentSystem.Risks.Dtos.CreateMitigationActionForConsequenceDto",
+                  "typeSimple": "RiskManagmentSystem.Risks.Dtos.CreateMitigationActionForConsequenceDto",
+                  "isOptional": false,
+                  "defaultValue": null
+                }
+              ],
+              "parameters": [
+                {
+                  "nameOnMethod": "input",
+                  "name": "input",
+                  "jsonName": null,
+                  "type": "RiskManagmentSystem.Risks.Dtos.CreateMitigationActionForConsequenceDto",
+                  "typeSimple": "RiskManagmentSystem.Risks.Dtos.CreateMitigationActionForConsequenceDto",
+                  "isOptional": false,
+                  "defaultValue": null,
+                  "constraintTypes": null,
+                  "bindingSourceId": "Body",
+                  "descriptorName": ""
+                }
+              ],
+              "returnValue": {
+                "type": "RiskManagmentSystem.Risks.Dtos.MitigationActionDto",
+                "typeSimple": "RiskManagmentSystem.Risks.Dtos.MitigationActionDto"
+              },
+              "allowAnonymous": null,
+              "implementFrom": "RiskManagmentSystem.Risks.IMitigationActionAppService"
             }
           }
         },
@@ -1955,6 +2009,23 @@
                       "typeAsString": "RiskManagmentSystem.Risks.Dtos.UpdatePreventionActionDto, RiskManagmentSystem.Application.Contracts",
                       "type": "RiskManagmentSystem.Risks.Dtos.UpdatePreventionActionDto",
                       "typeSimple": "RiskManagmentSystem.Risks.Dtos.UpdatePreventionActionDto",
+                      "isOptional": false,
+                      "defaultValue": null
+                    }
+                  ],
+                  "returnValue": {
+                    "type": "RiskManagmentSystem.Risks.Dtos.PreventionActionDto",
+                    "typeSimple": "RiskManagmentSystem.Risks.Dtos.PreventionActionDto"
+                  }
+                },
+                {
+                  "name": "CreateAsync",
+                  "parametersOnMethod": [
+                    {
+                      "name": "input",
+                      "typeAsString": "RiskManagmentSystem.Risks.Dtos.CreatePreventionActionForCauseDto, RiskManagmentSystem.Application.Contracts",
+                      "type": "RiskManagmentSystem.Risks.Dtos.CreatePreventionActionForCauseDto",
+                      "typeSimple": "RiskManagmentSystem.Risks.Dtos.CreatePreventionActionForCauseDto",
                       "isOptional": false,
                       "defaultValue": null
                     }
@@ -2085,6 +2156,43 @@
                   "jsonName": null,
                   "type": "RiskManagmentSystem.Risks.Dtos.UpdatePreventionActionDto",
                   "typeSimple": "RiskManagmentSystem.Risks.Dtos.UpdatePreventionActionDto",
+                  "isOptional": false,
+                  "defaultValue": null,
+                  "constraintTypes": null,
+                  "bindingSourceId": "Body",
+                  "descriptorName": ""
+                }
+              ],
+              "returnValue": {
+                "type": "RiskManagmentSystem.Risks.Dtos.PreventionActionDto",
+                "typeSimple": "RiskManagmentSystem.Risks.Dtos.PreventionActionDto"
+              },
+              "allowAnonymous": null,
+              "implementFrom": "RiskManagmentSystem.Risks.IPreventionActionAppService"
+            },
+            "CreateAsyncByInput": {
+              "uniqueName": "CreateAsyncByInput",
+              "name": "CreateAsync",
+              "httpMethod": "POST",
+              "url": "api/app/prevention-action",
+              "supportedVersions": [],
+              "parametersOnMethod": [
+                {
+                  "name": "input",
+                  "typeAsString": "RiskManagmentSystem.Risks.Dtos.CreatePreventionActionForCauseDto, RiskManagmentSystem.Application.Contracts",
+                  "type": "RiskManagmentSystem.Risks.Dtos.CreatePreventionActionForCauseDto",
+                  "typeSimple": "RiskManagmentSystem.Risks.Dtos.CreatePreventionActionForCauseDto",
+                  "isOptional": false,
+                  "defaultValue": null
+                }
+              ],
+              "parameters": [
+                {
+                  "nameOnMethod": "input",
+                  "name": "input",
+                  "jsonName": null,
+                  "type": "RiskManagmentSystem.Risks.Dtos.CreatePreventionActionForCauseDto",
+                  "typeSimple": "RiskManagmentSystem.Risks.Dtos.CreatePreventionActionForCauseDto",
                   "isOptional": false,
                   "defaultValue": null,
                   "constraintTypes": null,
@@ -3101,6 +3209,638 @@
               },
               "allowAnonymous": null,
               "implementFrom": "RiskManagmentSystem.Risks.IRiskAppService"
+            }
+          }
+        },
+        "RiskManagmentSystem.Risks.RiskCausesAppService": {
+          "controllerName": "RiskCauses",
+          "controllerGroupName": "RiskCauses",
+          "isRemoteService": true,
+          "isIntegrationService": false,
+          "apiVersion": null,
+          "type": "RiskManagmentSystem.Risks.RiskCausesAppService",
+          "interfaces": [
+            {
+              "type": "RiskManagmentSystem.Risks.IRiskCausesAppService",
+              "name": "IRiskCausesAppService",
+              "methods": [
+                {
+                  "name": "GetAsync",
+                  "parametersOnMethod": [
+                    {
+                      "name": "id",
+                      "typeAsString": "System.Int32, System.Private.CoreLib",
+                      "type": "System.Int32",
+                      "typeSimple": "number",
+                      "isOptional": false,
+                      "defaultValue": null
+                    }
+                  ],
+                  "returnValue": {
+                    "type": "RiskManagmentSystem.Risks.Dtos.CauseDto",
+                    "typeSimple": "RiskManagmentSystem.Risks.Dtos.CauseDto"
+                  }
+                },
+                {
+                  "name": "GetByRiskIdAsync",
+                  "parametersOnMethod": [
+                    {
+                      "name": "riskId",
+                      "typeAsString": "System.Int32, System.Private.CoreLib",
+                      "type": "System.Int32",
+                      "typeSimple": "number",
+                      "isOptional": false,
+                      "defaultValue": null
+                    }
+                  ],
+                  "returnValue": {
+                    "type": "System.Collections.Generic.List<RiskManagmentSystem.Risks.Dtos.CauseDto>",
+                    "typeSimple": "[RiskManagmentSystem.Risks.Dtos.CauseDto]"
+                  }
+                },
+                {
+                  "name": "CreateAsync",
+                  "parametersOnMethod": [
+                    {
+                      "name": "input",
+                      "typeAsString": "RiskManagmentSystem.Risks.Dtos.CreateCauseForRiskDto, RiskManagmentSystem.Application.Contracts",
+                      "type": "RiskManagmentSystem.Risks.Dtos.CreateCauseForRiskDto",
+                      "typeSimple": "RiskManagmentSystem.Risks.Dtos.CreateCauseForRiskDto",
+                      "isOptional": false,
+                      "defaultValue": null
+                    }
+                  ],
+                  "returnValue": {
+                    "type": "RiskManagmentSystem.Risks.Dtos.CauseDto",
+                    "typeSimple": "RiskManagmentSystem.Risks.Dtos.CauseDto"
+                  }
+                },
+                {
+                  "name": "UpdateAsync",
+                  "parametersOnMethod": [
+                    {
+                      "name": "id",
+                      "typeAsString": "System.Int32, System.Private.CoreLib",
+                      "type": "System.Int32",
+                      "typeSimple": "number",
+                      "isOptional": false,
+                      "defaultValue": null
+                    },
+                    {
+                      "name": "input",
+                      "typeAsString": "RiskManagmentSystem.Risks.Dtos.UpdateCauseForRiskDto, RiskManagmentSystem.Application.Contracts",
+                      "type": "RiskManagmentSystem.Risks.Dtos.UpdateCauseForRiskDto",
+                      "typeSimple": "RiskManagmentSystem.Risks.Dtos.UpdateCauseForRiskDto",
+                      "isOptional": false,
+                      "defaultValue": null
+                    }
+                  ],
+                  "returnValue": {
+                    "type": "RiskManagmentSystem.Risks.Dtos.CauseDto",
+                    "typeSimple": "RiskManagmentSystem.Risks.Dtos.CauseDto"
+                  }
+                },
+                {
+                  "name": "DeleteAsync",
+                  "parametersOnMethod": [
+                    {
+                      "name": "id",
+                      "typeAsString": "System.Int32, System.Private.CoreLib",
+                      "type": "System.Int32",
+                      "typeSimple": "number",
+                      "isOptional": false,
+                      "defaultValue": null
+                    }
+                  ],
+                  "returnValue": {
+                    "type": "System.Void",
+                    "typeSimple": "System.Void"
+                  }
+                }
+              ]
+            }
+          ],
+          "actions": {
+            "GetAsyncById": {
+              "uniqueName": "GetAsyncById",
+              "name": "GetAsync",
+              "httpMethod": "GET",
+              "url": "api/app/risk-causes/{id}",
+              "supportedVersions": [],
+              "parametersOnMethod": [
+                {
+                  "name": "id",
+                  "typeAsString": "System.Int32, System.Private.CoreLib",
+                  "type": "System.Int32",
+                  "typeSimple": "number",
+                  "isOptional": false,
+                  "defaultValue": null
+                }
+              ],
+              "parameters": [
+                {
+                  "nameOnMethod": "id",
+                  "name": "id",
+                  "jsonName": null,
+                  "type": "System.Int32",
+                  "typeSimple": "number",
+                  "isOptional": false,
+                  "defaultValue": null,
+                  "constraintTypes": [],
+                  "bindingSourceId": "Path",
+                  "descriptorName": ""
+                }
+              ],
+              "returnValue": {
+                "type": "RiskManagmentSystem.Risks.Dtos.CauseDto",
+                "typeSimple": "RiskManagmentSystem.Risks.Dtos.CauseDto"
+              },
+              "allowAnonymous": null,
+              "implementFrom": "RiskManagmentSystem.Risks.IRiskCausesAppService"
+            },
+            "GetByRiskIdAsyncByRiskId": {
+              "uniqueName": "GetByRiskIdAsyncByRiskId",
+              "name": "GetByRiskIdAsync",
+              "httpMethod": "GET",
+              "url": "api/app/risk-causes/by-risk-id/{riskId}",
+              "supportedVersions": [],
+              "parametersOnMethod": [
+                {
+                  "name": "riskId",
+                  "typeAsString": "System.Int32, System.Private.CoreLib",
+                  "type": "System.Int32",
+                  "typeSimple": "number",
+                  "isOptional": false,
+                  "defaultValue": null
+                }
+              ],
+              "parameters": [
+                {
+                  "nameOnMethod": "riskId",
+                  "name": "riskId",
+                  "jsonName": null,
+                  "type": "System.Int32",
+                  "typeSimple": "number",
+                  "isOptional": false,
+                  "defaultValue": null,
+                  "constraintTypes": [],
+                  "bindingSourceId": "Path",
+                  "descriptorName": ""
+                }
+              ],
+              "returnValue": {
+                "type": "System.Collections.Generic.List<RiskManagmentSystem.Risks.Dtos.CauseDto>",
+                "typeSimple": "[RiskManagmentSystem.Risks.Dtos.CauseDto]"
+              },
+              "allowAnonymous": null,
+              "implementFrom": "RiskManagmentSystem.Risks.IRiskCausesAppService"
+            },
+            "CreateAsyncByInput": {
+              "uniqueName": "CreateAsyncByInput",
+              "name": "CreateAsync",
+              "httpMethod": "POST",
+              "url": "api/app/risk-causes",
+              "supportedVersions": [],
+              "parametersOnMethod": [
+                {
+                  "name": "input",
+                  "typeAsString": "RiskManagmentSystem.Risks.Dtos.CreateCauseForRiskDto, RiskManagmentSystem.Application.Contracts",
+                  "type": "RiskManagmentSystem.Risks.Dtos.CreateCauseForRiskDto",
+                  "typeSimple": "RiskManagmentSystem.Risks.Dtos.CreateCauseForRiskDto",
+                  "isOptional": false,
+                  "defaultValue": null
+                }
+              ],
+              "parameters": [
+                {
+                  "nameOnMethod": "input",
+                  "name": "input",
+                  "jsonName": null,
+                  "type": "RiskManagmentSystem.Risks.Dtos.CreateCauseForRiskDto",
+                  "typeSimple": "RiskManagmentSystem.Risks.Dtos.CreateCauseForRiskDto",
+                  "isOptional": false,
+                  "defaultValue": null,
+                  "constraintTypes": null,
+                  "bindingSourceId": "Body",
+                  "descriptorName": ""
+                }
+              ],
+              "returnValue": {
+                "type": "RiskManagmentSystem.Risks.Dtos.CauseDto",
+                "typeSimple": "RiskManagmentSystem.Risks.Dtos.CauseDto"
+              },
+              "allowAnonymous": null,
+              "implementFrom": "RiskManagmentSystem.Risks.IRiskCausesAppService"
+            },
+            "UpdateAsyncByIdAndInput": {
+              "uniqueName": "UpdateAsyncByIdAndInput",
+              "name": "UpdateAsync",
+              "httpMethod": "PUT",
+              "url": "api/app/risk-causes/{id}",
+              "supportedVersions": [],
+              "parametersOnMethod": [
+                {
+                  "name": "id",
+                  "typeAsString": "System.Int32, System.Private.CoreLib",
+                  "type": "System.Int32",
+                  "typeSimple": "number",
+                  "isOptional": false,
+                  "defaultValue": null
+                },
+                {
+                  "name": "input",
+                  "typeAsString": "RiskManagmentSystem.Risks.Dtos.UpdateCauseForRiskDto, RiskManagmentSystem.Application.Contracts",
+                  "type": "RiskManagmentSystem.Risks.Dtos.UpdateCauseForRiskDto",
+                  "typeSimple": "RiskManagmentSystem.Risks.Dtos.UpdateCauseForRiskDto",
+                  "isOptional": false,
+                  "defaultValue": null
+                }
+              ],
+              "parameters": [
+                {
+                  "nameOnMethod": "id",
+                  "name": "id",
+                  "jsonName": null,
+                  "type": "System.Int32",
+                  "typeSimple": "number",
+                  "isOptional": false,
+                  "defaultValue": null,
+                  "constraintTypes": [],
+                  "bindingSourceId": "Path",
+                  "descriptorName": ""
+                },
+                {
+                  "nameOnMethod": "input",
+                  "name": "input",
+                  "jsonName": null,
+                  "type": "RiskManagmentSystem.Risks.Dtos.UpdateCauseForRiskDto",
+                  "typeSimple": "RiskManagmentSystem.Risks.Dtos.UpdateCauseForRiskDto",
+                  "isOptional": false,
+                  "defaultValue": null,
+                  "constraintTypes": null,
+                  "bindingSourceId": "Body",
+                  "descriptorName": ""
+                }
+              ],
+              "returnValue": {
+                "type": "RiskManagmentSystem.Risks.Dtos.CauseDto",
+                "typeSimple": "RiskManagmentSystem.Risks.Dtos.CauseDto"
+              },
+              "allowAnonymous": null,
+              "implementFrom": "RiskManagmentSystem.Risks.IRiskCausesAppService"
+            },
+            "DeleteAsyncById": {
+              "uniqueName": "DeleteAsyncById",
+              "name": "DeleteAsync",
+              "httpMethod": "DELETE",
+              "url": "api/app/risk-causes/{id}",
+              "supportedVersions": [],
+              "parametersOnMethod": [
+                {
+                  "name": "id",
+                  "typeAsString": "System.Int32, System.Private.CoreLib",
+                  "type": "System.Int32",
+                  "typeSimple": "number",
+                  "isOptional": false,
+                  "defaultValue": null
+                }
+              ],
+              "parameters": [
+                {
+                  "nameOnMethod": "id",
+                  "name": "id",
+                  "jsonName": null,
+                  "type": "System.Int32",
+                  "typeSimple": "number",
+                  "isOptional": false,
+                  "defaultValue": null,
+                  "constraintTypes": [],
+                  "bindingSourceId": "Path",
+                  "descriptorName": ""
+                }
+              ],
+              "returnValue": {
+                "type": "System.Void",
+                "typeSimple": "System.Void"
+              },
+              "allowAnonymous": null,
+              "implementFrom": "RiskManagmentSystem.Risks.IRiskCausesAppService"
+            }
+          }
+        },
+        "RiskManagmentSystem.Risks.RiskConsequencesAppService": {
+          "controllerName": "RiskConsequences",
+          "controllerGroupName": "RiskConsequences",
+          "isRemoteService": true,
+          "isIntegrationService": false,
+          "apiVersion": null,
+          "type": "RiskManagmentSystem.Risks.RiskConsequencesAppService",
+          "interfaces": [
+            {
+              "type": "RiskManagmentSystem.Risks.IRiskConsequencesAppService",
+              "name": "IRiskConsequencesAppService",
+              "methods": [
+                {
+                  "name": "GetAsync",
+                  "parametersOnMethod": [
+                    {
+                      "name": "id",
+                      "typeAsString": "System.Int32, System.Private.CoreLib",
+                      "type": "System.Int32",
+                      "typeSimple": "number",
+                      "isOptional": false,
+                      "defaultValue": null
+                    }
+                  ],
+                  "returnValue": {
+                    "type": "RiskManagmentSystem.Risks.Dtos.ConsequenceDto",
+                    "typeSimple": "RiskManagmentSystem.Risks.Dtos.ConsequenceDto"
+                  }
+                },
+                {
+                  "name": "GetByRiskIdAsync",
+                  "parametersOnMethod": [
+                    {
+                      "name": "riskId",
+                      "typeAsString": "System.Int32, System.Private.CoreLib",
+                      "type": "System.Int32",
+                      "typeSimple": "number",
+                      "isOptional": false,
+                      "defaultValue": null
+                    }
+                  ],
+                  "returnValue": {
+                    "type": "System.Collections.Generic.List<RiskManagmentSystem.Risks.Dtos.ConsequenceDto>",
+                    "typeSimple": "[RiskManagmentSystem.Risks.Dtos.ConsequenceDto]"
+                  }
+                },
+                {
+                  "name": "CreateAsync",
+                  "parametersOnMethod": [
+                    {
+                      "name": "input",
+                      "typeAsString": "RiskManagmentSystem.Risks.Dtos.CreateConsequenceForRiskDto, RiskManagmentSystem.Application.Contracts",
+                      "type": "RiskManagmentSystem.Risks.Dtos.CreateConsequenceForRiskDto",
+                      "typeSimple": "RiskManagmentSystem.Risks.Dtos.CreateConsequenceForRiskDto",
+                      "isOptional": false,
+                      "defaultValue": null
+                    }
+                  ],
+                  "returnValue": {
+                    "type": "RiskManagmentSystem.Risks.Dtos.ConsequenceDto",
+                    "typeSimple": "RiskManagmentSystem.Risks.Dtos.ConsequenceDto"
+                  }
+                },
+                {
+                  "name": "UpdateAsync",
+                  "parametersOnMethod": [
+                    {
+                      "name": "id",
+                      "typeAsString": "System.Int32, System.Private.CoreLib",
+                      "type": "System.Int32",
+                      "typeSimple": "number",
+                      "isOptional": false,
+                      "defaultValue": null
+                    },
+                    {
+                      "name": "input",
+                      "typeAsString": "RiskManagmentSystem.Risks.Dtos.UpdateConsequenceForRiskDto, RiskManagmentSystem.Application.Contracts",
+                      "type": "RiskManagmentSystem.Risks.Dtos.UpdateConsequenceForRiskDto",
+                      "typeSimple": "RiskManagmentSystem.Risks.Dtos.UpdateConsequenceForRiskDto",
+                      "isOptional": false,
+                      "defaultValue": null
+                    }
+                  ],
+                  "returnValue": {
+                    "type": "RiskManagmentSystem.Risks.Dtos.ConsequenceDto",
+                    "typeSimple": "RiskManagmentSystem.Risks.Dtos.ConsequenceDto"
+                  }
+                },
+                {
+                  "name": "DeleteAsync",
+                  "parametersOnMethod": [
+                    {
+                      "name": "id",
+                      "typeAsString": "System.Int32, System.Private.CoreLib",
+                      "type": "System.Int32",
+                      "typeSimple": "number",
+                      "isOptional": false,
+                      "defaultValue": null
+                    }
+                  ],
+                  "returnValue": {
+                    "type": "System.Void",
+                    "typeSimple": "System.Void"
+                  }
+                }
+              ]
+            }
+          ],
+          "actions": {
+            "GetAsyncById": {
+              "uniqueName": "GetAsyncById",
+              "name": "GetAsync",
+              "httpMethod": "GET",
+              "url": "api/app/risk-consequences/{id}",
+              "supportedVersions": [],
+              "parametersOnMethod": [
+                {
+                  "name": "id",
+                  "typeAsString": "System.Int32, System.Private.CoreLib",
+                  "type": "System.Int32",
+                  "typeSimple": "number",
+                  "isOptional": false,
+                  "defaultValue": null
+                }
+              ],
+              "parameters": [
+                {
+                  "nameOnMethod": "id",
+                  "name": "id",
+                  "jsonName": null,
+                  "type": "System.Int32",
+                  "typeSimple": "number",
+                  "isOptional": false,
+                  "defaultValue": null,
+                  "constraintTypes": [],
+                  "bindingSourceId": "Path",
+                  "descriptorName": ""
+                }
+              ],
+              "returnValue": {
+                "type": "RiskManagmentSystem.Risks.Dtos.ConsequenceDto",
+                "typeSimple": "RiskManagmentSystem.Risks.Dtos.ConsequenceDto"
+              },
+              "allowAnonymous": null,
+              "implementFrom": "RiskManagmentSystem.Risks.IRiskConsequencesAppService"
+            },
+            "GetByRiskIdAsyncByRiskId": {
+              "uniqueName": "GetByRiskIdAsyncByRiskId",
+              "name": "GetByRiskIdAsync",
+              "httpMethod": "GET",
+              "url": "api/app/risk-consequences/by-risk-id/{riskId}",
+              "supportedVersions": [],
+              "parametersOnMethod": [
+                {
+                  "name": "riskId",
+                  "typeAsString": "System.Int32, System.Private.CoreLib",
+                  "type": "System.Int32",
+                  "typeSimple": "number",
+                  "isOptional": false,
+                  "defaultValue": null
+                }
+              ],
+              "parameters": [
+                {
+                  "nameOnMethod": "riskId",
+                  "name": "riskId",
+                  "jsonName": null,
+                  "type": "System.Int32",
+                  "typeSimple": "number",
+                  "isOptional": false,
+                  "defaultValue": null,
+                  "constraintTypes": [],
+                  "bindingSourceId": "Path",
+                  "descriptorName": ""
+                }
+              ],
+              "returnValue": {
+                "type": "System.Collections.Generic.List<RiskManagmentSystem.Risks.Dtos.ConsequenceDto>",
+                "typeSimple": "[RiskManagmentSystem.Risks.Dtos.ConsequenceDto]"
+              },
+              "allowAnonymous": null,
+              "implementFrom": "RiskManagmentSystem.Risks.IRiskConsequencesAppService"
+            },
+            "CreateAsyncByInput": {
+              "uniqueName": "CreateAsyncByInput",
+              "name": "CreateAsync",
+              "httpMethod": "POST",
+              "url": "api/app/risk-consequences",
+              "supportedVersions": [],
+              "parametersOnMethod": [
+                {
+                  "name": "input",
+                  "typeAsString": "RiskManagmentSystem.Risks.Dtos.CreateConsequenceForRiskDto, RiskManagmentSystem.Application.Contracts",
+                  "type": "RiskManagmentSystem.Risks.Dtos.CreateConsequenceForRiskDto",
+                  "typeSimple": "RiskManagmentSystem.Risks.Dtos.CreateConsequenceForRiskDto",
+                  "isOptional": false,
+                  "defaultValue": null
+                }
+              ],
+              "parameters": [
+                {
+                  "nameOnMethod": "input",
+                  "name": "input",
+                  "jsonName": null,
+                  "type": "RiskManagmentSystem.Risks.Dtos.CreateConsequenceForRiskDto",
+                  "typeSimple": "RiskManagmentSystem.Risks.Dtos.CreateConsequenceForRiskDto",
+                  "isOptional": false,
+                  "defaultValue": null,
+                  "constraintTypes": null,
+                  "bindingSourceId": "Body",
+                  "descriptorName": ""
+                }
+              ],
+              "returnValue": {
+                "type": "RiskManagmentSystem.Risks.Dtos.ConsequenceDto",
+                "typeSimple": "RiskManagmentSystem.Risks.Dtos.ConsequenceDto"
+              },
+              "allowAnonymous": null,
+              "implementFrom": "RiskManagmentSystem.Risks.IRiskConsequencesAppService"
+            },
+            "UpdateAsyncByIdAndInput": {
+              "uniqueName": "UpdateAsyncByIdAndInput",
+              "name": "UpdateAsync",
+              "httpMethod": "PUT",
+              "url": "api/app/risk-consequences/{id}",
+              "supportedVersions": [],
+              "parametersOnMethod": [
+                {
+                  "name": "id",
+                  "typeAsString": "System.Int32, System.Private.CoreLib",
+                  "type": "System.Int32",
+                  "typeSimple": "number",
+                  "isOptional": false,
+                  "defaultValue": null
+                },
+                {
+                  "name": "input",
+                  "typeAsString": "RiskManagmentSystem.Risks.Dtos.UpdateConsequenceForRiskDto, RiskManagmentSystem.Application.Contracts",
+                  "type": "RiskManagmentSystem.Risks.Dtos.UpdateConsequenceForRiskDto",
+                  "typeSimple": "RiskManagmentSystem.Risks.Dtos.UpdateConsequenceForRiskDto",
+                  "isOptional": false,
+                  "defaultValue": null
+                }
+              ],
+              "parameters": [
+                {
+                  "nameOnMethod": "id",
+                  "name": "id",
+                  "jsonName": null,
+                  "type": "System.Int32",
+                  "typeSimple": "number",
+                  "isOptional": false,
+                  "defaultValue": null,
+                  "constraintTypes": [],
+                  "bindingSourceId": "Path",
+                  "descriptorName": ""
+                },
+                {
+                  "nameOnMethod": "input",
+                  "name": "input",
+                  "jsonName": null,
+                  "type": "RiskManagmentSystem.Risks.Dtos.UpdateConsequenceForRiskDto",
+                  "typeSimple": "RiskManagmentSystem.Risks.Dtos.UpdateConsequenceForRiskDto",
+                  "isOptional": false,
+                  "defaultValue": null,
+                  "constraintTypes": null,
+                  "bindingSourceId": "Body",
+                  "descriptorName": ""
+                }
+              ],
+              "returnValue": {
+                "type": "RiskManagmentSystem.Risks.Dtos.ConsequenceDto",
+                "typeSimple": "RiskManagmentSystem.Risks.Dtos.ConsequenceDto"
+              },
+              "allowAnonymous": null,
+              "implementFrom": "RiskManagmentSystem.Risks.IRiskConsequencesAppService"
+            },
+            "DeleteAsyncById": {
+              "uniqueName": "DeleteAsyncById",
+              "name": "DeleteAsync",
+              "httpMethod": "DELETE",
+              "url": "api/app/risk-consequences/{id}",
+              "supportedVersions": [],
+              "parametersOnMethod": [
+                {
+                  "name": "id",
+                  "typeAsString": "System.Int32, System.Private.CoreLib",
+                  "type": "System.Int32",
+                  "typeSimple": "number",
+                  "isOptional": false,
+                  "defaultValue": null
+                }
+              ],
+              "parameters": [
+                {
+                  "nameOnMethod": "id",
+                  "name": "id",
+                  "jsonName": null,
+                  "type": "System.Int32",
+                  "typeSimple": "number",
+                  "isOptional": false,
+                  "defaultValue": null,
+                  "constraintTypes": [],
+                  "bindingSourceId": "Path",
+                  "descriptorName": ""
+                }
+              ],
+              "returnValue": {
+                "type": "System.Void",
+                "typeSimple": "System.Void"
+              },
+              "allowAnonymous": null,
+              "implementFrom": "RiskManagmentSystem.Risks.IRiskConsequencesAppService"
             }
           }
         }
@@ -6382,6 +7122,63 @@
         }
       ]
     },
+    "RiskManagmentSystem.Risks.Dtos.CreateCauseForRiskDto": {
+      "baseType": null,
+      "isEnum": false,
+      "enumNames": null,
+      "enumValues": null,
+      "genericArguments": null,
+      "properties": [
+        {
+          "name": "RiskId",
+          "jsonName": null,
+          "type": "System.Int32",
+          "typeSimple": "number",
+          "isRequired": true,
+          "minLength": null,
+          "maxLength": null,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        },
+        {
+          "name": "Description",
+          "jsonName": null,
+          "type": "System.String",
+          "typeSimple": "string",
+          "isRequired": true,
+          "minLength": 0,
+          "maxLength": 500,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        },
+        {
+          "name": "Likelihood",
+          "jsonName": null,
+          "type": "RiskManagmentSystem.Domain.Shared.Enums.Likelihood",
+          "typeSimple": "enum",
+          "isRequired": true,
+          "minLength": null,
+          "maxLength": null,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        },
+        {
+          "name": "Severity",
+          "jsonName": null,
+          "type": "RiskManagmentSystem.Domain.Shared.Enums.Severity",
+          "typeSimple": "enum",
+          "isRequired": true,
+          "minLength": null,
+          "maxLength": null,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        }
+      ]
+    },
     "RiskManagmentSystem.Risks.Dtos.CreateConsequenceDto": {
       "baseType": null,
       "isEnum": false,
@@ -6439,6 +7236,51 @@
         }
       ]
     },
+    "RiskManagmentSystem.Risks.Dtos.CreateConsequenceForRiskDto": {
+      "baseType": null,
+      "isEnum": false,
+      "enumNames": null,
+      "enumValues": null,
+      "genericArguments": null,
+      "properties": [
+        {
+          "name": "RiskId",
+          "jsonName": null,
+          "type": "System.Int32",
+          "typeSimple": "number",
+          "isRequired": true,
+          "minLength": null,
+          "maxLength": null,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        },
+        {
+          "name": "Description",
+          "jsonName": null,
+          "type": "System.String",
+          "typeSimple": "string",
+          "isRequired": true,
+          "minLength": 0,
+          "maxLength": 500,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        },
+        {
+          "name": "PotentialCost",
+          "jsonName": null,
+          "type": "System.Decimal",
+          "typeSimple": "number",
+          "isRequired": true,
+          "minLength": null,
+          "maxLength": null,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        }
+      ]
+    },
     "RiskManagmentSystem.Risks.Dtos.CreateMitigationActionDto": {
       "baseType": null,
       "isEnum": false,
@@ -6475,6 +7317,99 @@
           "jsonName": null,
           "type": "System.DateTime?",
           "typeSimple": "string?",
+          "isRequired": false,
+          "minLength": null,
+          "maxLength": null,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        }
+      ]
+    },
+    "RiskManagmentSystem.Risks.Dtos.CreateMitigationActionForConsequenceDto": {
+      "baseType": null,
+      "isEnum": false,
+      "enumNames": null,
+      "enumValues": null,
+      "genericArguments": null,
+      "properties": [
+        {
+          "name": "ConsequenceId",
+          "jsonName": null,
+          "type": "System.Int32",
+          "typeSimple": "number",
+          "isRequired": true,
+          "minLength": null,
+          "maxLength": null,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        },
+        {
+          "name": "Description",
+          "jsonName": null,
+          "type": "System.String",
+          "typeSimple": "string",
+          "isRequired": true,
+          "minLength": 0,
+          "maxLength": 500,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        },
+        {
+          "name": "Priority",
+          "jsonName": null,
+          "type": "RiskManagmentSystem.Domain.Shared.Enums.ActionPriority",
+          "typeSimple": "enum",
+          "isRequired": true,
+          "minLength": null,
+          "maxLength": null,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        },
+        {
+          "name": "EstimatedCost",
+          "jsonName": null,
+          "type": "System.Decimal",
+          "typeSimple": "number",
+          "isRequired": false,
+          "minLength": null,
+          "maxLength": null,
+          "minimum": "0",
+          "maximum": "1.7976931348623157E+308",
+          "regex": null
+        },
+        {
+          "name": "AssignedTo",
+          "jsonName": null,
+          "type": "System.String",
+          "typeSimple": "string",
+          "isRequired": false,
+          "minLength": 0,
+          "maxLength": 255,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        },
+        {
+          "name": "DueDate",
+          "jsonName": null,
+          "type": "System.DateTime?",
+          "typeSimple": "string?",
+          "isRequired": false,
+          "minLength": null,
+          "maxLength": null,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        },
+        {
+          "name": "Status",
+          "jsonName": null,
+          "type": "RiskManagmentSystem.Domain.Shared.Enums.ActionStatus",
+          "typeSimple": "enum",
           "isRequired": false,
           "minLength": null,
           "maxLength": null,
@@ -6521,6 +7456,99 @@
           "type": "RiskManagmentSystem.Domain.Shared.Enums.ActionPriority",
           "typeSimple": "enum",
           "isRequired": true,
+          "minLength": null,
+          "maxLength": null,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        }
+      ]
+    },
+    "RiskManagmentSystem.Risks.Dtos.CreatePreventionActionForCauseDto": {
+      "baseType": null,
+      "isEnum": false,
+      "enumNames": null,
+      "enumValues": null,
+      "genericArguments": null,
+      "properties": [
+        {
+          "name": "CauseId",
+          "jsonName": null,
+          "type": "System.Int32",
+          "typeSimple": "number",
+          "isRequired": true,
+          "minLength": null,
+          "maxLength": null,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        },
+        {
+          "name": "Description",
+          "jsonName": null,
+          "type": "System.String",
+          "typeSimple": "string",
+          "isRequired": true,
+          "minLength": 0,
+          "maxLength": 500,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        },
+        {
+          "name": "Priority",
+          "jsonName": null,
+          "type": "RiskManagmentSystem.Domain.Shared.Enums.ActionPriority",
+          "typeSimple": "enum",
+          "isRequired": true,
+          "minLength": null,
+          "maxLength": null,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        },
+        {
+          "name": "Cost",
+          "jsonName": null,
+          "type": "System.Decimal",
+          "typeSimple": "number",
+          "isRequired": false,
+          "minLength": null,
+          "maxLength": null,
+          "minimum": "0",
+          "maximum": "1.7976931348623157E+308",
+          "regex": null
+        },
+        {
+          "name": "AssignedTo",
+          "jsonName": null,
+          "type": "System.String",
+          "typeSimple": "string",
+          "isRequired": false,
+          "minLength": 0,
+          "maxLength": 255,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        },
+        {
+          "name": "DueDate",
+          "jsonName": null,
+          "type": "System.DateTime?",
+          "typeSimple": "string?",
+          "isRequired": false,
+          "minLength": null,
+          "maxLength": null,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        },
+        {
+          "name": "Status",
+          "jsonName": null,
+          "type": "RiskManagmentSystem.Domain.Shared.Enums.ActionStatus",
+          "typeSimple": "enum",
+          "isRequired": false,
           "minLength": null,
           "maxLength": null,
           "minimum": null,
@@ -7510,6 +8538,51 @@
         }
       ]
     },
+    "RiskManagmentSystem.Risks.Dtos.UpdateCauseForRiskDto": {
+      "baseType": null,
+      "isEnum": false,
+      "enumNames": null,
+      "enumValues": null,
+      "genericArguments": null,
+      "properties": [
+        {
+          "name": "Description",
+          "jsonName": null,
+          "type": "System.String",
+          "typeSimple": "string",
+          "isRequired": true,
+          "minLength": 0,
+          "maxLength": 500,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        },
+        {
+          "name": "Likelihood",
+          "jsonName": null,
+          "type": "RiskManagmentSystem.Domain.Shared.Enums.Likelihood",
+          "typeSimple": "enum",
+          "isRequired": true,
+          "minLength": null,
+          "maxLength": null,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        },
+        {
+          "name": "Severity",
+          "jsonName": null,
+          "type": "RiskManagmentSystem.Domain.Shared.Enums.Severity",
+          "typeSimple": "enum",
+          "isRequired": true,
+          "minLength": null,
+          "maxLength": null,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        }
+      ]
+    },
     "RiskManagmentSystem.Risks.Dtos.UpdateConsequenceDto": {
       "baseType": null,
       "isEnum": false,
@@ -7547,6 +8620,39 @@
           "type": "[RiskManagmentSystem.Risks.Dtos.UpdateMitigationActionDto]",
           "typeSimple": "[RiskManagmentSystem.Risks.Dtos.UpdateMitigationActionDto]",
           "isRequired": false,
+          "minLength": null,
+          "maxLength": null,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        }
+      ]
+    },
+    "RiskManagmentSystem.Risks.Dtos.UpdateConsequenceForRiskDto": {
+      "baseType": null,
+      "isEnum": false,
+      "enumNames": null,
+      "enumValues": null,
+      "genericArguments": null,
+      "properties": [
+        {
+          "name": "Description",
+          "jsonName": null,
+          "type": "System.String",
+          "typeSimple": "string",
+          "isRequired": true,
+          "minLength": 0,
+          "maxLength": 500,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        },
+        {
+          "name": "PotentialCost",
+          "jsonName": null,
+          "type": "System.Decimal",
+          "typeSimple": "number",
+          "isRequired": true,
           "minLength": null,
           "maxLength": null,
           "minimum": null,

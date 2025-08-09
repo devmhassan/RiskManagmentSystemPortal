@@ -31,7 +31,7 @@ export class DashboardComponent {
   // Sample risk data for matrix
   risks: Risk[] = [
     {
-      id: 'RISK-001',
+      riskId: 'RISK-001',
       description: 'Data breach due to unauthorized access',
       likelihood: 'L5',
       severity: 'S5',
@@ -44,7 +44,7 @@ export class DashboardComponent {
       reviewDate: '2023-12-15'
     },
     {
-      id: 'RISK-002',
+      riskId: 'RISK-002',
       description: 'System downtime during peak hours',
       likelihood: 'L4',
       severity: 'S4',
@@ -57,7 +57,7 @@ export class DashboardComponent {
       reviewDate: '2023-11-30'
     },
     {
-      id: 'RISK-003',
+      riskId: 'RISK-003',
       description: 'Compliance violation in financial reporting',
       likelihood: 'L4',
       severity: 'S5',
@@ -70,7 +70,7 @@ export class DashboardComponent {
       reviewDate: '2023-10-15'
     },
     {
-      id: 'RISK-004',
+      riskId: 'RISK-004',
       description: 'Supply chain disruption',
       likelihood: 'L3',
       severity: 'S4',
@@ -83,7 +83,7 @@ export class DashboardComponent {
       reviewDate: '2023-12-20'
     },
     {
-      id: 'RISK-005',
+      riskId: 'RISK-005',
       description: 'Product quality defects',
       likelihood: 'L2',
       severity: 'S4',

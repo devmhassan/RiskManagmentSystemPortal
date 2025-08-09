@@ -57,7 +57,7 @@ export class SharedRiskListComponent implements OnInit, OnChanges {
     if (searchValue.trim()) {
       this.filteredRisks = this.risks.filter(risk =>
         risk.description.toLowerCase().includes(searchValue.toLowerCase()) ||
-        risk.id.toLowerCase().includes(searchValue.toLowerCase()) ||
+        risk.riskId.toLowerCase().includes(searchValue.toLowerCase()) ||
         risk.owner.toLowerCase().includes(searchValue.toLowerCase())
       );
     } else {
@@ -186,7 +186,7 @@ export class SharedRiskListComponent implements OnInit, OnChanges {
   }
 
   onRiskClick(risk: Risk): void {
-    this.router.navigate(['/risk', risk.id]);
+    this.router.navigate(['/risk', risk.riskId]);
   }
 
   toggleDropdown(event: Event, riskId: string): void {
@@ -197,20 +197,20 @@ export class SharedRiskListComponent implements OnInit, OnChanges {
   viewBowtie(event: Event, risk: Risk): void {
     event.stopPropagation();
     this.openDropdownId = null;
-    this.router.navigate(['/risk', risk.id]);
+    this.router.navigate(['/risk', risk.riskId]);
   }
 
   editRisk(event: Event, risk: Risk): void {
     event.stopPropagation();
     this.openDropdownId = null;
-    this.router.navigate(['/risk', risk.id, 'edit']);
+    this.router.navigate(['/risk', risk.riskId, 'edit']);
   }
 
   deleteRisk(event: Event, risk: Risk): void {
     event.stopPropagation();
     this.openDropdownId = null;
     // Implement delete logic
-    console.log('Delete risk:', risk.id);
+    console.log('Delete risk:', risk.riskId);
   }
 
   onSearchChange(): void {
