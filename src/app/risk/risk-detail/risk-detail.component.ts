@@ -19,7 +19,14 @@ import { finalize } from 'rxjs/operators';
   templateUrl: './risk-detail.component.html',
   styleUrls: ['./risk-detail.component.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule, RiskAnalysisComponent, ActionTrackerComponent]
+  imports: [CommonModule, FormsModule, RiskAnalysisComponent, ActionTrackerComponent],
+  providers: [
+    RiskService,
+    MitigationActionService,
+    PreventionActionService,
+    RiskCausesService,
+    RiskConsequencesService
+  ]
 })
 export class RiskDetailComponent implements OnInit {
   riskId: string = '';
