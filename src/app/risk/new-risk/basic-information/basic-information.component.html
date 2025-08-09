@@ -64,7 +64,7 @@
     </div>
 
     <div class="form-group">
-      <label>Trigger Events</label>
+      <label>Trigger Events <span class="required">*</span></label>
       <div class="trigger-events-container">
         <div class="trigger-input-group">
           <input id="triggerEventInput" type="text" formControlName="triggerEventInput" class="form-control"
@@ -79,6 +79,9 @@
             <span>{{event}}</span>
             <button type="button" class="btn-remove" (click)="removeTriggerEvent(i)">×</button>
           </div>
+        </div>
+        <div class="error-message" *ngIf="triggerEvents.length === 0 && basicInfoForm.touched">
+          At least one trigger event is required
         </div>
       </div>
     </div>

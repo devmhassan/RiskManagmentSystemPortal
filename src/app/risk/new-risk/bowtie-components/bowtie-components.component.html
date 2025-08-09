@@ -1,40 +1,57 @@
-<div class="form-container">
-  <div class="page-header">
-    <h1>Bowtie Components</h1>
-    <p class="subtitle">Define the causes, consequences, and controls for the risk</p>
+<div class="container-fluid p-4">
+  <!-- Header Section -->
+  <div class="mb-4">
+    <h1 class="h3 fw-semibold text-dark mb-2">Bowtie Components</h1>
+    <p class="text-muted mb-0">Define the causes, consequences, and controls for the risk</p>
   </div>
 
   <form [formGroup]="bowtieForm">
-    <div class="bowtie-section">
-      <!-- Causes Container -->
-      <div class="causes-container">
+    <!-- Two Column Layout -->
+    <div class="row g-4">
+      <!-- Causes Column -->
+      <div class="col-lg-6">
         <div formArrayName="causes">
-          <div *ngFor="let causeControl of causes.controls; let causeIndex = index" 
-               [formGroupName]="causeIndex" class="causes-section">
-            <div class="heading">
-              <span>Cause {{ causeIndex + 1 }}</span>
-              <div class="badges">
-                <span class="badge l3">L{{ causeControl.get('likelihood')?.value || 3 }}</span>
-                <span class="badge s3">S{{ causeControl.get('severity')?.value || 3 }}</span>
-              </div>
-            </div>
+          <div *ngFor="let causeControl of causes.controls; let causeIndex = index; trackBy: trackByCause" 
+               [formGroupName]="causeIndex" class="mb-4">
+            
+            <!-- Cause Card -->
+            <div class="card border-0 shadow-sm">
+              <div class="card-body p-4" [style.background-color]="'#fff5f8'">
+                
+                <!-- Cause Header -->
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                  <h5 class="mb-0 fw-semibold">Cause {{ causeIndex + 1 }}</h5>
+                  <div class="d-flex gap-2 align-items-center">
+                    <span class="badge bg-warning text-dark">L{{ causeControl.get('likelihood')?.value || 3 }}</span>
+                    <span class="badge bg-danger">Highest</span>
+                    <button type="button" 
+                            class="btn btn-sm text-danger" 
+                            (click)="removeCause(causeIndex)"
+                            [disabled]="causes.length <= 1"
+                            title="Remove Cause"
+                            style="border: none; background: none;">
+                      🗑️
+                    </button>
+                  </div>
+                </div>
 
-            <div class="risk-card">
-              <!-- Risk Description Input -->
-              <div class="input-group">
-                <input formControlName="description" 
-                       placeholder="What could cause this risk to occur..." 
-                       class="form-control">
-                <button type="button" class="copy-btn">
-                  <div class="copy-icon"></div>
-                </button>
-              </div>
+                <!-- Cause Description -->
+                <div class="mb-3">
+                  <label class="form-label text-dark fw-medium" [for]="'cause_desc_' + causeIndex">Risk Cause <span class="text-danger">*</span></label>
+                  <input formControlName="description" 
+                         [id]="'cause_desc_' + causeIndex"
+                         [name]="'cause_desc_' + causeIndex"
+                         placeholder="What could cause this risk to occur..." 
+                         class="form-control border-0 bg-white">
+                </div>
 
-              <!-- Risk Details -->
-              <div class="risk-details">
-                <div class="likelihood-section">
-                  <label>Likelihood</label>
-                  <select formControlName="likelihood" class="form-select">
+                <!-- Likelihood Section -->
+                <div class="mb-3">
+                  <label class="form-label text-dark fw-medium" [for]="'cause_likelihood_' + causeIndex">Likelihood (1-5) <span class="text-danger">*</span></label>
+                  <select formControlName="likelihood" 
+                          [id]="'cause_likelihood_' + causeIndex"
+                          [name]="'cause_likelihood_' + causeIndex"
+                          class="form-select">
                     <option value="">Select Likelihood</option>
                     <option *ngFor="let option of likelihoodOptions" [value]="option.value">
                       {{ option.value }} - {{ option.key }}
@@ -42,178 +59,206 @@
                   </select>
                 </div>
 
-                <div class="severity-section">
-                  <label>Severity</label>
-                  <select formControlName="severity" class="form-select">
-                    <option value="">Select Severity</option>
-                    <option *ngFor="let option of severityOptions" [value]="option.value">
-                      {{ option.value }} - {{ option.key }}
-                    </option>
-                  </select>
-                </div>
-
-                <!-- Prevention Actions -->
-                <div class="actions-section">
-                  <h4>Prevention Actions</h4>
+                <!-- Preventive Actions -->
+                <div class="mb-3">
+                  <h6 class="fw-semibold mb-3">Preventive Actions</h6>
                   <div formArrayName="preventionActions">
-                    <div *ngFor="let actionControl of causeControl.get('preventionActions')?.controls; let actionIndex = index" 
-                         [formGroupName]="actionIndex" class="action-item">
-                      <div class="action-input-group">
+                    <div *ngFor="let actionControl of causeControl.get('preventionActions')?.controls; let actionIndex = index; trackBy: trackByPreventionAction" 
+                         [formGroupName]="actionIndex" class="mb-3">
+                      
+                      <!-- Action Description -->
+                      <div class="mb-2">
+                        <label class="form-label text-dark fw-medium" [for]="'prev_desc_' + causeIndex + '_' + actionIndex">Action Description</label>
                         <input formControlName="description" 
-                               placeholder="Describe prevention action..." 
+                               [id]="'prev_desc_' + causeIndex + '_' + actionIndex"
+                               [name]="'prev_desc_' + causeIndex + '_' + actionIndex"
+                               placeholder="Action to prevent this cause..." 
                                class="form-control">
-                        <button type="button" class="remove-action-btn" 
-                                (click)="removePreventionAction(causeIndex, actionIndex)"
-                                [disabled]="causeControl.get('preventionActions')?.controls.length <= 1">
-                          ×
-                        </button>
                       </div>
                       
-                      <div class="action-details">
-                        <div class="cost-priority-row">
-                          <div class="cost-input">
-                            <span class="currency">$</span>
+                      <!-- Cost and Priority Row with Delete Button -->
+                      <div class="row g-2 align-items-end">
+                        <div class="col-4">
+                          <label class="form-label text-dark fw-medium" [for]="'prev_cost_' + causeIndex + '_' + actionIndex">Cost <span class="text-danger">*</span></label>
+                          <div class="input-group">
+                            <span class="input-group-text">$</span>
                             <input type="number" formControlName="cost" 
-                                   class="cost-value" placeholder="0.00" 
+                                   [id]="'prev_cost_' + causeIndex + '_' + actionIndex"
+                                   [name]="'prev_cost_' + causeIndex + '_' + actionIndex"
+                                   class="form-control" placeholder="0" 
                                    min="0" step="0.01">
                           </div>
-                          <select formControlName="priority" class="priority-select">
+                        </div>
+                        <div class="col-6">
+                          <label class="form-label text-dark fw-medium" [for]="'prev_priority_' + causeIndex + '_' + actionIndex">Priority <span class="text-danger">*</span></label>
+                          <select formControlName="priority" 
+                                  [id]="'prev_priority_' + causeIndex + '_' + actionIndex"
+                                  [name]="'prev_priority_' + causeIndex + '_' + actionIndex"
+                                  class="form-select">
                             <option *ngFor="let option of actionPriorityOptions" [value]="option.value">
                               {{ option.key }}
                             </option>
                           </select>
                         </div>
+                        <div class="col-2">
+                          <button type="button" 
+                                  class="btn btn-sm text-danger w-100" 
+                                  (click)="removePreventionAction(causeIndex, actionIndex)"
+                                  [disabled]="causeControl.get('preventionActions')?.controls.length <= 1"
+                                  title="Remove Action"
+                                  style="border: none; background: none;">
+                            🗑️
+                          </button>
+                        </div>
                       </div>
                     </div>
                   </div>
                   
-                  <button type="button" class="add-action-btn" 
+                  <!-- Add Prevention Action Button -->
+                  <button type="button" class="btn btn-outline-primary btn-sm mt-3" 
                           (click)="addPreventionAction(causeIndex)">
-                    + Add Prevention Action
+                    ➕ Add Preventive Action
                   </button>
                 </div>
               </div>
             </div>
-
-            <!-- Remove Cause Button -->
-            <button type="button" class="remove-cause-btn" 
-                    (click)="removeCause(causeIndex)" 
-                    [disabled]="causes.length <= 1">
-              Remove Cause
-            </button>
           </div>
         </div>
 
-        <!-- Add Cause Button -->
-        <button type="button" class="add-cause-btn" (click)="addCause()">
-          + Add Another Cause
+        <!-- Add Another Cause Button -->
+        <button type="button" class="btn btn-outline-secondary" (click)="addCause()">
+          ➕ Add Another Cause
         </button>
       </div>
 
-      <!-- Consequences Container -->
-      <div class="consequences-container">
+      <!-- Consequences Column -->
+      <div class="col-lg-6">
         <div formArrayName="consequences">
-          <div *ngFor="let consequenceControl of consequences.controls; let consequenceIndex = index" 
-               [formGroupName]="consequenceIndex" class="consequences-section">
-            <div class="heading">
-              <span>Consequence {{ consequenceIndex + 1 }}</span>
-              <div class="badges">
-                <span class="badge s3">S{{ consequenceControl.get('severity')?.value || 3 }}</span>
-                <span class="badge highest">Impact</span>
-              </div>
-            </div>
+          <div *ngFor="let consequenceControl of consequences.controls; let consequenceIndex = index; trackBy: trackByConsequence" 
+               [formGroupName]="consequenceIndex" class="mb-4">
+            
+            <!-- Consequence Card -->
+            <div class="card border-0 shadow-sm">
+              <div class="card-body p-4" [style.background-color]="'#fff5f8'">
+                
+                <!-- Consequence Header -->
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                  <h5 class="mb-0 fw-semibold">Consequence {{ consequenceIndex + 1 }}</h5>
+                  <div class="d-flex gap-2 align-items-center">
+                    <span class="badge bg-warning text-dark">S{{ consequenceControl.get('severity')?.value || 3 }}</span>
+                    <span class="badge bg-danger">Highest</span>
+                    <button type="button" 
+                            class="btn btn-sm text-danger" 
+                            (click)="removeConsequence(consequenceIndex)"
+                            [disabled]="consequences.length <= 1"
+                            title="Remove Consequence"
+                            style="border: none; background: none;">
+                      🗑️
+                    </button>
+                  </div>
+                </div>
 
-            <div class="risk-card">
-              <!-- Consequence Description Input -->
-              <div class="input-group">
-                <input formControlName="description" 
-                       placeholder="What could be the consequence..." 
-                       class="form-control">
-                <button type="button" class="copy-btn">
-                  <div class="copy-icon"></div>
-                </button>
-              </div>
+                <!-- Consequence Description -->
+                <div class="mb-3">
+                  <label class="form-label text-dark fw-medium" [for]="'conseq_desc_' + consequenceIndex">Risk Consequence <span class="text-danger">*</span></label>
+                  <input formControlName="description" 
+                         [id]="'conseq_desc_' + consequenceIndex"
+                         [name]="'conseq_desc_' + consequenceIndex"
+                         placeholder="What could happen if this risk occurs..." 
+                         class="form-control border-0 bg-white">
+                </div>
 
-              <!-- Consequence Details -->
-              <div class="risk-details">
-                <div class="severity-cost-section">
-                  <div class="severity-section">
-                    <label>Severity</label>
-                    <select formControlName="severity" class="form-select">
+                <!-- Severity and Potential Cost Row -->
+                <div class="row g-3 mb-3">
+                  <div class="col-6">
+                    <label class="form-label text-dark fw-medium" [for]="'conseq_severity_' + consequenceIndex">Severity (1-5) <span class="text-danger">*</span></label>
+                    <select formControlName="severity" 
+                            [id]="'conseq_severity_' + consequenceIndex"
+                            [name]="'conseq_severity_' + consequenceIndex"
+                            class="form-select">
                       <option value="">Select Severity</option>
                       <option *ngFor="let option of severityOptions" [value]="option.value">
                         {{ option.value }} - {{ option.key }}
                       </option>
                     </select>
                   </div>
-
-                  <div class="potential-cost">
-                    <label>Potential Cost</label>
-                    <div class="cost-input">
-                      <span class="currency">$</span>
+                  <div class="col-6">
+                    <label class="form-label text-dark fw-medium" [for]="'conseq_cost_' + consequenceIndex">Potential Cost <span class="text-danger">*</span></label>
+                    <div class="input-group">
+                      <span class="input-group-text">$</span>
                       <input type="number" formControlName="potentialCost" 
-                             class="cost-value" placeholder="0.00" 
+                             [id]="'conseq_cost_' + consequenceIndex"
+                             [name]="'conseq_cost_' + consequenceIndex"
+                             class="form-control" placeholder="0" 
                              min="0" step="0.01">
                     </div>
                   </div>
                 </div>
 
                 <!-- Mitigation Actions -->
-                <div class="actions-section">
-                  <h4>Mitigation Actions</h4>
+                <div class="mb-3">
+                  <h6 class="fw-semibold mb-3">Mitigation Actions</h6>
                   <div formArrayName="mitigationActions">
-                    <div *ngFor="let actionControl of consequenceControl.get('mitigationActions')?.controls; let actionIndex = index" 
-                         [formGroupName]="actionIndex" class="action-item">
-                      <div class="action-input-group">
+                    <div *ngFor="let actionControl of consequenceControl.get('mitigationActions')?.controls; let actionIndex = index; trackBy: trackByMitigationAction" 
+                         [formGroupName]="actionIndex" class="mb-3">
+                      
+                      <!-- Action Description -->
+                      <div class="mb-2">
+                        <label class="form-label text-dark fw-medium" [for]="'mitig_desc_' + consequenceIndex + '_' + actionIndex">Action Description</label>
                         <input formControlName="description" 
-                               placeholder="Describe mitigation action..." 
+                               [id]="'mitig_desc_' + consequenceIndex + '_' + actionIndex"
+                               [name]="'mitig_desc_' + consequenceIndex + '_' + actionIndex"
+                               placeholder="Action to mitigate this consequence..." 
                                class="form-control">
-                        <button type="button" class="remove-action-btn" 
-                                (click)="removeMitigationAction(consequenceIndex, actionIndex)"
-                                [disabled]="consequenceControl.get('mitigationActions')?.controls.length <= 1">
-                          ×
-                        </button>
                       </div>
                       
-                      <div class="action-details">
-                        <div class="priority-date-row">
-                          <select formControlName="priority" class="priority-select">
+                      <!-- Priority Row with Delete Button -->
+                      <div class="row g-2 align-items-end">
+                        <div class="col-10">
+                          <label class="form-label text-dark fw-medium" [for]="'mitig_priority_' + consequenceIndex + '_' + actionIndex">Priority <span class="text-danger">*</span></label>
+                          <select formControlName="priority" 
+                                  [id]="'mitig_priority_' + consequenceIndex + '_' + actionIndex"
+                                  [name]="'mitig_priority_' + consequenceIndex + '_' + actionIndex"
+                                  class="form-select">
                             <option *ngFor="let option of actionPriorityOptions" [value]="option.value">
                               {{ option.key }}
                             </option>
                           </select>
-                          <input type="date" formControlName="dueDate" class="date-input">
+                        </div>
+                        <div class="col-2">
+                          <button type="button" 
+                                  class="btn btn-sm text-danger w-100" 
+                                  (click)="removeMitigationAction(consequenceIndex, actionIndex)"
+                                  [disabled]="consequenceControl.get('mitigationActions')?.controls.length <= 1"
+                                  title="Remove Action"
+                                  style="border: none; background: none;">
+                            🗑️
+                          </button>
                         </div>
                       </div>
                     </div>
                   </div>
                   
-                  <button type="button" class="add-action-btn" 
+                  <!-- Add Mitigation Action Button -->
+                  <button type="button" class="btn btn-outline-primary btn-sm mt-3" 
                           (click)="addMitigationAction(consequenceIndex)">
-                    + Add Mitigation Action
+                    ➕ Add Mitigation Action
                   </button>
                 </div>
               </div>
             </div>
-
-            <!-- Remove Consequence Button -->
-            <button type="button" class="remove-consequence-btn" 
-                    (click)="removeConsequence(consequenceIndex)" 
-                    [disabled]="consequences.length <= 1">
-              Remove Consequence
-            </button>
           </div>
         </div>
 
-        <!-- Add Consequence Button -->
-        <button type="button" class="add-consequence-btn" (click)="addConsequence()">
-          + Add Another Consequence
+        <!-- Add Another Consequence Button -->
+        <button type="button" class="btn btn-outline-secondary" (click)="addConsequence()">
+          ➕ Add Another Consequence
         </button>
       </div>
     </div>
 
     <!-- Form validation summary -->
-    <div class="form-summary" *ngIf="!isFormValid() && bowtieForm.touched">
+    <div class="mt-4" *ngIf="!isFormValid() && bowtieForm.touched">
       <div class="alert alert-warning">
         <strong>Please complete all required fields and ensure at least one cause and consequence are defined.</strong>
       </div>

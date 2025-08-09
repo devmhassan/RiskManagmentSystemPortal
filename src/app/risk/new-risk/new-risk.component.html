@@ -30,7 +30,7 @@
   </div>
 </div>
 
-<div class="content-container">
+<div class="content-container p-3">
   <div class="step-content">
     <app-basic-information *ngIf="currentStep === 1"></app-basic-information>
     <app-risk-assessment *ngIf="currentStep === 2"></app-risk-assessment>
@@ -41,8 +41,11 @@
     <button 
       class="btn btn-outline-secondary"
       (click)="previousStep()" 
-      [disabled]="currentStep === 1">
-      <i class="fas fa-arrow-left me-2"></i> Previous
+      [disabled]="currentStep === 1"
+      *ngIf="currentStep > 1">
+      <i class="fas fa-arrow-left me-2"></i> 
+      <span *ngIf="currentStep === 2">Back: Basic Information</span>
+      <span *ngIf="currentStep === 3">Back: Risk Assessment</span>
     </button>
     
     <div class="step-indicator">
@@ -50,10 +53,21 @@
     </div>
     
     <button 
-      class="btn btn-primary"
-      (click)="nextStep()" 
-      [disabled]="currentStep === totalSteps">
-      Next <i class="fas fa-arrow-right ms-2"></i>
+      class="btn"
+      [class.btn-dark]="currentStep === 2"
+      [class.btn-primary]="currentStep !== 2"
+      [class.btn-success]="currentStep === 3"
+      (click)="currentStep === 3 ? onSave() : nextStep()" 
+      [disabled]="currentStep === 3 ? !canSave() || isLoading : !canProceedToNext()"
+      style="min-width: 140px;">
+      <span *ngIf="isLoading && currentStep === 3" class="spinner-border spinner-border-sm me-2"></span>
+      <span *ngIf="currentStep === 1">Next: Risk Assessment</span>
+      <span *ngIf="currentStep === 2">Next: Bowtie Components</span>
+      <span *ngIf="currentStep === 3 && !isLoading">
+        <i class="fas fa-save me-2"></i>Save Risk
+      </span>
+      <span *ngIf="currentStep === 3 && isLoading">Saving...</span>
+      <i *ngIf="currentStep !== 3" class="fas fa-arrow-right ms-2"></i>
     </button>
   </div>
 </div>

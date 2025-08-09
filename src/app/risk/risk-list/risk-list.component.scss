@@ -12,6 +12,12 @@
   margin-bottom: 32px;
 }
 
+.header-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
 .title {
   font-size: 32px;
   font-weight: 600;
@@ -19,27 +25,50 @@
   margin: 0;
 }
 
-.new-risk-btn {
+.new-risk-btn,
+.refresh-btn {
   display: flex;
   align-items: center;
   gap: 8px;
-  background-color: #1f2937;
-  color: white;
   border: none;
   border-radius: 8px;
   padding: 12px 20px;
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: all 0.2s;
 
-  &:hover {
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+.new-risk-btn {
+  background-color: #1f2937;
+  color: white;
+
+  &:hover:not(:disabled) {
     background-color: #374151;
   }
 
   .plus-icon {
     font-size: 16px;
     font-weight: 600;
+  }
+}
+
+.refresh-btn {
+  background-color: #f3f4f6;
+  color: #374151;
+  border: 1px solid #d1d5db;
+
+  &:hover:not(:disabled) {
+    background-color: #e5e7eb;
+  }
+
+  .refresh-icon {
+    font-size: 16px;
   }
 }
 
@@ -99,7 +128,79 @@
     gap: 16px;
   }
 
+  .header-actions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+
   .title {
     font-size: 24px;
+  }
+}
+
+/* Loading State */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 24px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
+
+  p {
+    margin: 16px 0 0 0;
+    color: #6b7280;
+    font-size: 14px;
+  }
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid #f3f4f6;
+  border-top: 3px solid #1f2937;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Error State */
+.error-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 24px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
+  text-align: center;
+}
+
+.error-message {
+  color: #dc2626;
+  font-size: 16px;
+  margin: 0 0 20px 0;
+}
+
+.retry-btn {
+  background-color: #1f2937;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 20px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+
+  &:hover {
+    background-color: #374151;
   }
 }

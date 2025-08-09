@@ -2,10 +2,16 @@
   <!-- Header -->
   <div class="header">
     <h1 class="title">Risk Management</h1>
-    <button class="new-risk-btn" (click)="navigateToNewRisk()">
-      <span class="plus-icon">+</span>
-      New Risk
-    </button>
+    <div class="header-actions">
+      <button class="refresh-btn" (click)="refreshRisks()" [disabled]="isLoading">
+        <span class="refresh-icon">↻</span>
+        Refresh
+      </button>
+      <button class="new-risk-btn" (click)="navigateToNewRisk()">
+        <span class="plus-icon">+</span>
+        New Risk
+      </button>
+    </div>
   </div>
 
   <!-- Tab Navigation -->
@@ -24,18 +30,33 @@
     </button>
   </div>
 
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-container">
+    <div class="loading-spinner"></div>
+    <p>Loading risks...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error && !isLoading" class="error-container">
+    <p class="error-message">{{ error }}</p>
+    <button class="retry-btn" (click)="loadRisks()">Try Again</button>
+  </div>
+
   <!-- Risk Register Content -->
-  <div *ngIf="selectedTab === 'register'" class="risk-register">
+  <div *ngIf="selectedTab === 'register' && !isLoading && !error" class="risk-register">
     <app-shared-risk-list 
+      [risks]="risks"
       [isDashboard]="false"
       [showTitle]="false"
       [showPagination]="true"
-      [maxItems]="0">
+      [maxItems]="0"
+      [isLoading]="isLoading"
+      [error]="error">
     </app-shared-risk-list>
   </div>
 
   <!-- Risk Matrix Content -->
-  <div *ngIf="selectedTab === 'matrix'" class="risk-matrix">
+  <div *ngIf="selectedTab === 'matrix' && !isLoading && !error" class="risk-matrix">
     <app-shared-risk-matrix 
       [risks]="risks"
       [showTitle]="true"

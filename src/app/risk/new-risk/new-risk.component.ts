@@ -42,8 +42,11 @@ export class NewRiskComponent implements OnInit {
   ngOnInit() {
     // Initialize first step
     this.updateStepStatus();
-    // Reset form when component initializes
-    this.riskFormService.resetForm();
+    // Only reset form if it's a completely new risk creation
+    const existingData = this.riskFormService.getCurrentFormData();
+    if (!existingData.riskId && !existingData.description) {
+      this.riskFormService.resetForm();
+    }
   }
 
   goToStep(stepId: number) {
@@ -63,12 +66,35 @@ export class NewRiskComponent implements OnInit {
   }
 
   nextStep() {
+    // Validate current step before proceeding
+    if (!this.isCurrentStepValid()) {
+      this.toaster.error('Please complete all required fields before proceeding.', 'Validation Error');
+      return;
+    }
+
     if (this.currentStep < this.totalSteps) {
       // Mark the current step as completed
       this.steps[this.currentStep - 1].completed = true;
       // Move to the next step
       this.goToStep(this.currentStep + 1);
     }
+  }
+
+  isCurrentStepValid(): boolean {
+    switch (this.currentStep) {
+      case 1:
+        return this.riskFormService.isBasicInformationValid();
+      case 2:
+        return this.riskFormService.isRiskAssessmentValid();
+      case 3:
+        return this.riskFormService.isBowtieComponentsValid();
+      default:
+        return false;
+    }
+  }
+
+  canProceedToNext(): boolean {
+    return this.isCurrentStepValid();
   }
 
   previousStep() {
