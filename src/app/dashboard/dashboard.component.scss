@@ -217,10 +217,27 @@
         .action-date {
           font-size: 14px;
           color: #6b7280;
+          margin-bottom: 2px;
+        }
+
+        .action-risk {
+          font-size: 12px;
+          color: #8b5cf6;
+          margin-bottom: 2px;
+        }
+
+        .action-assigned {
+          font-size: 12px;
+          color: #059669;
         }
       }
 
       .action-status {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 4px;
+
         .overdue-badge {
           background-color: #ef4444;
           color: white;
@@ -228,6 +245,39 @@
           border-radius: 12px;
           font-size: 12px;
           font-weight: 600;
+        }
+
+        .priority-badge {
+          padding: 2px 6px;
+          border-radius: 8px;
+          font-size: 10px;
+          font-weight: 600;
+          text-transform: uppercase;
+
+          &.priority-low {
+            background-color: #d1fae5;
+            color: #065f46;
+          }
+
+          &.priority-medium {
+            background-color: #fef3c7;
+            color: #92400e;
+          }
+
+          &.priority-high {
+            background-color: #fee2e2;
+            color: #991b1b;
+          }
+
+          &.priority-urgent {
+            background-color: #fecaca;
+            color: #7f1d1d;
+          }
+
+          &.priority-immediate {
+            background-color: #ef4444;
+            color: white;
+          }
         }
       }
     }
@@ -270,4 +320,65 @@
   padding: 32px;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
   border: 1px solid #e5e7eb;
+}
+
+// Action item cards for Actions tab
+.action-item-card {
+  padding: 16px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background-color: #ffffff;
+  transition: all 0.2s ease;
+
+  &:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border-color: #d1d5db;
+  }
+
+  &.overdue {
+    border-color: #fca5a5;
+    background-color: #fef2f2;
+  }
+
+  h6 {
+    font-weight: 600;
+    color: #1f2937;
+    margin-bottom: 8px;
+  }
+
+  .small {
+    font-size: 0.875rem;
+  }
+
+  .badge {
+    font-size: 0.75rem;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-weight: 600;
+
+    &.priority-low {
+      background-color: #d1fae5;
+      color: #065f46;
+    }
+
+    &.priority-medium {
+      background-color: #fef3c7;
+      color: #92400e;
+    }
+
+    &.priority-high {
+      background-color: #fee2e2;
+      color: #991b1b;
+    }
+
+    &.priority-urgent {
+      background-color: #fecaca;
+      color: #7f1d1d;
+    }
+
+    &.priority-immediate {
+      background-color: #ef4444;
+      color: white;
+    }
+  }
 }

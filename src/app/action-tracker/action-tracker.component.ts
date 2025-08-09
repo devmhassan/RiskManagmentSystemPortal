@@ -2,111 +2,83 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActionItem, ActionStatusSummary } from './models/action.interface';
-import { SharedActionTrackerComponent } from '../shared/components/shared-action-tracker/shared-action-tracker.component';
+import { RiskService } from '../proxy/risk-managment-system/risks/risk.service';
+import { ActionTrackerStatsDto, ActionItemDto } from '../proxy/risk-managment-system/risks/dtos/models';
+import { ActionPriority } from '../proxy/risk-managment-system/domain/shared/enums/action-priority.enum';
 
 @Component({
   selector: 'app-action-tracker',
   templateUrl: './action-tracker.component.html',
   styleUrls: ['./action-tracker.component.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule, SharedActionTrackerComponent]
+  imports: [CommonModule, FormsModule]
 })
 export class ActionTrackerComponent implements OnInit {
   activeTab: 'all' | 'upcoming' | 'overdue' | 'completed' = 'all';
   searchQuery = '';
+  loading = false;
+  error: string | null = null;
   
-  statusSummary: ActionStatusSummary = {
-    open: 2,
-    inProgress: 3,
-    completed: 2,
-    overdue: 1
+  // Backend data
+  actionTrackerStats = {
+    openActionsCount: 0,
+    inProgressActionsCount: 0,
+    completedActionsCount: 0,
+    overdueActionsCount: 0
   };
 
-  mockActions: ActionItem[] = [
-    {
-      id: 'ACT-001',
-      title: 'Implement strong password requirements',
-      description: 'Implement strong password requirements for all user accounts',
-      status: 'completed',
-      priority: 'high',
-      assignedTo: 'John Smith',
-      dueDate: new Date('2023-11-15'),
-      createdDate: new Date('2023-10-01'),
-      completedDate: new Date('2023-11-15'),
-      riskId: 'RISK-001',
-      riskTitle: 'Data breach due to unauthorized access'
-    },
-    {
-      id: 'ACT-002',
-      title: 'Regular password rotation',
-      description: 'Regular password rotation policy implementation',
-      status: 'in-progress',
-      priority: 'medium',
-      assignedTo: 'Sarah Johnson',
-      dueDate: new Date('2023-12-20'),
-      createdDate: new Date('2023-10-15'),
-      riskId: 'RISK-001',
-      riskTitle: 'Data breach due to unauthorized access',
-      daysOverdue: 595
-    },
-    {
-      id: 'ACT-003',
-      title: 'Implement role-based access control',
-      description: 'Implement role-based access control system',
-      status: 'in-progress',
-      priority: 'high',
-      assignedTo: 'Michael Chen',
-      dueDate: new Date('2023-12-25'),
-      createdDate: new Date('2023-11-01'),
-      riskId: 'RISK-001',
-      riskTitle: 'Data breach due to unauthorized access',
-      daysOverdue: 590
-    },
-    {
-      id: 'ACT-004',
-      title: 'Incident response plan',
-      description: 'Develop and test incident response procedures',
-      status: 'open',
-      priority: 'medium',
-      assignedTo: 'Emily Davis',
-      dueDate: new Date('2023-12-31'),
-      createdDate: new Date('2023-11-10'),
-      riskId: 'RISK-001',
-      riskTitle: 'Data breach due to unauthorized access',
-      daysOverdue: 584
-    },
-    {
-      id: 'ACT-005',
-      title: 'Infrastructure redundancy',
-      description: 'Implement backup systems and redundancy measures',
-      status: 'overdue',
-      priority: 'critical',
-      assignedTo: 'Robert Wilson',
-      dueDate: new Date('2023-11-10'),
-      createdDate: new Date('2023-09-01'),
-      riskId: 'RISK-002',
-      riskTitle: 'System downtime during peak hours',
-      daysOverdue: 635
-    },
-    {
-      id: 'ACT-006',
-      title: 'Backup systems',
-      description: 'Implement automated backup systems',
-      status: 'completed',
-      priority: 'high',
-      assignedTo: 'Robert Wilson',
-      dueDate: new Date('2023-10-15'),
-      createdDate: new Date('2023-09-01'),
-      completedDate: new Date('2023-10-15'),
-      riskId: 'RISK-002',
-      riskTitle: 'System downtime during peak hours'
-    }
-  ];
+  upcomingActions: ActionItemDto[] = [];
+  overdueActions: ActionItemDto[] = [];
+  allActions: ActionItemDto[] = [];
+  filteredActions: ActionItemDto[] = [];
 
-  filteredActions: ActionItem[] = [];
+  // Computed status summary from backend data
+  get statusSummary(): ActionStatusSummary {
+    return {
+      open: this.actionTrackerStats.openActionsCount,
+      inProgress: this.actionTrackerStats.inProgressActionsCount,
+      completed: this.actionTrackerStats.completedActionsCount,
+      overdue: this.actionTrackerStats.overdueActionsCount
+    };
+  }
+
+  constructor(private riskService: RiskService) {}
 
   ngOnInit() {
-    this.filterActions();
+    this.loadActionTrackerStats();
+  }
+
+  loadActionTrackerStats(): void {
+    this.loading = true;
+    this.error = null;
+    
+    this.riskService.getActionTrackerStats().subscribe({
+      next: (stats: ActionTrackerStatsDto) => {
+        this.updateActionTrackerStats(stats);
+        this.filterActions();
+        this.loading = false;
+      },
+      error: (error) => {
+        console.error('Error loading action tracker stats:', error);
+        this.error = 'Failed to load action tracker data. Please try again later.';
+        this.loading = false;
+      }
+    });
+  }
+
+  private updateActionTrackerStats(stats: ActionTrackerStatsDto): void {
+    this.actionTrackerStats = {
+      openActionsCount: stats.openActionsCount,
+      inProgressActionsCount: stats.inProgressActionsCount,
+      completedActionsCount: stats.completedActionsCount,
+      overdueActionsCount: stats.overdueActionsCount
+    };
+    
+    this.upcomingActions = stats.upcomingActions || [];
+    this.overdueActions = stats.overdueActions || [];
+    
+    // Combine all actions for filtering
+    this.allActions = [...this.upcomingActions, ...this.overdueActions];
   }
 
   setActiveTab(tab: 'all' | 'upcoming' | 'overdue' | 'completed') {
@@ -115,20 +87,21 @@ export class ActionTrackerComponent implements OnInit {
   }
 
   filterActions() {
-    let filtered = this.mockActions;
+    let filtered = this.allActions;
 
     // Filter by tab
     switch (this.activeTab) {
       case 'upcoming':
-        filtered = filtered.filter(action => 
-          action.status === 'open' || action.status === 'in-progress'
-        );
+        filtered = this.upcomingActions;
         break;
       case 'overdue':
-        filtered = filtered.filter(action => action.status === 'overdue');
+        filtered = this.overdueActions;
         break;
       case 'completed':
-        filtered = filtered.filter(action => action.status === 'completed');
+        // Filter completed actions from all actions
+        filtered = this.allActions.filter(action => 
+          this.getActionStatus(action) === 'completed'
+        );
         break;
       // 'all' shows everything
     }
@@ -137,21 +110,86 @@ export class ActionTrackerComponent implements OnInit {
     if (this.searchQuery.trim()) {
       const query = this.searchQuery.toLowerCase();
       filtered = filtered.filter(action =>
-        action.title.toLowerCase().includes(query) ||
-        action.description.toLowerCase().includes(query) ||
-        action.id.toLowerCase().includes(query) ||
-        action.assignedTo.toLowerCase().includes(query)
+        (action.description || '').toLowerCase().includes(query) ||
+        (action.actionId || '').toLowerCase().includes(query) ||
+        (action.assignedTo || '').toLowerCase().includes(query) ||
+        (action.riskDescription || '').toLowerCase().includes(query)
       );
     }
 
     this.filteredActions = filtered;
   }
 
+  private getActionStatus(action: ActionItemDto): string {
+    if (action.daysOverdue > 0) return 'overdue';
+    // This is a simplified status mapping - you might want to enhance this
+    // based on your actual action status logic
+    return 'upcoming';
+  }
+
   onSearchChange() {
     this.filterActions();
   }
 
-  getStatusBadgeClass(status: string): string {
+  retryLoad(): void {
+    this.loadActionTrackerStats();
+  }
+
+  formatActionDate(dateString?: string): string {
+    if (!dateString) return 'No due date';
+    
+    try {
+      const date = new Date(dateString);
+      return date.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
+      });
+    } catch {
+      return dateString; // Return original string if parsing fails
+    }
+  }
+
+  getPriorityDisplayText(priority?: ActionPriority): string {
+    if (!priority) return '';
+    
+    switch (priority) {
+      case ActionPriority.Low:
+        return 'Low';
+      case ActionPriority.Medium:
+        return 'Medium';
+      case ActionPriority.High:
+        return 'High';
+      case ActionPriority.Urgent:
+        return 'Urgent';
+      case ActionPriority.Immediate:
+        return 'Immediate';
+      default:
+        return String(priority);
+    }
+  }
+
+  getPriorityCssClass(priority?: ActionPriority): string {
+    if (!priority) return '';
+    
+    switch (priority) {
+      case ActionPriority.Low:
+        return 'priority-low';
+      case ActionPriority.Medium:
+        return 'priority-medium';
+      case ActionPriority.High:
+        return 'priority-high';
+      case ActionPriority.Urgent:
+        return 'priority-urgent';
+      case ActionPriority.Immediate:
+        return 'priority-immediate';
+      default:
+        return '';
+    }
+  }
+
+  getStatusBadgeClass(action: ActionItemDto): string {
+    const status = this.getActionStatus(action);
     switch (status) {
       case 'open': return 'status-badge open';
       case 'in-progress': return 'status-badge in-progress';
@@ -161,7 +199,8 @@ export class ActionTrackerComponent implements OnInit {
     }
   }
 
-  getBootstrapStatusBadgeClass(status: string): string {
+  getBootstrapStatusBadgeClass(action: ActionItemDto): string {
+    const status = this.getActionStatus(action);
     switch (status) {
       case 'open': return 'badge bg-primary';
       case 'in-progress': return 'badge bg-warning';
@@ -171,6 +210,7 @@ export class ActionTrackerComponent implements OnInit {
     }
   }
 
+  // Legacy methods for backward compatibility with old priority strings
   getPriorityBadgeClass(priority: string): string {
     switch (priority) {
       case 'low': return 'priority-badge low';
@@ -199,10 +239,21 @@ export class ActionTrackerComponent implements OnInit {
     });
   }
 
-  getOverdueText(action: ActionItem): string {
-    if (action.daysOverdue) {
+  getOverdueText(action: ActionItemDto): string {
+    if (action.daysOverdue && action.daysOverdue > 0) {
       return `(${action.daysOverdue} days overdue)`;
     }
     return '';
+  }
+
+  getActionDisplayStatus(action: ActionItemDto): string {
+    const status = this.getActionStatus(action);
+    switch (status) {
+      case 'open': return 'Open';
+      case 'in-progress': return 'In Progress';
+      case 'completed': return 'Completed';
+      case 'overdue': return 'Overdue';
+      default: return 'Unknown';
+    }
   }
 }

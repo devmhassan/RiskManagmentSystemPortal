@@ -105,6 +105,9 @@ export interface ActionTrackerStatsDto {
   inProgressActionsCount: number;
   completedActionsCount: number;
   overdueActionsCount: number;
+  openActions: ActionItemDto[];
+  inProgressActions: ActionItemDto[];
+  completedActions: ActionItemDto[];
   overdueActions: ActionItemDto[];
   upcomingActions: ActionItemDto[];
 }
