@@ -1,0 +1,160 @@
+<div class="action-status">
+  <div class="row">
+    <!-- Action Status Overview -->
+    <div class="col-lg-8 mb-4">
+      <div class="card border-0 shadow-sm h-100">
+        <div class="card-header bg-white border-bottom">
+          <h5 class="card-title mb-0">Action Status Overview</h5>
+          <small class="text-muted">Distribution of actions by status</small>
+        </div>
+        <div class="card-body">
+          <!-- Pie Chart Placeholder -->
+          <div class="row">
+            <div class="col-md-6">
+              <div class="chart-container text-center">
+                <div class="pie-chart-placeholder">
+                  <svg width="250" height="250" viewBox="0 0 250 250" class="mx-auto">
+                    <circle cx="125" cy="125" r="80" fill="none" stroke="#e9ecef" stroke-width="2"></circle>
+                    <!-- Action status segments would be here -->
+                    <text x="125" y="130" text-anchor="middle" class="chart-center-text">Action Status</text>
+                  </svg>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <!-- Status Legend -->
+              <div class="status-legend">
+                <div class="legend-item d-flex justify-content-between align-items-center mb-3">
+                  <div class="d-flex align-items-center">
+                    <span class="legend-color bg-primary me-2"></span>
+                    <span>Open ({{ actionSummary.open }})</span>
+                  </div>
+                  <span class="badge bg-primary">{{ getActionPercentage(actionSummary.open) }}%</span>
+                </div>
+                <div class="legend-item d-flex justify-content-between align-items-center mb-3">
+                  <div class="d-flex align-items-center">
+                    <span class="legend-color bg-warning me-2"></span>
+                    <span>In Progress ({{ actionSummary.inProgress }})</span>
+                  </div>
+                  <span class="badge bg-warning">{{ getActionPercentage(actionSummary.inProgress) }}%</span>
+                </div>
+                <div class="legend-item d-flex justify-content-between align-items-center mb-3">
+                  <div class="d-flex align-items-center">
+                    <span class="legend-color bg-success me-2"></span>
+                    <span>Completed ({{ actionSummary.completed }})</span>
+                  </div>
+                  <span class="badge bg-success">{{ getActionPercentage(actionSummary.completed) }}%</span>
+                </div>
+                <div class="legend-item d-flex justify-content-between align-items-center">
+                  <div class="d-flex align-items-center">
+                    <span class="legend-color bg-danger me-2"></span>
+                    <span>Overdue ({{ actionSummary.overdue }})</span>
+                  </div>
+                  <span class="badge bg-danger">{{ getActionPercentage(actionSummary.overdue) }}%</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Action Completion Trend -->
+    <div class="col-lg-4 mb-4">
+      <div class="card border-0 shadow-sm h-100">
+        <div class="card-header bg-white border-bottom">
+          <h5 class="card-title mb-0">Action Completion Trend</h5>
+          <small class="text-muted">Action completion rate over time</small>
+        </div>
+        <div class="card-body">
+          <div class="trend-placeholder text-center py-4">
+            <div class="trend-chart-mini">
+              <svg width="100%" height="200" viewBox="0 0 300 200" class="completion-trend">
+                <!-- Grid background -->
+                <defs>
+                  <pattern id="miniGrid" width="30" height="20" patternUnits="userSpaceOnUse">
+                    <path d="M 30 0 L 0 0 0 20" fill="none" stroke="#f0f0f0" stroke-width="1"/>
+                  </pattern>
+                </defs>
+                <rect width="100%" height="100%" fill="url(#miniGrid)" />
+                
+                <!-- Trend line -->
+                <polyline 
+                  fill="none" 
+                  stroke="#198754" 
+                  stroke-width="3" 
+                  points="30,150 80,140 130,120 180,110 230,95 280,80"/>
+                <circle cx="280" cy="80" r="4" fill="#198754"/>
+                
+                <text x="150" y="190" text-anchor="middle" class="chart-mini-text">
+                  Action completion trend would appear here
+                </text>
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Overdue Actions -->
+  <div class="row">
+    <div class="col-12">
+      <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white border-bottom">
+          <h5 class="card-title mb-0">Overdue Actions</h5>
+          <small class="text-muted">Actions that are past their due date</small>
+        </div>
+        <div class="card-body">
+          <div *ngIf="overdueActions.length > 0" class="table-responsive">
+            <table class="table table-borderless">
+              <thead>
+                <tr class="text-muted">
+                  <th>Action ID</th>
+                  <th>Description</th>
+                  <th>Due Date</th>
+                  <th>Days Overdue</th>
+                  <th>Priority</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let action of overdueActions" class="overdue-action-row">
+                  <td>
+                    <span class="action-id">{{ action.id }}</span>
+                  </td>
+                  <td>
+                    <span class="action-title">{{ action.title }}</span>
+                  </td>
+                  <td>
+                    <span class="due-date text-muted">
+                      <i class="bi bi-calendar3 me-1"></i>
+                      Due: {{ action.dueDate }}
+                    </span>
+                  </td>
+                  <td>
+                    <span class="overdue-days text-danger fw-bold">
+                      <i class="bi bi-exclamation-triangle me-1"></i>
+                      {{ action.daysOverdue }} days overdue
+                    </span>
+                  </td>
+                  <td>
+                    <span class="badge" [class]="'bg-' + action.priorityClass">
+                      {{ action.priority }}
+                    </span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          
+          <!-- Empty state -->
+          <div *ngIf="overdueActions.length === 0" class="text-center py-5">
+            <i class="bi bi-check-circle text-success" style="font-size: 3rem;"></i>
+            <h6 class="mt-3 text-muted">No Overdue Actions</h6>
+            <p class="text-muted">All actions are on track or completed.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

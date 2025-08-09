@@ -3,13 +3,15 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { Risk } from '../models/risk.interface';
+import { SharedRiskListComponent } from '../../shared/components/shared-risk-list/shared-risk-list.component';
+import { SharedRiskMatrixComponent } from '../../shared/components/shared-risk-matrix/shared-risk-matrix.component';
 
 @Component({
   selector: 'app-risk-list',
   templateUrl: './risk-list.component.html',
   styleUrls: ['./risk-list.component.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule]
+  imports: [CommonModule, FormsModule, SharedRiskListComponent, SharedRiskMatrixComponent]
 })
 export class RiskListComponent implements OnInit {
   searchTerm: string = '';
@@ -158,13 +160,6 @@ export class RiskListComponent implements OnInit {
   totalItems: number = 0;
   totalPages: number = 0;
 
-  // Matrix properties
-  selectedMatrixRisks: Risk[] = [];
-  selectedLikelihood: number = 0;
-  selectedSeverity: number = 0;
-  hoveredCell: { likelihood: number; severity: number } | null = null;
-  tooltipPosition: { x: number; y: number } = { x: 0, y: 0 };
-
   constructor(private router: Router) {}
 
   ngOnInit(): void {
@@ -253,75 +248,9 @@ export class RiskListComponent implements OnInit {
     return pageNumbers;
   }
 
-  // Matrix methods
-  getRisksAtPosition(likelihood: number, severity: number): Risk[] {
-    return this.risks.filter(risk => {
-      const riskLikelihood = parseInt(risk.likelihood.substring(1));
-      const riskSeverity = parseInt(risk.severity.substring(1));
-      return riskLikelihood === likelihood && riskSeverity === severity;
-    });
-  }
-
-  getMatrixCellClass(likelihood: number, severity: number): string {
-    const score = likelihood * severity;
-    let riskLevel = '';
-    
-    if (score <= 3) {
-      riskLevel = 'low';
-    } else if (score <= 7) {
-      riskLevel = 'medium';
-    } else if (score <= 14) {
-      riskLevel = 'high';
-    } else {
-      riskLevel = 'critical';
-    }
-
-    const hasRisks = this.getRisksAtPosition(likelihood, severity).length > 0;
-    return `matrix-cell-${riskLevel}${hasRisks ? ' has-risks' : ''}`;
-  }
-
-  getMatrixRiskLevel(likelihood: number, severity: number): string {
-    const score = likelihood * severity;
-    
-    if (score <= 3) {
-      return `Low (${score})`;
-    } else if (score <= 7) {
-      return `Medium (${score})`;
-    } else if (score <= 14) {
-      return `High (${score})`;
-    } else {
-      return `Critical (${score})`;
-    }
-  }
-
-  onMatrixCellClick(likelihood: number, severity: number): void {
-    this.selectedLikelihood = likelihood;
-    this.selectedSeverity = severity;
-    this.selectedMatrixRisks = this.getRisksAtPosition(likelihood, severity);
-  }
-
-  onMatrixCellHover(likelihood: number, severity: number, event: MouseEvent): void {
-    this.hoveredCell = { likelihood, severity };
-    
-    // Calculate tooltip position with offset and boundary checking
-    const offsetX = 15;
-    const offsetY = -15;
-    let x = event.clientX + offsetX;
-    let y = event.clientY + offsetY;
-    
-    // Simple boundary checking (adjust if tooltip goes off screen)
-    if (x + 200 > window.innerWidth) {
-      x = event.clientX - 200 - offsetX;
-    }
-    if (y < 0) {
-      y = event.clientY + offsetX;
-    }
-    
-    this.tooltipPosition = { x, y };
-  }
-
-  onMatrixCellLeave(): void {
-    this.hoveredCell = null;
+  // Matrix methods - these will be handled by the shared component
+  onMatrixCellClick(data: {likelihood: number, severity: number, risks: Risk[]}): void {
+    console.log('Matrix cell clicked:', data);
   }
 
   navigateToNewRisk(): void {

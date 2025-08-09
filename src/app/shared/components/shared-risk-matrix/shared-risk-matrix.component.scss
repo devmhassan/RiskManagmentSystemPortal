@@ -1,0 +1,382 @@
+.risk-matrix-container {
+  .matrix-header {
+    margin-bottom: 1rem;
+  }
+
+  // Dashboard Matrix Styles (Compact)
+  .dashboard-matrix {
+    .matrix-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .matrix-labels {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .y-axis-label {
+      writing-mode: vertical-rl;
+      text-orientation: mixed;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 200px;
+      
+      .axis-title {
+        font-weight: 600;
+        color: var(--bs-secondary);
+      }
+    }
+
+    .matrix-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .matrix-row {
+      gap: 2px;
+      align-items: center;
+    }
+
+    .y-label {
+      width: 30px;
+      height: 36px;
+      font-weight: 600;
+      color: var(--bs-secondary);
+    }
+
+    .matrix-cell {
+      width: 36px;
+      height: 36px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-size: 0.875rem;
+
+      &:hover {
+        transform: scale(1.05);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      &.low {
+        background-color: #28a745;
+        color: white;
+      }
+
+      &.medium {
+        background-color: #ffc107;
+        color: #000;
+      }
+
+      &.high {
+        background-color: #fd7e14;
+        color: white;
+      }
+
+      &.critical {
+        background-color: #dc3545;
+        color: white;
+      }
+
+      &.has-risks {
+        font-weight: bold;
+        border: 2px solid rgba(255, 255, 255, 0.8);
+      }
+
+      .cell-value {
+        font-size: 0.75rem;
+        font-weight: 600;
+      }
+    }
+
+    .x-labels {
+      margin-top: 2px;
+      gap: 2px;
+    }
+
+    .x-label-spacer {
+      width: 30px;
+    }
+
+    .x-label {
+      width: 36px;
+      height: 20px;
+      font-weight: 600;
+      color: var(--bs-secondary);
+    }
+
+    .x-axis-label {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 0.5rem;
+      
+      .axis-title {
+        font-weight: 600;
+        color: var(--bs-secondary);
+      }
+    }
+
+    .matrix-legend {
+      .legend-item {
+        margin-bottom: 0.5rem;
+
+        .legend-color {
+          width: 16px;
+          height: 16px;
+          border-radius: 2px;
+          flex-shrink: 0;
+
+          &.low {
+            background-color: #28a745;
+          }
+
+          &.medium {
+            background-color: #ffc107;
+          }
+
+          &.high {
+            background-color: #fd7e14;
+          }
+
+          &.critical {
+            background-color: #dc3545;
+          }
+        }
+
+        .legend-text {
+          font-size: 0.875rem;
+        }
+
+        .legend-count {
+          font-size: 0.75rem;
+        }
+      }
+    }
+  }
+
+  // Detailed Matrix Styles (Risk List)
+  .detailed-matrix {
+    .matrix-container {
+      display: flex;
+      gap: 2rem;
+      align-items: flex-start;
+    }
+
+    .matrix-grid-wrapper {
+      display: grid;
+      grid-template-columns: 30px 1fr 30px;
+      grid-template-rows: 30px 1fr 30px;
+      gap: 8px;
+      align-items: center;
+      justify-items: center;
+    }
+
+    .y-axis-label {
+      grid-column: 1;
+      grid-row: 2;
+      writing-mode: vertical-rl;
+      text-orientation: mixed;
+      font-weight: 600;
+      color: var(--bs-secondary);
+    }
+
+    .y-axis {
+      grid-column: 1;
+      grid-row: 2;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      margin-left: 30px;
+    }
+
+    .axis-number {
+      width: 30px;
+      height: 60px;
+      font-weight: 600;
+      color: var(--bs-secondary);
+    }
+
+    .matrix-cells {
+      grid-column: 2;
+      grid-row: 2;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .matrix-row {
+      gap: 4px;
+    }
+
+    .matrix-cell {
+      width: 60px;
+      height: 60px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border: 2px solid transparent;
+
+      &:hover {
+        transform: scale(1.05);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      }
+
+      &.matrix-cell-low {
+        background-color: #28a745;
+        color: white;
+      }
+
+      &.matrix-cell-medium {
+        background-color: #ffc107;
+        color: #000;
+      }
+
+      &.matrix-cell-high {
+        background-color: #fd7e14;
+        color: white;
+      }
+
+      &.matrix-cell-critical {
+        background-color: #dc3545;
+        color: white;
+      }
+
+      &.has-risks {
+        border-color: rgba(255, 255, 255, 0.8);
+      }
+
+      .cell-score {
+        font-size: 1rem;
+      }
+
+      .cell-count {
+        font-size: 0.75rem;
+      }
+    }
+
+    .x-axis {
+      grid-column: 2;
+      grid-row: 3;
+      gap: 4px;
+      margin-top: 8px;
+    }
+
+    .x-axis-label {
+      grid-column: 2;
+      grid-row: 3;
+      margin-top: 40px;
+      font-weight: 600;
+      color: var(--bs-secondary);
+    }
+
+    .matrix-legend {
+      flex-shrink: 0;
+      min-width: 200px;
+
+      .legend-color {
+        width: 20px;
+        height: 20px;
+        border-radius: 4px;
+        flex-shrink: 0;
+
+        &.low {
+          background-color: #28a745;
+        }
+
+        &.medium {
+          background-color: #ffc107;
+        }
+
+        &.high {
+          background-color: #fd7e14;
+        }
+
+        &.critical {
+          background-color: #dc3545;
+        }
+      }
+    }
+  }
+
+  // Tooltip Styles
+  .matrix-tooltip {
+    pointer-events: none;
+    z-index: 9999;
+
+    .tooltip-content {
+      max-width: 250px;
+      font-size: 0.875rem;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .tooltip-header {
+      font-size: 0.875rem;
+    }
+
+    .tooltip-risk-level {
+      font-size: 0.75rem;
+    }
+
+    .tooltip-risk-count {
+      font-size: 0.75rem;
+    }
+  }
+
+  // Risk Details Panel
+  .risk-details-panel {
+    .card-header {
+      background-color: var(--bs-light);
+      border-bottom: 1px solid var(--bs-border-color);
+    }
+
+    .risk-card {
+      transition: all 0.2s ease;
+
+      &:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      }
+    }
+  }
+}
+
+// Responsive Design
+@media (max-width: 768px) {
+  .risk-matrix-container {
+    .dashboard-matrix {
+      .matrix-wrapper {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .y-axis-label {
+        writing-mode: horizontal-tb;
+        text-orientation: initial;
+        height: auto;
+        width: 100%;
+        margin-bottom: 0.5rem;
+      }
+
+      .x-axis-label {
+        margin-top: 0.5rem;
+      }
+    }
+
+    .detailed-matrix {
+      .matrix-container {
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      .matrix-legend {
+        min-width: auto;
+        width: 100%;
+      }
+    }
+  }
+}

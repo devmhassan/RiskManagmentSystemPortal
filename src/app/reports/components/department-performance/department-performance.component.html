@@ -1,0 +1,106 @@
+<div class="department-performance">
+  <!-- Department Risk Management Performance -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white border-bottom">
+          <h5 class="card-title mb-0">Department Risk Management Performance</h5>
+          <small class="text-muted">Performance metrics by business unit</small>
+        </div>
+        <div class="card-body">
+          <div *ngFor="let dept of departmentPerformances" class="department-item mb-4">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <h6 class="department-name mb-0">{{ dept.name }}</h6>
+              <span class="completion-rate fw-bold text-{{ getPerformanceColor(dept.completionRate) }}">
+                {{ dept.completionRate }}% action completion rate
+              </span>
+            </div>
+            
+            <div class="progress mb-2" style="height: 12px;">
+              <div 
+                class="progress-bar bg-{{ getPerformanceColor(dept.completionRate) }}" 
+                role="progressbar" 
+                [style.width]="getPerformanceWidth(dept.completionRate)">
+              </div>
+            </div>
+            
+            <div class="d-flex justify-content-between text-muted">
+              <span>{{ dept.actionsCompleted }} actions completed</span>
+              <span>{{ dept.risksMitigated }} risks mitigated</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <!-- Top Performers -->
+    <div class="col-lg-6 mb-4">
+      <div class="card border-0 shadow-sm h-100">
+        <div class="card-header bg-white border-bottom">
+          <h5 class="card-title mb-0">Top Performers</h5>
+          <small class="text-muted">Team members with highest action completion rate</small>
+        </div>
+        <div class="card-body">
+          <div *ngFor="let performer of topPerformers; let i = index" class="performer-item d-flex align-items-center mb-3">
+            <div class="performer-avatar me-3">
+              <div class="avatar-circle bg-primary text-white d-flex align-items-center justify-content-center">
+                {{ performer.id }}
+              </div>
+            </div>
+            <div class="performer-info flex-grow-1">
+              <h6 class="performer-name mb-1">{{ performer.name }}</h6>
+              <p class="performer-department text-muted mb-0">{{ performer.department }}</p>
+            </div>
+            <div class="performer-metrics text-end">
+              <div class="completion-percentage fw-bold text-success">{{ performer.completionRate }}%</div>
+              <div class="actions-completed text-muted">{{ performer.actionsCompleted }} actions</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Risk Mitigation Effectiveness -->
+    <div class="col-lg-6 mb-4">
+      <div class="card border-0 shadow-sm h-100">
+        <div class="card-header bg-white border-bottom">
+          <h5 class="card-title mb-0">Risk Mitigation Effectiveness</h5>
+          <small class="text-muted">Effectiveness of risk mitigation by department</small>
+        </div>
+        <div class="card-body">
+          <div class="chart-placeholder text-center py-4">
+            <div class="effectiveness-chart">
+              <svg width="100%" height="250" viewBox="0 0 400 250" class="mitigation-chart">
+                <!-- Chart background -->
+                <rect width="100%" height="100%" fill="#f8f9fa" rx="8"/>
+                
+                <!-- Bar chart mockup -->
+                <g transform="translate(40, 30)">
+                  <!-- Bars -->
+                  <rect x="0" y="140" width="40" height="60" fill="#198754" rx="2"/>
+                  <rect x="60" y="120" width="40" height="80" fill="#198754" rx="2"/>
+                  <rect x="120" y="160" width="40" height="40" fill="#ffc107" rx="2"/>
+                  <rect x="180" y="180" width="40" height="20" fill="#dc3545" rx="2"/>
+                  <rect x="240" y="150" width="40" height="50" fill="#198754" rx="2"/>
+                  
+                  <!-- Labels -->
+                  <text x="20" y="220" text-anchor="middle" class="chart-label">IT</text>
+                  <text x="80" y="220" text-anchor="middle" class="chart-label">Sec</text>
+                  <text x="140" y="220" text-anchor="middle" class="chart-label">Fin</text>
+                  <text x="200" y="220" text-anchor="middle" class="chart-label">Ops</text>
+                  <text x="260" y="220" text-anchor="middle" class="chart-label">HR</text>
+                </g>
+                
+                <text x="200" y="35" text-anchor="middle" class="chart-title">
+                  Risk mitigation effectiveness chart would appear here
+                </text>
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -2,13 +2,14 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActionItem, ActionStatusSummary } from './models/action.interface';
+import { SharedActionTrackerComponent } from '../shared/components/shared-action-tracker/shared-action-tracker.component';
 
 @Component({
   selector: 'app-action-tracker',
   templateUrl: './action-tracker.component.html',
   styleUrls: ['./action-tracker.component.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule]
+  imports: [CommonModule, FormsModule, SharedActionTrackerComponent]
 })
 export class ActionTrackerComponent implements OnInit {
   activeTab: 'all' | 'upcoming' | 'overdue' | 'completed' = 'all';

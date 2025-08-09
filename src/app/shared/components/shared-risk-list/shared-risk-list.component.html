@@ -1,0 +1,240 @@
+<div class="shared-risk-list">
+  <!-- Title (optional) -->
+  <div *ngIf="showTitle" class="mb-4">
+    <h2 class="h4 mb-1">Risk Register</h2>
+    <p class="text-muted mb-0">View and manage all identified risks. Click on a risk to view its Bowtie diagram.</p>
+  </div>
+
+  <!-- Search and Controls with Bootstrap 5 -->
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <div class="d-flex align-items-center">
+      <div class="input-group" style="max-width: 300px;">
+        <span class="input-group-text bg-light border-end-0">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </span>
+        <input 
+          type="text" 
+          class="form-control border-start-0" 
+          placeholder="Search risks..."
+          [(ngModel)]="searchTerm"
+          (input)="onSearch()">
+      </div>
+    </div>
+    <div class="d-flex gap-2">
+      <button class="btn btn-outline-secondary btn-sm" type="button">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M3 4.6C3 4.03995 3 3.75992 3.10899 3.54601C3.20487 3.35785 3.35785 3.20487 3.54601 3.10899C3.75992 3 4.03995 3 4.6 3H19.4C19.9601 3 20.2401 3 20.454 3.10899C20.6422 3.20487 20.7951 3.35785 20.891 3.54601C21 3.75992 21 4.03995 21 4.6V6.33726C21 6.58185 21 6.70414 20.9724 6.81923C20.9479 6.92127 20.9075 7.01881 20.8526 7.10828C20.7908 7.2092 20.7043 7.29568 20.5314 7.46863L14.4686 13.5314C14.2957 13.7043 14.2092 13.7908 14.1474 13.8917C14.0925 13.9812 14.0521 14.0787 14.0276 14.1808C14 14.2959 14 14.4182 14 14.6627V17L10 21V14.6627C10 14.4182 10 14.2959 9.97237 14.1808C9.94787 14.0787 9.90747 13.9812 9.85264 13.8917C9.7908 13.7908 9.70432 13.7043 9.53137 13.5314L3.46863 7.46863C3.29568 7.29568 3.2092 7.2092 3.14736 7.10828C3.09253 7.01881 3.05213 6.92127 3.02763 6.81923C3 6.70414 3 6.58185 3 6.33726V4.6Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      <button class="btn btn-outline-secondary btn-sm" type="button">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M3 6h18M7 12h10m-7 6h4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Risk Table with Bootstrap 5 -->
+  <div class="table-responsive">
+    <table class="table table-hover">
+      <thead class="table-light">
+        <tr>
+          <th scope="col">Risk ID</th>
+          <th scope="col">Description</th>
+          <th scope="col">Likelihood</th>
+          <th scope="col">Severity</th>
+          <th scope="col">Risk Level</th>
+          <th scope="col">Owner</th>
+          <th scope="col">Status</th>
+          <th scope="col">Review Date</th>
+          <th scope="col"></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr 
+          *ngFor="let risk of paginatedRisks" 
+          class="align-middle"
+          style="cursor: pointer;"
+          (click)="onRiskClick(risk)">
+          <td class="text-primary fw-medium">{{ risk.id }}</td>
+          <td>{{ risk.description }}</td>
+          <td>
+            <span class="badge" [class]="getLikelihoodBadgeClass(risk.likelihood)">{{ risk.likelihood }}</span>
+          </td>
+          <td>
+            <span class="badge" [class]="getSeverityBadgeClass(risk.severity)">{{ risk.severity }}</span>
+          </td>
+          <td>
+            <span class="badge" [class]="getRiskLevelBadgeClass(risk.riskLevelColor)">
+              {{ risk.riskLevel }} ({{ risk.riskScore }})
+            </span>
+          </td>
+          <td>{{ risk.owner }}</td>
+          <td>
+            <span class="badge" [class]="getStatusBadgeClass(risk.statusColor)">{{ risk.status }}</span>
+          </td>
+          <td>{{ risk.reviewDate }}</td>
+          <td>
+            <div class="dropdown">
+              <button 
+                class="btn btn-link btn-sm p-0" 
+                type="button" 
+                data-bs-toggle="dropdown" 
+                aria-expanded="false"
+                (click)="toggleDropdown($event, risk.id)">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M12 13a1 1 0 1 0 0-2 1 1 0 0 0 0 2ZM19 13a1 1 0 1 0 0-2 1 1 0 0 0 0 2ZM5 13a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </button>
+              <ul class="dropdown-menu" [class.show]="openDropdownId === risk.id">
+                <li>
+                  <button class="dropdown-item d-flex align-items-center" (click)="viewBowtie($event, risk)">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="me-2">
+                      <path d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" stroke="currentColor" stroke-width="2"/>
+                      <path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7Z" stroke="currentColor" stroke-width="2"/>
+                    </svg>
+                    View Bowtie
+                  </button>
+                </li>
+                <li>
+                  <button class="dropdown-item d-flex align-items-center" (click)="editRisk($event, risk)">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="me-2">
+                      <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                      <path d="m18.5 2.5 3 3L12 15l-4 1 1-4 9.5-9.5z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    Edit Risk
+                  </button>
+                </li>
+                <li><hr class="dropdown-divider"></li>
+                <li>
+                  <button class="dropdown-item d-flex align-items-center text-danger" (click)="deleteRisk($event, risk)">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="me-2">
+                      <path d="m3 6 3 0m0 0 14 0m-14 0v14a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V6M10 3h4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    Delete Risk
+                  </button>
+                </li>
+              </ul>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>  <!-- Enhanced Pagination Controls with Bootstrap 5 -->
+  <div *ngIf="showPagination && totalPages > 0" class="border-top pt-4 mt-4">
+    <div class="row align-items-center">
+      <!-- Results Info and Items Per Page -->
+      <div class="col-12 col-md-6 mb-3 mb-md-0">
+        <div class="d-flex flex-column flex-sm-row align-items-start align-items-sm-center gap-3">
+          <div class="text-muted small">
+            <i class="bi bi-info-circle me-1"></i>
+            Showing <strong>{{ ((currentPage - 1) * itemsPerPage) + 1 }}</strong> to 
+            <strong>{{ Math.min(currentPage * itemsPerPage, totalItems) }}</strong> of 
+            <strong>{{ totalItems }}</strong> results
+          </div>
+          <div class="d-flex align-items-center gap-2">
+            <label for="itemsPerPage" class="form-label mb-0 text-muted small">Show:</label>
+            <select 
+              id="itemsPerPage" 
+              [value]="itemsPerPage" 
+              (change)="changeItemsPerPage(+$any($event.target).value)"
+              class="form-select form-select-sm"
+              style="width: 70px;">
+              <option value="5">5</option>
+              <option value="10">10</option>
+              <option value="20">20</option>
+              <option value="50">50</option>
+            </select>
+            <span class="text-muted small">per page</span>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Pagination Navigation -->
+      <div class="col-12 col-md-6">
+        <nav aria-label="Risk table pagination" *ngIf="totalPages > 1" class="d-flex justify-content-end">
+          <ul class="pagination pagination-sm mb-0">
+            <!-- First Page -->
+            <li class="page-item" [class.disabled]="currentPage === 1">
+              <button 
+                class="page-link border-0"
+                (click)="goToPage(1)" 
+                [disabled]="currentPage === 1"
+                title="First page">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="m11 17-5-5 5-5M18 17l-5-5 5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </button>
+            </li>
+            
+            <!-- Previous Page -->
+            <li class="page-item" [class.disabled]="currentPage === 1">
+              <button 
+                class="page-link border-0"
+                (click)="previousPage()" 
+                [disabled]="currentPage === 1"
+                title="Previous page">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="m15 18-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </button>
+            </li>
+            
+            <!-- Page Numbers -->
+            <li 
+              *ngFor="let pageNum of getPageNumbers()" 
+              class="page-item"
+              [class.active]="pageNum === currentPage">
+              <button 
+                class="page-link border-0"
+                [class]="pageNum === currentPage ? 'bg-primary text-white' : ''"
+                (click)="goToPage(pageNum)">
+                {{ pageNum }}
+              </button>
+            </li>
+            
+            <!-- Next Page -->
+            <li class="page-item" [class.disabled]="currentPage === totalPages">
+              <button 
+                class="page-link border-0"
+                (click)="nextPage()" 
+                [disabled]="currentPage === totalPages"
+                title="Next page">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="m9 18 6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </button>
+            </li>
+            
+            <!-- Last Page -->
+            <li class="page-item" [class.disabled]="currentPage === totalPages">
+              <button 
+                class="page-link border-0"
+                (click)="goToPage(totalPages)" 
+                [disabled]="currentPage === totalPages"
+                title="Last page">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="m13 17 5-5-5-5M6 17l5-5-5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </button>
+            </li>
+          </ul>
+        </nav>
+        
+        <!-- Simple pagination for single page -->
+        <div *ngIf="totalPages === 1" class="d-flex justify-content-end">
+          <span class="badge bg-light text-dark border">Page 1 of 1</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- No Results Message -->
+  <div *ngIf="paginatedRisks.length === 0" class="text-center py-5">
+    <div class="text-muted">
+      <p class="mb-0">No risks found matching your search criteria.</p>
+    </div>
+  </div>
+</div>

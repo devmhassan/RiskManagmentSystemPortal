@@ -1,0 +1,181 @@
+<div class="risk-overview">
+  <!-- Summary Cards -->
+  <div class="row mb-4">
+    <div class="col-md-3">
+      <div class="card summary-card text-center border-0 shadow-sm">
+        <div class="card-body">
+          <div class="summary-icon bg-primary text-white rounded-circle mx-auto mb-3">
+            <i class="bi bi-bar-chart-fill"></i>
+          </div>
+          <h3 class="summary-number text-primary">{{ riskSummary.totalRisks }}</h3>
+          <p class="summary-label text-muted mb-0">Total Risks</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card summary-card text-center border-0 shadow-sm">
+        <div class="card-body">
+          <div class="summary-icon bg-danger text-white rounded-circle mx-auto mb-3">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+          </div>
+          <h3 class="summary-number text-danger">{{ riskSummary.criticalRisks }}</h3>
+          <p class="summary-label text-muted mb-0">Critical Risks</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card summary-card text-center border-0 shadow-sm">
+        <div class="card-body">
+          <div class="summary-icon bg-warning text-white rounded-circle mx-auto mb-3">
+            <i class="bi bi-clock-fill"></i>
+          </div>
+          <h3 class="summary-number text-warning">{{ riskSummary.openActions }}</h3>
+          <p class="summary-label text-muted mb-0">Open Actions</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card summary-card text-center border-0 shadow-sm">
+        <div class="card-body">
+          <div class="summary-icon bg-success text-white rounded-circle mx-auto mb-3">
+            <i class="bi bi-check-circle-fill"></i>
+          </div>
+          <h3 class="summary-number text-success">{{ riskSummary.completedActions }}</h3>
+          <p class="summary-label text-muted mb-0">Completed Actions</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <!-- Risk Distribution by Level -->
+    <div class="col-lg-6 mb-4">
+      <div class="card border-0 shadow-sm h-100">
+        <div class="card-header bg-white border-bottom">
+          <h5 class="card-title mb-0">Risk Distribution by Level</h5>
+          <small class="text-muted">Distribution of risks by severity level</small>
+        </div>
+        <div class="card-body">
+          <!-- Pie Chart Placeholder -->
+          <div class="chart-container text-center mb-4">
+            <div class="pie-chart-placeholder">
+              <svg width="200" height="200" viewBox="0 0 200 200" class="mx-auto">
+                <circle cx="100" cy="100" r="80" fill="none" stroke="#e9ecef" stroke-width="2"></circle>
+                <!-- This would be replaced with actual chart library -->
+                <text x="100" y="105" text-anchor="middle" class="chart-center-text">Risk Levels</text>
+              </svg>
+            </div>
+          </div>
+          
+          <!-- Legend -->
+          <div class="risk-legend">
+            <div class="legend-item d-flex justify-content-between align-items-center mb-2">
+              <div class="d-flex align-items-center">
+                <span class="legend-color bg-danger me-2"></span>
+                <span>Critical ({{ riskDistribution.critical }})</span>
+              </div>
+              <span class="badge bg-danger">{{ getRiskDistributionPercentage(riskDistribution.critical) }}%</span>
+            </div>
+            <div class="legend-item d-flex justify-content-between align-items-center mb-2">
+              <div class="d-flex align-items-center">
+                <span class="legend-color bg-warning me-2"></span>
+                <span>High ({{ riskDistribution.high }})</span>
+              </div>
+              <span class="badge bg-warning">{{ getRiskDistributionPercentage(riskDistribution.high) }}%</span>
+            </div>
+            <div class="legend-item d-flex justify-content-between align-items-center mb-2">
+              <div class="d-flex align-items-center">
+                <span class="legend-color bg-info me-2"></span>
+                <span>Medium ({{ riskDistribution.medium }})</span>
+              </div>
+              <span class="badge bg-info">{{ getRiskDistributionPercentage(riskDistribution.medium) }}%</span>
+            </div>
+            <div class="legend-item d-flex justify-content-between align-items-center">
+              <div class="d-flex align-items-center">
+                <span class="legend-color bg-success me-2"></span>
+                <span>Low ({{ riskDistribution.low }})</span>
+              </div>
+              <span class="badge bg-success">{{ getRiskDistributionPercentage(riskDistribution.low) }}%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Top Risks by Business Unit -->
+    <div class="col-lg-6 mb-4">
+      <div class="card border-0 shadow-sm h-100">
+        <div class="card-header bg-white border-bottom">
+          <h5 class="card-title mb-0">Top Risks by Business Unit</h5>
+          <small class="text-muted">Business units with the highest risk exposure</small>
+        </div>
+        <div class="card-body">
+          <div *ngFor="let unit of businessUnitRisks" class="business-unit-item mb-3">
+            <div class="d-flex justify-content-between align-items-center mb-1">
+              <span class="unit-name">{{ unit.name }}</span>
+              <span class="unit-count">{{ unit.riskCount }} risks</span>
+            </div>
+            <div class="progress" style="height: 8px;">
+              <div 
+                class="progress-bar bg-primary" 
+                role="progressbar" 
+                [style.width]="getBusinessUnitWidth(unit.riskCount)">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recent Risk Changes -->
+  <div class="row">
+    <div class="col-12">
+      <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white border-bottom">
+          <h5 class="card-title mb-0">Recent Risk Changes</h5>
+          <small class="text-muted">Risks that have been updated in the selected timeframe</small>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-borderless">
+              <thead>
+                <tr class="text-muted">
+                  <th>Risk ID</th>
+                  <th>Description</th>
+                  <th>Status</th>
+                  <th>Updated</th>
+                  <th>Change</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let change of recentRiskChanges" class="risk-change-row">
+                  <td>
+                    <span class="risk-id">{{ change.id }}</span>
+                  </td>
+                  <td>
+                    <span class="risk-title">{{ change.title }}</span>
+                  </td>
+                  <td>
+                    <span class="badge bg-success">{{ change.status }}</span>
+                  </td>
+                  <td>
+                    <span class="text-muted">{{ change.daysAgo }} days ago</span>
+                  </td>
+                  <td>
+                    <div class="d-flex align-items-center">
+                      <span class="severity-change me-2">{{ change.severityFrom }}</span>
+                      <i class="bi bi-arrow-right text-muted me-2"></i>
+                      <span class="severity-change">{{ change.severityTo }}</span>
+                      <i class="bi bi-trending-down text-success ms-2"></i>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

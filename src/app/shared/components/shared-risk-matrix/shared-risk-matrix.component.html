@@ -1,0 +1,219 @@
+<div class="risk-matrix-container">
+  <!-- Title Section -->
+  <div *ngIf="showTitle" class="matrix-header">
+    <h2 class="h4 mb-1">{{ title }}</h2>
+    <p class="text-muted mb-3" *ngIf="subtitle">{{ subtitle }}</p>
+  </div>
+
+  <!-- Dashboard Style Matrix (Compact) -->
+  <div *ngIf="!showDetails" class="matrix-content dashboard-matrix">
+    <div class="matrix-wrapper">
+      <div class="matrix-labels">
+        <div class="y-axis-label">
+          <span class="axis-title">Impact</span>
+        </div>
+        <div class="matrix-grid">
+          <div class="matrix-row d-flex" *ngFor="let row of [5,4,3,2,1]; let i = index">
+            <div class="y-label d-flex align-items-center justify-content-center">{{ row }}</div>
+            <div 
+              class="matrix-cell d-flex align-items-center justify-content-center position-relative" 
+              *ngFor="let col of [1,2,3,4,5]; let j = index"
+              [class]="getCellClass(row, col)"
+              [attr.data-bs-toggle]="interactive ? 'tooltip' : null"
+              [attr.data-bs-title]="interactive ? getRiskLevel(row, col) : null"
+              (click)="onMatrixCellClick(row, col)"
+              (mouseenter)="onMatrixCellHover(row, col, $event)"
+              (mouseleave)="onMatrixCellLeave()"
+            >
+              <span class="cell-value fw-bold" [class.text-white]="getCellRiskCount(row, col) > 0">
+                {{ getCellRiskCount(row, col) || '' }}
+              </span>
+            </div>
+          </div>
+          <div class="x-labels d-flex">
+            <div class="x-label-spacer"></div>
+            <div class="x-label d-flex align-items-center justify-content-center" *ngFor="let i of [1,2,3,4,5]">{{ i }}</div>
+          </div>
+        </div>
+      </div>
+      <div class="x-axis-label">
+        <span class="axis-title">Severity</span>
+      </div>
+    </div>
+
+    <!-- Legend -->
+    <div *ngIf="showLegend" class="matrix-legend mt-3">
+      <div class="row g-2">
+        <div class="col-6 col-md-3">
+          <div class="legend-item d-flex align-items-center">
+            <div class="legend-color low me-2"></div>
+            <div class="legend-text">
+              <span class="fw-semibold">Low (1-3)</span>
+              <span class="legend-count badge bg-secondary ms-2">{{ riskCategories.low }}</span>
+            </div>
+          </div>
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="legend-item d-flex align-items-center">
+            <div class="legend-color medium me-2"></div>
+            <div class="legend-text">
+              <span class="fw-semibold">Medium (4-7)</span>
+              <span class="legend-count badge bg-secondary ms-2">{{ riskCategories.medium }}</span>
+            </div>
+          </div>
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="legend-item d-flex align-items-center">
+            <div class="legend-color high me-2"></div>
+            <div class="legend-text">
+              <span class="fw-semibold">High (8-14)</span>
+              <span class="legend-count badge bg-secondary ms-2">{{ riskCategories.high }}</span>
+            </div>
+          </div>
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="legend-item d-flex align-items-center">
+            <div class="legend-color critical me-2"></div>
+            <div class="legend-text">
+              <span class="fw-semibold">Critical (15-25)</span>
+              <span class="legend-count badge bg-secondary ms-2">{{ riskCategories.critical }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Risk List Style Matrix (Detailed) -->
+  <div *ngIf="showDetails" class="matrix-content detailed-matrix">
+    <div class="matrix-container">
+      <div class="matrix-grid-wrapper">
+        <!-- Y-axis label -->
+        <div class="axis-label y-axis-label">
+          <span class="axis-title">Likelihood</span>
+        </div>
+        
+        <!-- Y-axis numbers -->
+        <div class="y-axis">
+          <div class="axis-number d-flex align-items-center justify-content-center" *ngFor="let num of [5,4,3,2,1]">{{ num }}</div>
+        </div>
+        
+        <!-- Matrix cells -->
+        <div class="matrix-cells">
+          <div class="matrix-row d-flex" *ngFor="let likelihood of [5,4,3,2,1]; let i = index">
+            <div 
+              class="matrix-cell d-flex flex-column align-items-center justify-content-center position-relative" 
+              *ngFor="let severity of [1,2,3,4,5]; let j = index"
+              [class]="getCellClass(likelihood, severity)"
+              (click)="onMatrixCellClick(likelihood, severity)"
+              (mouseenter)="onMatrixCellHover(likelihood, severity, $event)"
+              (mouseleave)="onMatrixCellLeave()"
+            >
+              <span class="cell-score fw-bold">{{ likelihood * severity }}</span>
+              <span class="cell-count badge bg-light text-dark mt-1" *ngIf="getRisksAtPosition(likelihood, severity).length > 0">
+                {{ getRisksAtPosition(likelihood, severity).length }}
+              </span>
+            </div>
+          </div>
+        </div>
+        
+        <!-- X-axis numbers -->
+        <div class="x-axis d-flex">
+          <div class="axis-number d-flex align-items-center justify-content-center" *ngFor="let num of [1,2,3,4,5]">{{ num }}</div>
+        </div>
+        
+        <!-- X-axis label -->
+        <div class="axis-label x-axis-label">
+          <span class="axis-title">Severity</span>
+        </div>
+      </div>
+
+      <!-- Matrix Legend -->
+      <div *ngIf="showLegend" class="matrix-legend mt-4">
+        <h3 class="h5 mb-3">Risk Levels</h3>
+        <div class="legend-items">
+          <div class="legend-item d-flex align-items-center mb-2">
+            <div class="legend-color low me-2"></div>
+            <span class="fw-semibold">Low (1-3)</span>
+          </div>
+          <div class="legend-item d-flex align-items-center mb-2">
+            <div class="legend-color medium me-2"></div>
+            <span class="fw-semibold">Medium (4-7)</span>
+          </div>
+          <div class="legend-item d-flex align-items-center mb-2">
+            <div class="legend-color high me-2"></div>
+            <span class="fw-semibold">High (8-14)</span>
+          </div>
+          <div class="legend-item d-flex align-items-center">
+            <div class="legend-color critical me-2"></div>
+            <span class="fw-semibold">Critical (15-25)</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Risk Details Panel -->
+    <div class="risk-details-panel mt-4" *ngIf="selectedMatrixRisks.length > 0">
+      <div class="card">
+        <div class="card-header">
+          <h3 class="h5 mb-1">{{ selectedMatrixRisks.length }} Risk{{ selectedMatrixRisks.length > 1 ? 's' : '' }} at L{{ selectedLikelihood }} x S{{ selectedSeverity }}</h3>
+          <p class="text-muted mb-0">Risk Level: {{ getRiskLevel(selectedLikelihood, selectedSeverity) }}</p>
+        </div>
+        
+        <div class="card-body">
+          <div class="row g-3">
+            <div class="col-12" *ngFor="let risk of selectedMatrixRisks">
+              <div class="card border">
+                <div class="card-body">
+                  <div class="d-flex justify-content-between align-items-start mb-2">
+                    <span class="badge bg-primary">{{ risk.id }}</span>
+                    <span class="badge" [class]="'bg-' + (risk.riskLevelColor === 'critical' ? 'danger' : risk.riskLevelColor === 'high' ? 'warning' : risk.riskLevelColor === 'medium' ? 'info' : 'success')">
+                      {{ risk.riskLevel }} ({{ risk.riskScore }})
+                    </span>
+                  </div>
+                  <h6 class="card-title">{{ risk.description }}</h6>
+                  <div class="d-flex justify-content-between align-items-center">
+                    <div class="risk-status">
+                      <span class="badge" [class]="'bg-' + (risk.statusColor === 'open' ? 'danger' : risk.statusColor === 'mitigated' ? 'warning' : 'success')">
+                        {{ risk.status }}
+                      </span>
+                    </div>
+                    <div class="risk-owner">
+                      <small class="text-muted">Owner: {{ risk.owner }}</small>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Matrix Tooltip -->
+    <div class="matrix-tooltip position-fixed" 
+         *ngIf="hoveredCell && interactive" 
+         [style.left.px]="tooltipPosition.x" 
+         [style.top.px]="tooltipPosition.y"
+         [style.z-index]="9999">
+      <div class="tooltip-content bg-dark text-white p-2 rounded shadow">
+        <div class="tooltip-header fw-bold">
+          Likelihood {{ hoveredCell.likelihood }} × Severity {{ hoveredCell.severity }}
+        </div>
+        <div class="tooltip-risk-level text-muted">
+          {{ getRiskLevel(hoveredCell.likelihood, hoveredCell.severity) }}
+        </div>
+        <div class="tooltip-risks" *ngIf="getRisksAtPosition(hoveredCell.likelihood, hoveredCell.severity).length > 0">
+          <div class="tooltip-risk-count">
+            {{ getRisksAtPosition(hoveredCell.likelihood, hoveredCell.severity).length }} risk(s) at this position
+          </div>
+        </div>
+        <div class="tooltip-no-risks" *ngIf="getRisksAtPosition(hoveredCell.likelihood, hoveredCell.severity).length === 0">
+          <div class="tooltip-risk-count">
+            No risks at this position
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

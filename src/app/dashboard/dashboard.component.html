@@ -1,0 +1,111 @@
+<div class="dashboard-container">
+  <!-- Header -->
+  <div class="dashboard-header">
+    <h1 class="dashboard-title">Dashboard</h1>
+  </div>
+
+  <!-- Tab Navigation -->
+  <div class="tab-navigation">
+    <button class="tab" [class.active]="activeTab === 'overview'" (click)="setActiveTab('overview')">
+      Overview
+    </button>
+    <button class="tab" [class.active]="activeTab === 'risks'" (click)="setActiveTab('risks')">
+      Risks
+    </button>
+    <button class="tab" [class.active]="activeTab === 'actions'" (click)="setActiveTab('actions')">
+      Actions
+    </button>
+  </div>
+
+  <!-- Overview Tab Content -->
+  <div *ngIf="activeTab === 'overview'" class="tab-content overview-content">
+    <!-- Stats Cards -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-header">Total Risks</div>
+        <div class="stat-value">{{ overviewStats.totalRisks }}</div>
+        <div class="stat-change">{{ overviewStats.totalRisksChange }}</div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-header">High Risks</div>
+        <div class="stat-value">{{ overviewStats.highRisks }}</div>
+        <div class="stat-change">{{ overviewStats.highRisksChange }}</div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-header">Open Actions</div>
+        <div class="stat-value">{{ overviewStats.openActions }}</div>
+        <div class="stat-change">{{ overviewStats.openActionsChange }}</div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-header">Mitigated Risks</div>
+        <div class="stat-value">{{ overviewStats.mitigatedRisks }}</div>
+        <div class="stat-change">{{ overviewStats.mitigatedRisksChange }}</div>
+      </div>
+    </div>
+
+    <!-- Main Content Grid -->
+    <div class="main-content-grid">
+      <!-- Risk Matrix Section -->
+      <div class="risk-matrix-section">
+        <div class="section-header">
+          <h3>Risk Matrix</h3>
+        </div>
+
+        <app-shared-risk-matrix [risks]="risks" [showTitle]="true" [showLegend]="true" [showDetails]="true"
+          [interactive]="true" title="Risk Matrix" subtitle="Visualize risks based on likelihood and severity."
+          (cellClicked)="onMatrixCellClick($event)">
+        </app-shared-risk-matrix>
+      </div>
+
+      <!-- Action Tracker Section -->
+      <div class="action-tracker-section">
+        <div class="section-header">
+          <h3>Action Tracker</h3>
+          <p>Recent and upcoming actions</p>
+        </div>
+
+        <div class="action-tabs">
+          <div class="action-tab active">Upcoming</div>
+          <div class="action-tab">Overdue (1)</div>
+        </div>
+
+        <div class="action-list">
+          <div *ngIf="upcomingActions.length === 0" class="no-actions">
+            No upcoming actions found.
+          </div>
+
+          <div *ngFor="let action of upcomingActions" class="action-item" [class.overdue]="action.isOverdue">
+            <div class="action-content">
+              <div class="action-title">{{ action.title }}</div>
+              <div class="action-date">{{ action.dueDate }}</div>
+            </div>
+            <div class="action-status" *ngIf="action.isOverdue">
+              <span class="overdue-badge">Overdue</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="action-footer">
+          <button class="view-all-btn" (click)="viewAllActions()">
+            View All Actions
+            <i class="fas fa-arrow-right"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Risks Tab Content -->
+  <div *ngIf="activeTab === 'risks'" class="tab-content risks-content">
+    <app-shared-risk-list [showPagination]="true"></app-shared-risk-list>
+  </div>
+
+  <!-- Actions Tab Content -->
+  <div *ngIf="activeTab === 'actions'" class="tab-content actions-content">
+    <app-shared-action-tracker  [showTitle]="true"
+    [showSummaryCards]="true"> </app-shared-action-tracker>
+  </div>
+</div>

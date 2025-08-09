@@ -1,0 +1,125 @@
+.department-item {
+  padding: 1rem;
+  border-radius: 0.5rem;
+  background-color: #f8f9fa;
+  margin-bottom: 1rem;
+  
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.department-name {
+  font-weight: 600;
+  color: #495057;
+}
+
+.completion-rate {
+  font-size: 0.875rem;
+}
+
+.progress {
+  background-color: #e9ecef;
+  border-radius: 6px;
+}
+
+.performer-item {
+  padding: 0.5rem;
+  border-radius: 0.375rem;
+  transition: background-color 0.2s ease;
+  
+  &:hover {
+    background-color: #f8f9fa;
+  }
+  
+  &:last-child {
+    margin-bottom: 0 !important;
+  }
+}
+
+.performer-avatar {
+  .avatar-circle {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    font-weight: 600;
+    font-size: 1rem;
+  }
+}
+
+.performer-name {
+  font-weight: 600;
+  color: #495057;
+  font-size: 0.95rem;
+}
+
+.performer-department {
+  font-size: 0.875rem;
+}
+
+.performer-metrics {
+  min-width: 80px;
+}
+
+.completion-percentage {
+  font-size: 1.1rem;
+}
+
+.actions-completed {
+  font-size: 0.875rem;
+}
+
+.chart-placeholder {
+  background-color: #f8f9fa;
+  border-radius: 0.375rem;
+  min-height: 250px;
+}
+
+.mitigation-chart {
+  background-color: #fff;
+  border-radius: 0.375rem;
+}
+
+.chart-label {
+  font-size: 12px;
+  fill: #6c757d;
+  font-weight: 500;
+}
+
+.chart-title {
+  font-size: 14px;
+  fill: #6c757d;
+  font-weight: 500;
+}
+
+.card {
+  border-radius: 0.5rem;
+}
+
+.card-header {
+  border-radius: 0.5rem 0.5rem 0 0;
+}
+
+.text-success {
+  color: #198754 !important;
+}
+
+.text-warning {
+  color: #ffc107 !important;
+}
+
+.text-danger {
+  color: #dc3545 !important;
+}
+
+.bg-success {
+  background-color: #198754 !important;
+}
+
+.bg-warning {
+  background-color: #ffc107 !important;
+}
+
+.bg-danger {
+  background-color: #dc3545 !important;
+}
