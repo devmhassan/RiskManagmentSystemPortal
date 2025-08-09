@@ -104,17 +104,68 @@ export class RiskFormService {
   }
 
   private isFormValid(data: Partial<RiskFormData>): data is RiskFormData {
+    // Check basic fields
+    const basicFieldsValid = !!(
+      data.riskId &&
+      data.status &&
+      data.description &&
+      data.businessDomain &&
+      data.riskOwner &&
+      data.reviewDate &&
+      data.triggerEvents && 
+      data.triggerEvents.length > 0 &&
+      data.initialLikelihood &&
+      data.initialSeverity &&
+      data.residualLikelihood &&
+      data.residualSeverity
+    );
+
+    // Check bowtie components
+    const hasCauses = data.causes && data.causes.length > 0 && 
+      data.causes.every(cause => cause.description && cause.description.trim().length > 0);
+    
+    const hasConsequences = data.consequences && data.consequences.length > 0 && 
+      data.consequences.every(consequence => consequence.description && consequence.description.trim().length > 0);
+
+    return basicFieldsValid && hasCauses && hasConsequences;
+  }
+
+  // Step validation methods
+  isBasicInformationValid(): boolean {
+    const data = this.riskFormDataSubject.value;
     return !!(
       data.riskId &&
       data.status &&
       data.description &&
       data.businessDomain &&
       data.riskOwner &&
+      data.reviewDate &&
+      data.triggerEvents && 
+      data.triggerEvents.length > 0
+    );
+  }
+
+  isRiskAssessmentValid(): boolean {
+    const data = this.riskFormDataSubject.value;
+    return !!(
       data.initialLikelihood &&
       data.initialSeverity &&
       data.residualLikelihood &&
       data.residualSeverity
     );
+  }
+
+  isBowtieComponentsValid(): boolean {
+    const data = this.riskFormDataSubject.value;
+    
+    // Check if we have causes and consequences with proper descriptions
+    const hasCauses = data.causes && data.causes.length > 0 && 
+      data.causes.every(cause => cause.description && cause.description.trim().length > 0);
+    
+    const hasConsequences = data.consequences && data.consequences.length > 0 && 
+      data.consequences.every(consequence => consequence.description && consequence.description.trim().length > 0);
+    
+    return hasCauses && hasConsequences;
   }
 
   resetForm() {

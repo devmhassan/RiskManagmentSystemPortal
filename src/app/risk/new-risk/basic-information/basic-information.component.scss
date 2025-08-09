@@ -36,6 +36,13 @@
     margin-bottom: 8px;
     font-weight: 500;
     color: #333;
+    
+    .required {
+      color: #dc3545;
+      font-weight: bold;
+      margin-left: 2px;
+      font-size: 1.1em;
+    }
   }
 
   .form-control {
@@ -76,6 +83,14 @@
   color: #f44336;
   font-size: 12px;
   margin-top: 4px;
+}
+
+// Additional styling for required asterisks
+.required,
+.text-danger {
+  color: #dc3545 !important;
+  font-weight: bold;
+  font-size: 1.1em;
 }
 
 .trigger-events-container {

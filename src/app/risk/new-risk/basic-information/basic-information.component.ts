@@ -77,18 +77,20 @@ export class BasicInformationComponent implements OnInit {
   }
 
   private updateFormData() {
-    if (this.basicInfoForm.valid) {
-      const formValue = this.basicInfoForm.value;
-      this.riskFormService.updateBasicInformation({
-        riskId: formValue.riskId,
-        status: formValue.status,
-        description: formValue.description,
-        businessDomain: formValue.businessDomain,
-        riskOwner: formValue.riskOwner,
-        reviewDate: formValue.reviewDate,
-        triggerEvents: this.triggerEvents
-      });
-    }
+    const formValue = this.basicInfoForm.value;
+    this.riskFormService.updateBasicInformation({
+      riskId: formValue.riskId,
+      status: formValue.status,
+      description: formValue.description,
+      businessDomain: formValue.businessDomain,
+      riskOwner: formValue.riskOwner,
+      reviewDate: formValue.reviewDate,
+      triggerEvents: this.triggerEvents
+    });
+  }
+
+  isFormValid(): boolean {
+    return this.basicInfoForm.valid && this.triggerEvents.length > 0;
   }
 
   // Validation helper methods
@@ -105,9 +107,5 @@ export class BasicInformationComponent implements OnInit {
   get riskOwnerInvalid() {
     const control = this.basicInfoForm.get('riskOwner');
     return control?.invalid && (control?.dirty || control?.touched);
-  }
-
-  isFormValid(): boolean {
-    return this.basicInfoForm.valid;
   }
 }

@@ -14,7 +14,7 @@
     cursor: pointer;
     padding: 0.5rem;
     transition: all 0.3s ease;
-    
+
     i {
       font-size: 1.2rem;
       color: #666;
@@ -62,7 +62,7 @@
 
     &.completed {
       color: #28a745;
-      
+
       &::after {
         content: '✓';
         margin-left: 0.5rem;
@@ -79,8 +79,10 @@
 .content-container {
   // max-width: 1200px;
   // margin: 0 auto;
-  // padding: 2rem;
-  background-color: #f8f9fa;
+   padding: 2rem;
+
+    border-radius: 24px;
+  background-color: #ffffff;
 }
 
 .step-container {
@@ -102,6 +104,7 @@
   height: 100%;
 
   ::ng-deep {
+
     app-basic-information,
     app-risk-assessment,
     app-bowtie-components {
@@ -174,6 +177,7 @@
 
   .content-container {
     padding: 1rem;
+    border-radius: 24px;
 
     .step-content {
       padding: 1rem;
