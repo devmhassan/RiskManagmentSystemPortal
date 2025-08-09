@@ -14,7 +14,6 @@ import { Severity, severityOptions } from '../../../proxy/risk-managment-system/
 })
 export class RiskAssessmentComponent implements OnInit {
   assessmentForm: FormGroup;
-  private isUpdatingFromService = false; // Guard to prevent circular updates
 
   // Using proxy enums
   likelihoodOptions = likelihoodOptions;
@@ -33,11 +32,9 @@ export class RiskAssessmentComponent implements OnInit {
       residualSeverity: [Severity.Moderate, Validators.required]
     });
 
-    // Subscribe to changes for risk level calculations with guard
+    // Subscribe to changes for risk level calculations
     this.assessmentForm.valueChanges.subscribe(() => {
-      if (!this.isUpdatingFromService) {
-        this.updateFormData();
-      }
+      this.updateFormData();
     });
   }
 
@@ -45,14 +42,12 @@ export class RiskAssessmentComponent implements OnInit {
     // Load existing form data if available
     this.riskFormService.riskFormData$.subscribe(data => {
       if (data.initialLikelihood) {
-        this.isUpdatingFromService = true; // Set guard before patching
         this.assessmentForm.patchValue({
           initialLikelihood: data.initialLikelihood,
           initialSeverity: data.initialSeverity,
           residualLikelihood: data.residualLikelihood,
           residualSeverity: data.residualSeverity
         });
-        this.isUpdatingFromService = false; // Clear guard after patching
       }
     });
   }

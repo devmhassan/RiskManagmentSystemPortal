@@ -1,0 +1,44 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "yarn install",
+			"type": "shell",
+			"command": "yarn",
+			"args": [
+				"install"
+			],
+			"group": "build",
+			"isBackground": false,
+			"problemMatcher": []
+		},
+		{
+			"label": "yarn build",
+			"type": "shell",
+			"command": "yarn",
+			"args": [
+				"build"
+			],
+			"group": "build",
+			"isBackground": false,
+			"problemMatcher": [
+				"$tsc"
+			],
+			"dependsOn": "yarn install"
+		},
+		{
+			"label": "yarn start",
+			"type": "shell",
+			"command": "yarn",
+			"args": [
+				"start"
+			],
+			"group": "build",
+			"isBackground": true,
+			"problemMatcher": [
+				"$tsc"
+			],
+			"dependsOn": "yarn install"
+		}
+	]
+}

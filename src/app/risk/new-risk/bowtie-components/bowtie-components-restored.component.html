@@ -56,7 +56,7 @@
                 <div class="actions-section">
                   <h4>Prevention Actions</h4>
                   <div formArrayName="preventionActions">
-                    <div *ngFor="let actionControl of causeControl.get('preventionActions')?.controls; let actionIndex = index" 
+                    <div *ngFor="let actionControl of getPreventionActions(causeIndex).controls; let actionIndex = index" 
                          [formGroupName]="actionIndex" class="action-item">
                       <div class="action-input-group">
                         <input formControlName="description" 
@@ -64,7 +64,7 @@
                                class="form-control">
                         <button type="button" class="remove-action-btn" 
                                 (click)="removePreventionAction(causeIndex, actionIndex)"
-                                [disabled]="causeControl.get('preventionActions')?.controls.length <= 1">
+                                [disabled]="getPreventionActions(causeIndex).length <= 1">
                           ×
                         </button>
                       </div>
@@ -162,7 +162,7 @@
                 <div class="actions-section">
                   <h4>Mitigation Actions</h4>
                   <div formArrayName="mitigationActions">
-                    <div *ngFor="let actionControl of consequenceControl.get('mitigationActions')?.controls; let actionIndex = index" 
+                    <div *ngFor="let actionControl of getMitigationActions(consequenceIndex).controls; let actionIndex = index" 
                          [formGroupName]="actionIndex" class="action-item">
                       <div class="action-input-group">
                         <input formControlName="description" 
@@ -170,7 +170,7 @@
                                class="form-control">
                         <button type="button" class="remove-action-btn" 
                                 (click)="removeMitigationAction(consequenceIndex, actionIndex)"
-                                [disabled]="consequenceControl.get('mitigationActions')?.controls.length <= 1">
+                                [disabled]="getMitigationActions(consequenceIndex).length <= 1">
                           ×
                         </button>
                       </div>

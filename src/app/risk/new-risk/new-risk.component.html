@@ -3,6 +3,19 @@
     <i class="fas fa-arrow-left"></i>
   </button>
   <h1>Add New Risk</h1>
+  <div class="header-actions">
+    <button class="btn btn-outline-secondary" (click)="onCancel()">
+      Cancel
+    </button>
+    <button 
+      class="btn btn-primary" 
+      (click)="onSave()" 
+      [disabled]="!canSave() || isLoading">
+      <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2"></span>
+      <i *ngIf="!isLoading" class="fas fa-save me-2"></i>
+      {{ isLoading ? 'Saving...' : 'Save Risk' }}
+    </button>
+  </div>
 </div>
 
 <div class="risk-tabs">
@@ -11,30 +24,36 @@
        [class.completed]="step.completed"
        class="tab"
        (click)="goToStep(step.id)">
-    {{ step.label }}
+    <span class="step-number">{{ step.id }}</span>
+    <span class="step-label">{{ step.label }}</span>
+    <i *ngIf="step.completed" class="fas fa-check step-check"></i>
   </div>
 </div>
 
 <div class="content-container">
   <div class="step-content">
-    
-  </div>
-<app-basic-information *ngIf="currentStep === 1"></app-basic-information>
+    <app-basic-information *ngIf="currentStep === 1"></app-basic-information>
     <app-risk-assessment *ngIf="currentStep === 2"></app-risk-assessment>
     <app-bowtie-components *ngIf="currentStep === 3"></app-bowtie-components>
+  </div>
+  
   <div class="navigation-buttons">
     <button 
-      class="btn btn-secondary"
+      class="btn btn-outline-secondary"
       (click)="previousStep()" 
       [disabled]="currentStep === 1">
-      <i class="fas fa-arrow-left"></i> Previous
+      <i class="fas fa-arrow-left me-2"></i> Previous
     </button>
+    
+    <div class="step-indicator">
+      Step {{ currentStep }} of {{ totalSteps }}
+    </div>
+    
     <button 
       class="btn btn-primary"
       (click)="nextStep()" 
       [disabled]="currentStep === totalSteps">
-      {{ currentStep === totalSteps ? 'Save Risk' : 'Next' }} 
-      <i class="fas" [class.fa-save]="currentStep === totalSteps" [class.fa-arrow-right]="currentStep !== totalSteps"></i>
+      Next <i class="fas fa-arrow-right ms-2"></i>
     </button>
   </div>
 </div>

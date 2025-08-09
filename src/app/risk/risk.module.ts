@@ -8,6 +8,9 @@ import { ThemeSharedModule } from '@abp/ng.theme.shared';
 import { RiskListComponent } from './risk-list/risk-list.component';
 import { RiskDetailComponent } from './risk-detail/risk-detail.component';
 
+// Import the proxy services
+import { RiskService } from '../proxy/risk-managment-system/risks/risk.service';
+
 @NgModule({
   declarations: [],
   imports: [

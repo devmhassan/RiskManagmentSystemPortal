@@ -1,0 +1,26 @@
+{
+  "/api/*": {
+    "target": "https://localhost:44345",
+    "secure": true,
+    "changeOrigin": true,
+    "logLevel": "debug"
+  },
+  "/connect/*": {
+    "target": "https://localhost:44345",
+    "secure": true,
+    "changeOrigin": true,
+    "logLevel": "debug"
+  },
+  "/Account/*": {
+    "target": "https://localhost:44345",
+    "secure": true,
+    "changeOrigin": true,
+    "logLevel": "debug"
+  },
+  "/.well-known/*": {
+    "target": "https://localhost:44345",
+    "secure": true,
+    "changeOrigin": true,
+    "logLevel": "debug"
+  }
+}
