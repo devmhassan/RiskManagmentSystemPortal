@@ -1,15 +1,11 @@
-import { Component, OnInit, OnDestroy, Input } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, FormArray, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { RiskFormService } from '../../services/risk-form.service';
-import { RiskService } from '../../../proxy/risk-managment-system/risks/risk.service';
-import { CreateCauseDto, CreateConsequenceDto, CreatePreventionActionDto, CreateMitigationActionDto, RiskDto, CauseDto, ConsequenceDto } from '../../../proxy/risk-managment-system/risks/dtos/models';
+import { CreateCauseDto, CreateConsequenceDto, CreatePreventionActionDto, CreateMitigationActionDto } from '../../../proxy/risk-managment-system/risks/dtos/models';
 import { Likelihood, likelihoodOptions } from '../../../proxy/risk-managment-system/domain/shared/enums/likelihood.enum';
 import { Severity, severityOptions } from '../../../proxy/risk-managment-system/domain/shared/enums/severity.enum';
 import { ActionPriority, actionPriorityOptions } from '../../../proxy/risk-managment-system/domain/shared/enums/action-priority.enum';
-import { ActionStatus, actionStatusOptions } from '../../../proxy/risk-managment-system/domain/shared/enums/action-status.enum';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-bowtie-components',
@@ -18,30 +14,23 @@ import { takeUntil } from 'rxjs/operators';
   standalone: true,
   imports: [CommonModule, FormsModule, ReactiveFormsModule]
 })
-export class BowtieComponentsComponent implements OnInit, OnDestroy {
-  @Input() riskId?: string; // Input to receive riskId for fetching existing data
+export class BowtieComponentsComponent implements OnInit {
   bowtieForm: FormGroup;
   private isUpdatingFromService = false; // Guard to prevent circular updates
-  private destroy$ = new Subject<void>();
-  isLoading = false;
-  isEditMode = false;
   
   // Enum options for dropdowns
   likelihoodOptions = likelihoodOptions;
   severityOptions = severityOptions;
   actionPriorityOptions = actionPriorityOptions;
-  actionStatusOptions = actionStatusOptions;
   
   // Enum references
   Likelihood = Likelihood;
   Severity = Severity;
   ActionPriority = ActionPriority;
-  ActionStatus = ActionStatus;
 
   constructor(
     private fb: FormBuilder,
-    private riskFormService: RiskFormService,
-    private riskService: RiskService
+    private riskFormService: RiskFormService
   ) {
     this.bowtieForm = this.fb.group({
       causes: this.fb.array([]),
@@ -50,157 +39,25 @@ export class BowtieComponentsComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    // Check if we have a riskId to fetch existing data
-    if (this.riskId) {
-      this.isEditMode = true;
-      this.loadRiskData(this.riskId);
-    } else {
-      // Load existing form data if available from service (create mode)
-      this.riskFormService.riskFormData$.pipe(
-        takeUntil(this.destroy$)
-      ).subscribe(data => {
-        if (data.causes && data.causes.length > 0) {
-          this.isUpdatingFromService = true; // Set guard before loading data
-          this.loadExistingData(data.causes, data.consequences || []);
-          this.isUpdatingFromService = false; // Clear guard after loading
-        } else if (!this.isUpdatingFromService) {
-          // Only add initial data if not updating from service
-          this.addCause();
-          this.addConsequence();
-        }
-      });
-    }
-
-    // Subscribe to form changes with guard to prevent circular updates
-    this.bowtieForm.valueChanges.pipe(
-      takeUntil(this.destroy$)
-    ).subscribe(() => {
-      if (!this.isUpdatingFromService && !this.isEditMode) {
-        this.updateFormData();
-      }
-    });
-  }
-
-  /**
-   * Load risk data from backend API
-   */
-  private loadRiskData(riskId: string) {
-    this.isLoading = true;
-    this.riskService.getByRiskId(riskId).pipe(
-      takeUntil(this.destroy$)
-    ).subscribe({
-      next: (riskData: RiskDto) => {
-        this.loadRiskDataToForm(riskData);
-        this.isLoading = false;
-      },
-      error: (error) => {
-        console.error('Error loading risk data:', error);
-        this.isLoading = false;
-        // Fallback to empty form
+    // Load existing form data if available
+    this.riskFormService.riskFormData$.subscribe(data => {
+      if (data.causes && data.causes.length > 0) {
+        this.isUpdatingFromService = true; // Set guard before loading data
+        this.loadExistingData(data.causes, data.consequences || []);
+        this.isUpdatingFromService = false; // Clear guard after loading
+      } else if (!this.isUpdatingFromService) {
+        // Only add initial data if not updating from service
         this.addCause();
         this.addConsequence();
       }
     });
-  }
 
-  /**
-   * Map backend RiskDto to form structure
-   */
-  private loadRiskDataToForm(riskData: RiskDto) {
-    this.isUpdatingFromService = true;
-    
-    // Clear existing form arrays
-    while (this.causes.length) {
-      this.causes.removeAt(0);
-    }
-    while (this.consequences.length) {
-      this.consequences.removeAt(0);
-    }
-
-    // Map causes from backend to form
-    if (riskData.causes && riskData.causes.length > 0) {
-      riskData.causes.forEach(cause => {
-        const causeGroup = this.createCauseFormGroup();
-        
-        causeGroup.patchValue({
-          description: cause.description || '',
-          likelihood: cause.likelihood || Likelihood.Possible,
-          severity: cause.severity || Severity.Moderate
-        });
-
-        // Map prevention actions
-        const preventionActions = causeGroup.get('preventionActions') as FormArray;
-        if (cause.preventionActions && cause.preventionActions.length > 0) {
-          cause.preventionActions.forEach(action => {
-            const actionGroup = this.createPreventionActionFormGroup();
-            actionGroup.patchValue({
-              description: action.description || '',
-              cost: action.cost || 0,
-              priority: action.priority || ActionPriority.Medium,
-              status: action.status || ActionStatus.NotStarted,
-              assignedTo: action.assignedTo || '',
-              dueDate: action.dueDate ? new Date(action.dueDate).toISOString().split('T')[0] : ''
-            });
-            preventionActions.push(actionGroup);
-          });
-        } else {
-          // Add at least one empty prevention action
-          preventionActions.push(this.createPreventionActionFormGroup());
-        }
-
-        this.causes.push(causeGroup);
-      });
-    }
-
-    // Map consequences from backend to form
-    if (riskData.consequences && riskData.consequences.length > 0) {
-      riskData.consequences.forEach(consequence => {
-        const consequenceGroup = this.createConsequenceFormGroup();
-        
-        consequenceGroup.patchValue({
-          description: consequence.description || '',
-          severity: consequence.severity || Severity.Moderate,
-          potentialCost: consequence.potentialCost || 0
-        });
-
-        // Map mitigation actions
-        const mitigationActions = consequenceGroup.get('mitigationActions') as FormArray;
-        if (consequence.mitigationActions && consequence.mitigationActions.length > 0) {
-          consequence.mitigationActions.forEach(action => {
-            const actionGroup = this.createMitigationActionFormGroup();
-            actionGroup.patchValue({
-              description: action.description || '',
-              priority: action.priority || ActionPriority.Medium,
-              status: action.status || ActionStatus.NotStarted,
-              estimatedCost: action.estimatedCost || 0,
-              assignedTo: action.assignedTo || '',
-              dueDate: action.dueDate ? new Date(action.dueDate).toISOString().split('T')[0] : ''
-            });
-            mitigationActions.push(actionGroup);
-          });
-        } else {
-          // Add at least one empty mitigation action
-          mitigationActions.push(this.createMitigationActionFormGroup());
-        }
-
-        this.consequences.push(consequenceGroup);
-      });
-    }
-
-    // If no causes or consequences, add empty ones
-    if (this.causes.length === 0) {
-      this.addCause();
-    }
-    if (this.consequences.length === 0) {
-      this.addConsequence();
-    }
-
-    this.isUpdatingFromService = false;
-  }
-
-  ngOnDestroy() {
-    this.destroy$.next();
-    this.destroy$.complete();
+    // Subscribe to form changes with guard to prevent circular updates
+    this.bowtieForm.valueChanges.subscribe(() => {
+      if (!this.isUpdatingFromService) {
+        this.updateFormData();
+      }
+    });
   }
 
   // Causes FormArray helpers
@@ -225,10 +82,8 @@ export class BowtieComponentsComponent implements OnInit, OnDestroy {
   }
 
   removeCause(index: number) {
-    if (this.causes.length > 1) {
-      this.causes.removeAt(index);
-      this.updateFormData();
-    }
+    this.causes.removeAt(index);
+    this.updateFormData();
   }
 
   // Prevention Actions helpers
@@ -238,12 +93,9 @@ export class BowtieComponentsComponent implements OnInit, OnDestroy {
 
   createPreventionActionFormGroup(): FormGroup {
     return this.fb.group({
-      description: [''], // Make description optional
+      description: ['', [Validators.required, Validators.minLength(5)]],
       cost: [0, [Validators.required, Validators.min(0)]],
-      priority: [ActionPriority.Medium, Validators.required],
-      status: [ActionStatus.NotStarted, Validators.required],
-      assignedTo: [''],
-      dueDate: ['']
+      priority: [ActionPriority.Medium, Validators.required]
     });
   }
 
@@ -254,10 +106,8 @@ export class BowtieComponentsComponent implements OnInit, OnDestroy {
 
   removePreventionAction(causeIndex: number, actionIndex: number) {
     const preventionActionsArray = this.getPreventionActions(causeIndex);
-    if (preventionActionsArray.length > 1) {
-      preventionActionsArray.removeAt(actionIndex);
-      this.updateFormData();
-    }
+    preventionActionsArray.removeAt(actionIndex);
+    this.updateFormData();
   }
 
   // Consequences FormArray helpers
@@ -282,10 +132,8 @@ export class BowtieComponentsComponent implements OnInit, OnDestroy {
   }
 
   removeConsequence(index: number) {
-    if (this.consequences.length > 1) {
-      this.consequences.removeAt(index);
-      this.updateFormData();
-    }
+    this.consequences.removeAt(index);
+    this.updateFormData();
   }
 
   // Mitigation Actions helpers
@@ -295,11 +143,8 @@ export class BowtieComponentsComponent implements OnInit, OnDestroy {
 
   createMitigationActionFormGroup(): FormGroup {
     return this.fb.group({
-      description: [''], // Make description optional
+      description: ['', [Validators.required, Validators.minLength(5)]],
       priority: [ActionPriority.Medium, Validators.required],
-      status: [ActionStatus.NotStarted, Validators.required],
-      estimatedCost: [0, [Validators.min(0)]],
-      assignedTo: [''],
       dueDate: ['']
     });
   }
@@ -311,10 +156,8 @@ export class BowtieComponentsComponent implements OnInit, OnDestroy {
 
   removeMitigationAction(consequenceIndex: number, actionIndex: number) {
     const mitigationActionsArray = this.getMitigationActions(consequenceIndex);
-    if (mitigationActionsArray.length > 1) {
-      mitigationActionsArray.removeAt(actionIndex);
-      this.updateFormData();
-    }
+    mitigationActionsArray.removeAt(actionIndex);
+    this.updateFormData();
   }
 
   private loadExistingData(causes: CreateCauseDto[], consequences: CreateConsequenceDto[]) {
@@ -368,119 +211,39 @@ export class BowtieComponentsComponent implements OnInit, OnDestroy {
   }
 
   private updateFormData() {
-    const formValue = this.bowtieForm.value;
-    
-    const causes: CreateCauseDto[] = formValue.causes.map((cause: any) => ({
-      description: cause.description,
-      likelihood: cause.likelihood,
-      severity: cause.severity,
-      preventionActions: cause.preventionActions
-        .filter((action: any) => action.description && action.description.trim().length > 0)
-        .map((action: any) => ({
+    if (this.bowtieForm.valid) {
+      const formValue = this.bowtieForm.value;
+      
+      const causes: CreateCauseDto[] = formValue.causes.map((cause: any) => ({
+        description: cause.description,
+        likelihood: cause.likelihood,
+        severity: cause.severity,
+        preventionActions: cause.preventionActions.map((action: any) => ({
           description: action.description,
           cost: action.cost,
           priority: action.priority
         }))
-    }));
+      }));
 
-    const consequences: CreateConsequenceDto[] = formValue.consequences.map((consequence: any) => ({
-      description: consequence.description,
-      severity: consequence.severity,
-      potentialCost: consequence.potentialCost,
-      mitigationActions: consequence.mitigationActions
-        .filter((action: any) => action.description && action.description.trim().length > 0)
-        .map((action: any) => ({
+      const consequences: CreateConsequenceDto[] = formValue.consequences.map((consequence: any) => ({
+        description: consequence.description,
+        severity: consequence.severity,
+        potentialCost: consequence.potentialCost,
+        mitigationActions: consequence.mitigationActions.map((action: any) => ({
           description: action.description,
           priority: action.priority,
           dueDate: action.dueDate
         }))
-    }));
+      }));
 
-    this.riskFormService.updateBowtieComponents({
-      causes,
-      consequences
-    });
+      this.riskFormService.updateBowtieComponents({
+        causes,
+        consequences
+      });
+    }
   }
 
   isFormValid(): boolean {
-    return this.bowtieForm.valid && 
-           this.causes.length > 0 && 
-           this.consequences.length > 0 &&
-           !this.isLoading;
-  }
-
-  /**
-   * Check if component is in loading state
-   */
-  isComponentLoading(): boolean {
-    return this.isLoading;
-  }
-
-  /**
-   * Check if component is in edit mode
-   */
-  isInEditMode(): boolean {
-    return this.isEditMode;
-  }
-
-  /**
-   * Get current form data in CreateRiskDto format for the parent component
-   */
-  getBowtieFormData(): { causes: CreateCauseDto[], consequences: CreateConsequenceDto[] } {
-    if (!this.bowtieForm.valid) {
-      return { causes: [], consequences: [] };
-    }
-
-    const formValue = this.bowtieForm.value;
-    
-    const causes: CreateCauseDto[] = formValue.causes.map((cause: any) => ({
-      description: cause.description,
-      likelihood: cause.likelihood,
-      severity: cause.severity,
-      preventionActions: cause.preventionActions.map((action: any) => ({
-        description: action.description,
-        cost: action.cost,
-        priority: action.priority
-      }))
-    }));
-
-    const consequences: CreateConsequenceDto[] = formValue.consequences.map((consequence: any) => ({
-      description: consequence.description,
-      severity: consequence.severity,
-      potentialCost: consequence.potentialCost,
-      mitigationActions: consequence.mitigationActions.map((action: any) => ({
-        description: action.description,
-        priority: action.priority,
-        dueDate: action.dueDate
-      }))
-    }));
-
-    return { causes, consequences };
-  }
-
-  /**
-   * Refresh data from backend (useful for edit mode)
-   */
-  refreshData() {
-    if (this.riskId && this.isEditMode) {
-      this.loadRiskData(this.riskId);
-    }
-  }
-
-  // TrackBy functions to prevent unnecessary re-rendering
-  trackByCause(index: number, item: any): number {
-    return index;
-  }
-
-  trackByConsequence(index: number, item: any): number {
-    return index;
-  }
-
-  trackByPreventionAction(index: number, item: any): number {
-    return index;
-  }
-
-  trackByMitigationAction(index: number, item: any): number {
-    return index;
+    return this.bowtieForm.valid && this.causes.length > 0 && this.consequences.length > 0;
   }
 }
