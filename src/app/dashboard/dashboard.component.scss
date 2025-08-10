@@ -71,6 +71,68 @@
     padding: 24px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
     border: 1px solid #e5e7eb;
+    transition: all 0.3s ease;
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    }
+
+    &:first-child {
+      background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+      border-color: #bae6fd;
+      
+      &:hover {
+        background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
+        border-color: #7dd3fc;
+      }
+      
+      .stat-value {
+        color: #1d4ed8;
+      }
+    }
+
+    &:nth-child(2) {
+      background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+      border-color: #f87171;
+      
+      &:hover {
+        background: linear-gradient(135deg, #fecaca 0%, #fca5a5 100%);
+        border-color: #ef4444;
+      }
+      
+      .stat-value {
+        color: #dc2626;
+      }
+    }
+
+    &:nth-child(3) {
+      background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+      border-color: #fbbf24;
+      
+      &:hover {
+        background: linear-gradient(135deg, #fde68a 0%, #fcd34d 100%);
+        border-color: #f59e0b;
+      }
+      
+      .stat-value {
+        color: #d97706;
+      }
+    }
+
+    &:nth-child(4) {
+      background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+      border-color: #34d399;
+      
+      &:hover {
+        background: linear-gradient(135deg, #a7f3d0 0%, #6ee7b7 100%);
+        border-color: #10b981;
+      }
+      
+      .stat-value {
+        color: #047857;
+      }
+    }
 
     .stat-header {
       font-size: 14px;
@@ -170,9 +232,23 @@
       }
 
       &.active {
-        background-color: white;
         color: #1f2937;
         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        
+        // Upcoming tab - light blue background
+        &:first-child {
+          background-color: #e4f4fe;
+        }
+        
+        // Overdue tab - light pink background  
+        &:last-child {
+          background-color: #fecdcd;
+        }
+      }
+      
+      // Default inactive state
+      &:not(.active) {
+        background-color: white;
       }
     }
   }
@@ -205,6 +281,39 @@
       &.overdue {
         border-color: #ef4444;
         background-color: #fef2f2;
+      }
+      
+      // Status-based background colors for action cards
+      &.action-status-open {
+        background-color: #e4f4fe;
+        border-color: #e5e7eb;
+        
+        &:hover {
+          background-color: #bde3fd;
+          border-color: #d1d5db;
+        }
+      }
+      
+      &.action-status-overdue {
+        background-color: #fecdcd;
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        
+        &:hover {
+          background-color: #fbb5b5;
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+        
+        .action-content {
+          .action-title {
+            color: #1f2937;
+            font-weight: 600;
+          }
+          
+          .action-date {
+            color: #6b7280;
+          }
+        }
       }
 
       .action-content {

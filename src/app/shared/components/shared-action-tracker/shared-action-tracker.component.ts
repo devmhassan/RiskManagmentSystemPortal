@@ -1,8 +1,10 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, OnChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ActionItem, ActionStatusSummary } from '../../../action-tracker/models/action.interface';
+import { ActionItemDto } from '../../../proxy/risk-managment-system/risks/dtos/models';
+import { ActionPriority } from '../../../proxy/risk-managment-system/domain/shared/enums/action-priority.enum';
 
 @Component({
   selector: 'app-shared-action-tracker',
@@ -11,108 +13,99 @@ import { ActionItem, ActionStatusSummary } from '../../../action-tracker/models/
   standalone: true,
   imports: [CommonModule, FormsModule]
 })
-export class SharedActionTrackerComponent implements OnInit {
+export class SharedActionTrackerComponent implements OnInit, OnChanges {
   @Input() isDashboard: boolean = true;
   @Input() showTitle: boolean = false;
   @Input() showSummaryCards: boolean = false;
   @Input() maxItems: number = 10;
+  @Input() upcomingActions: ActionItemDto[] = [];
+  @Input() overdueActions: ActionItemDto[] = [];
+  @Input() openActions: ActionItemDto[] = [];
+  @Input() inProgressActions: ActionItemDto[] = [];
+  @Input() completedActions: ActionItemDto[] = [];
+  @Input() actionTrackerStats: any = {
+    openActionsCount: 0,
+    inProgressActionsCount: 0,
+    completedActionsCount: 0,
+    overdueActionsCount: 0
+  };
+  @Input() isLoading: boolean = false;
+  @Input() error: string | null = null;
 
   activeTab: 'all' | 'upcoming' | 'overdue' | 'completed' = 'all';
   searchQuery = '';
 
-  statusSummary: ActionStatusSummary = {
-    open: 2,
-    inProgress: 3,
-    completed: 2,
-    overdue: 1
-  };
+  get statusSummary(): ActionStatusSummary {
+    return {
+      open: this.actionTrackerStats.openActionsCount,
+      inProgress: this.actionTrackerStats.inProgressActionsCount,
+      completed: this.actionTrackerStats.completedActionsCount,
+      overdue: this.actionTrackerStats.overdueActionsCount
+    };
+  }
 
-  mockActions: ActionItem[] = [
-    {
-      id: 'ACT-001',
-      title: 'Implement strong password requirements',
-      description: 'Implement strong password requirements for all user accounts',
-      status: 'completed',
-      priority: 'high',
-      assignedTo: 'John Smith',
-      dueDate: new Date('2023-11-15'),
-      createdDate: new Date('2023-10-01'),
-      completedDate: new Date('2023-11-15'),
-      riskId: 'RISK-001',
-      riskTitle: 'Data breach due to unauthorized access'
-    },
-    {
-      id: 'ACT-002',
-      title: 'Regular password rotation',
-      description: 'Regular password rotation policy implementation',
-      status: 'in-progress',
-      priority: 'medium',
-      assignedTo: 'Sarah Johnson',
-      dueDate: new Date('2023-12-20'),
-      createdDate: new Date('2023-10-15'),
-      riskId: 'RISK-001',
-      riskTitle: 'Data breach due to unauthorized access',
-      daysOverdue: 595
-    },
-    {
-      id: 'ACT-003',
-      title: 'Implement role-based access control',
-      description: 'Implement role-based access control system',
-      status: 'in-progress',
-      priority: 'high',
-      assignedTo: 'Michael Chen',
-      dueDate: new Date('2023-12-25'),
-      createdDate: new Date('2023-10-20'),
-      riskId: 'RISK-001',
-      riskTitle: 'Data breach due to unauthorized access',
-      daysOverdue: 592
-    },
-    {
-      id: 'ACT-004',
-      title: 'Incident response plan',
-      description: 'Develop and implement incident response plan',
-      status: 'open',
-      priority: 'high',
-      assignedTo: 'Security Team',
-      dueDate: new Date('2024-01-15'),
-      createdDate: new Date('2023-11-01'),
-      riskId: 'RISK-001',
-      riskTitle: 'Data breach due to unauthorized access'
-    }
-  ];
+  allActions: ActionItemDto[] = [];
+  filteredActions: ActionItemDto[] = [];
+  displayedActions: ActionItemDto[] = [];
 
-  filteredActions: ActionItem[] = [];
-  displayedActions: ActionItem[] = [];
-
-  constructor(private router: Router) {}
+  constructor(private router: Router) { }
 
   ngOnInit(): void {
+   
+    this.initializeActions();
+  }
+
+  ngOnChanges(): void {
+    this.initializeActions();
+  }
+
+  private initializeActions(): void {
+    // Combine all action arrays
+    this.allActions = [
+      ...this.openActions,
+      ...this.upcomingActions,
+      ...this.inProgressActions,
+      ...this.completedActions,
+      ...this.overdueActions
+    ];
+
+    // Remove duplicates based on actionId
+    const uniqueActionsMap = new Map<string, ActionItemDto>();
+    this.allActions.forEach(action => {
+      if (action.actionId) {
+        uniqueActionsMap.set(action.actionId, action);
+      }
+    });
+    this.allActions = Array.from(uniqueActionsMap.values());
     this.filterActions();
   }
 
   filterActions(): void {
-    let filtered = [...this.mockActions];
+    let filtered = [...this.allActions];
 
     // Filter by search query
     if (this.searchQuery.trim()) {
+      const query = this.searchQuery.toLowerCase();
       filtered = filtered.filter(action =>
-        action.title.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-        action.description.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-        action.assignedTo.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-        action.id.toLowerCase().includes(this.searchQuery.toLowerCase())
+        (action.description || '').toLowerCase().includes(query) ||
+        (action.actionId || '').toLowerCase().includes(query) ||
+        (action.assignedTo || '').toLowerCase().includes(query) ||
+        (action.riskDescription || '').toLowerCase().includes(query)
       );
     }
 
     // Filter by active tab
     if (this.activeTab === 'upcoming') {
-      filtered = filtered.filter(action => 
-        action.status === 'open' || action.status === 'in-progress'
+      // Show actions that are open and not overdue
+      filtered = filtered.filter(action =>
+        this.getActionStatus(action) === 'open' && (!action.daysOverdue || action.daysOverdue <= 0)
       );
     } else if (this.activeTab === 'overdue') {
-      filtered = filtered.filter(action => action.daysOverdue && action.daysOverdue > 0);
+      filtered = filtered.filter(action => this.getActionStatus(action) === 'overdue');
     } else if (this.activeTab === 'completed') {
-      filtered = filtered.filter(action => action.status === 'completed');
+      filtered = filtered.filter(action => this.getActionStatus(action) === 'completed');
     }
+    // 'all' shows everything
 
     this.filteredActions = filtered;
 
@@ -121,6 +114,27 @@ export class SharedActionTrackerComponent implements OnInit {
     } else {
       this.displayedActions = this.filteredActions;
     }
+  }
+
+  private getActionStatus(action: ActionItemDto): string {
+    // First check if action is overdue (takes priority)
+    if (action.daysOverdue && action.daysOverdue > 0) {
+      return 'overdue';
+    }
+
+    // Then check the status field from the API
+    // Based on your API response: status: 1 appears to be "open"
+    if (action.status) {
+      switch (action.status) {
+        case 1: return 'open';          // Open/Active
+        case 2: return 'progress';      // In Progress  
+        case 3: return 'completed';     // Completed
+        case 4: return 'overdue';       // Overdue
+        default: return 'open';
+      }
+    }
+
+    return 'open'; // Default status
   }
 
   setActiveTab(tab: 'all' | 'upcoming' | 'overdue' | 'completed'): void {
@@ -132,38 +146,102 @@ export class SharedActionTrackerComponent implements OnInit {
     this.filterActions();
   }
 
-  getStatusClass(status: string): string {
+  getStatusClass(action: ActionItemDto): string {
+    const status = this.getActionStatus(action);
     switch (status) {
       case 'completed': return 'completed';
-      case 'in-progress': return 'in-progress';
-      case 'open': return 'open';
+      case 'overdue': return 'overdue';
+      case 'upcoming': return 'open';
       default: return 'open';
     }
   }
 
-  getPriorityClass(priority: string): string {
+  getPriorityClass(priority?: ActionPriority): string {
+    if (!priority) return 'medium';
+
     switch (priority) {
-      case 'high': return 'high';
-      case 'medium': return 'medium';
-      case 'low': return 'low';
-      default: return 'medium';
+      case ActionPriority.High:
+      case ActionPriority.Urgent:
+      case ActionPriority.Immediate:
+        return 'high';
+      case ActionPriority.Medium:
+        return 'medium';
+      case ActionPriority.Low:
+        return 'low';
+      default:
+        return 'medium';
     }
   }
 
-  isOverdue(action: ActionItem): boolean {
+  isOverdue(action: ActionItemDto): boolean {
     return action.daysOverdue ? action.daysOverdue > 0 : false;
   }
 
-  formatDate(date: Date): string {
-    return date.toLocaleDateString('en-US', { 
-      year: 'numeric', 
-      month: 'short', 
-      day: 'numeric' 
-    });
+  formatActionDate(dateString?: string): string {
+    if (!dateString) return 'No due date';
+
+    try {
+      const date = new Date(dateString);
+      return date.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
+      });
+    } catch {
+      return dateString; // Return original string if parsing fails
+    }
   }
 
-  viewAction(action: ActionItem): void {
-    // Navigate to action details or implement view logic
-    console.log('View action:', action.id);
+  getPriorityDisplayText(priority?: ActionPriority): string {
+    if (!priority) return '';
+
+    switch (priority) {
+      case ActionPriority.Low:
+        return 'Low';
+      case ActionPriority.Medium:
+        return 'Medium';
+      case ActionPriority.High:
+        return 'High';
+      case ActionPriority.Urgent:
+        return 'Urgent';
+      case ActionPriority.Immediate:
+        return 'Immediate';
+      default:
+        return String(priority);
+    }
+  }
+
+  getPriorityCssClass(priority?: ActionPriority): string {
+    if (!priority) return '';
+
+    switch (priority) {
+      case ActionPriority.Low:
+        return 'priority-low';
+      case ActionPriority.Medium:
+        return 'priority-medium';
+      case ActionPriority.High:
+        return 'priority-high';
+      case ActionPriority.Urgent:
+        return 'priority-urgent';
+      case ActionPriority.Immediate:
+        return 'priority-immediate';
+      default:
+        return '';
+    }
+  }
+
+  getStatusDisplayText(action: ActionItemDto): string {
+    const status = this.getActionStatus(action);
+    switch (status) {
+      case 'completed': return 'Completed';
+      case 'overdue': return 'Overdue';
+      case 'progress': return 'In progress';
+      case 'open': return 'Open';
+      default: return 'Open';
+    }
+  }
+
+  viewAction(action: ActionItemDto): void {
+    this.router.navigate(['/action-tracker/view', action.actionId]);
   }
 }

@@ -58,7 +58,7 @@
           class="align-middle"
           style="cursor: pointer;"
           (click)="onRiskClick(risk)">
-          <td class="text-primary fw-medium">{{ risk.id }}</td>
+          <td class="text-primary fw-medium">{{ risk.riskId }}</td>
           <td>{{ risk.description }}</td>
           <td>
             <span class="badge" [class]="getLikelihoodBadgeClass(risk.likelihood)">{{ risk.likelihood }}</span>
@@ -77,18 +77,18 @@
           </td>
           <td>{{ risk.reviewDate }}</td>
           <td>
-            <div class="dropdown">
+            <div class="dropdown actions-dropdown">
               <button 
-                class="btn btn-link btn-sm p-0" 
+                class="btn btn-link btn-sm p-0 more-actions-btn" 
                 type="button" 
                 data-bs-toggle="dropdown" 
                 aria-expanded="false"
-                (click)="toggleDropdown($event, risk.id)">
+                (click)="toggleDropdown($event, risk.riskId)">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M12 13a1 1 0 1 0 0-2 1 1 0 0 0 0 2ZM19 13a1 1 0 1 0 0-2 1 1 0 0 0 0 2ZM5 13a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
               </button>
-              <ul class="dropdown-menu" [class.show]="openDropdownId === risk.id">
+              <ul class="dropdown-menu dropdown-menu-end shadow-sm" [class.show]="openDropdownId === risk.riskId">
                 <li>
                   <button class="dropdown-item d-flex align-items-center" (click)="viewBowtie($event, risk)">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="me-2">
@@ -109,7 +109,7 @@
                 </li>
                 <li><hr class="dropdown-divider"></li>
                 <li>
-                  <button class="dropdown-item d-flex align-items-center text-danger" (click)="deleteRisk($event, risk)">
+                  <button class="dropdown-item d-flex align-items-center text-danger delete-item" (click)="deleteRisk($event, risk)">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="me-2">
                       <path d="m3 6 3 0m0 0 14 0m-14 0v14a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V6M10 3h4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
@@ -122,7 +122,9 @@
         </tr>
       </tbody>
     </table>
-  </div>  <!-- Enhanced Pagination Controls with Bootstrap 5 -->
+  </div>
+
+  <!-- Enhanced Pagination Controls with Bootstrap 5 -->
   <div *ngIf="showPagination && totalPages > 0" class="border-top pt-4 mt-4">
     <div class="row align-items-center">
       <!-- Results Info and Items Per Page -->

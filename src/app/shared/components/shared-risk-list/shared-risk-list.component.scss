@@ -1,4 +1,5 @@
 .shared-risk-list {
+  inset: auto 25px 0px auto;
   .risk-header {
     margin-bottom: 24px;
 
@@ -15,6 +16,49 @@
       margin: 0;
     }
   }
+
+  // Bootstrap dropdown overrides for better styling
+  .dropdown-menu {
+    border: 1px solid #e5e7eb !important;
+    border-radius: 8px !important;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15) !important;
+    padding: 0.5rem 0 !important;
+    
+    &.show {
+      animation: dropdownSlideIn 0.15s ease-out;
+    }
+
+    .dropdown-item {
+      padding: 0.75rem 1rem !important;
+      font-size: 0.875rem !important;
+      transition: all 0.15s ease !important;
+
+      &:hover {
+        background-color: #f8fafc !important;
+      }
+
+      &.text-danger:hover {
+        background-color: #fef2f2 !important;
+        color: #dc2626 !important;
+      }
+    }
+
+    .dropdown-divider {
+      margin: 0.5rem 0 !important;
+      border-top: 1px solid #e5e7eb !important;
+    }
+  }
+
+  // @keyframes dropdownSlideIn {
+  //   from {
+  //     opacity: 0;
+  //     transform: translateY(-10px);
+  //   }
+  //   to {
+  //     opacity: 1;
+  //     transform: translateY(0);
+  //   }
+  // }
 
   // Enhanced Pagination Styles
   .pagination {
@@ -299,6 +343,11 @@
                   background-color: #f3f4f6;
                   color: #374151;
                 }
+
+                &:focus {
+                  outline: none;
+                  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+                }
               }
 
               .dropdown-menu {
@@ -328,18 +377,26 @@
                   transition: all 0.2s ease;
 
                   &:hover {
-                    background-color: #f3f4f6;
+                    background-color: #f8fafc;
                   }
 
-                  &.delete-item:hover {
-                    background-color: #fef2f2;
-                    color: #dc2626;
+                  &:focus {
+                    outline: none;
+                    background-color: #f8fafc;
+                  }
+
+                  &.delete-item {
+                    &:hover {
+                      background-color: #fef2f2;
+                      color: #dc2626;
+                    }
                   }
 
                   svg {
                     width: 16px;
                     height: 16px;
                     flex-shrink: 0;
+                    opacity: 0.7;
                   }
                 }
               }

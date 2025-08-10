@@ -65,12 +65,10 @@
     </div>
 
     <!-- Main Content Grid -->
-    <div *ngIf="!loading && !error" class="main-content-grid">
+    <div [hide]="!loading && !error" class="main-content-grid">
       <!-- Risk Matrix Section -->
       <div class="risk-matrix-section">
-        <div class="section-header">
-          <h3>Risk Matrix</h3>
-        </div>
+    
 
         <app-shared-risk-matrix [risks]="risks" [showTitle]="true" [showLegend]="true" [showDetails]="true"
           [interactive]="true" title="Risk Matrix" subtitle="Visualize risks based on likelihood and severity."
@@ -87,7 +85,7 @@
 
         <div class="action-tabs">
           <div class="action-tab" [class.active]="activeActionTab === 'upcoming'" (click)="setActiveActionTab('upcoming')">
-            Upcoming ({{ upcomingActions.length }})
+            Upcoming ({{ getUpcomingCount() }})
           </div>
           <div class="action-tab" [class.active]="activeActionTab === 'overdue'" (click)="setActiveActionTab('overdue')">
             Overdue ({{ overdueActions.length }})
@@ -100,7 +98,7 @@
             <span *ngIf="activeActionTab === 'overdue'">No overdue actions found.</span>
           </div>
 
-          <div *ngFor="let action of currentActions" class="action-item" [class.overdue]="action.daysOverdue > 0">
+          <div *ngFor="let action of currentActions" class="action-item" [class]="getActionStatusClass(action)">
             <div class="action-content">
               <div class="action-title">{{ action.description || 'No description' }}</div>
               <div class="action-date">{{ formatActionDate(action.dueDate) }}</div>
@@ -108,7 +106,7 @@
               <div *ngIf="action.assignedTo" class="action-assigned">Assigned to: {{ action.assignedTo }}</div>
             </div>
             <div class="action-status">
-              <span *ngIf="action.daysOverdue > 0" class="overdue-badge">{{ action.daysOverdue }} days overdue</span>
+              <span *ngIf="action.daysOverdue && action.daysOverdue > 0" class="overdue-badge">{{ action.daysOverdue }} days overdue</span>
               <span *ngIf="action.priority" class="priority-badge {{ getPriorityCssClass(action.priority) }}">
                 {{ getPriorityDisplayText(action.priority) }}
               </span>
@@ -154,150 +152,16 @@
         <p class="text-muted mb-0">Monitor and assess all identified risks across the organization</p>
       </div>
 
-      <!-- Risk Summary Cards -->
-      <div class="row g-3 mb-4">
-        <div class="col-md-3">
-          <div class="card border-0 shadow-sm h-100">
-            <div class="card-body text-center">
-              <div class="text-danger mb-2">
-                <i class="bi bi-exclamation-triangle display-6"></i>
-              </div>
-              <h6 class="text-muted mb-1">Critical Risks</h6>
-              <h2 class="text-danger mb-0">{{ getCriticalRisksCount() }}</h2>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-md-3">
-          <div class="card border-0 shadow-sm h-100">
-            <div class="card-body text-center">
-              <div class="text-warning mb-2">
-                <i class="bi bi-shield-exclamation display-6"></i>
-              </div>
-              <h6 class="text-muted mb-1">High Risks</h6>
-              <h2 class="text-warning mb-0">{{ getHighRisksCount() }}</h2>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-md-3">
-          <div class="card border-0 shadow-sm h-100">
-            <div class="card-body text-center">
-              <div class="text-info mb-2">
-                <i class="bi bi-shield display-6"></i>
-              </div>
-              <h6 class="text-muted mb-1">Medium Risks</h6>
-              <h2 class="text-info mb-0">{{ getMediumRisksCount() }}</h2>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-md-3">
-          <div class="card border-0 shadow-sm h-100">
-            <div class="card-body text-center">
-              <div class="text-success mb-2">
-                <i class="bi bi-shield-check display-6"></i>
-              </div>
-              <h6 class="text-muted mb-1">Low Risks</h6>
-              <h2 class="text-success mb-0">{{ getLowRisksCount() }}</h2>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Risks Table -->
-      <div class="card border-0 shadow-sm">
-        <div class="card-header bg-white border-bottom">
-          <div class="d-flex justify-content-between align-items-center">
-            <h5 class="card-title mb-0">
-              <i class="bi bi-list-ul me-2 text-primary"></i>
-              All Risks ({{ backendRisks.length }})
-            </h5>
-            <button class="btn btn-primary btn-sm" (click)="navigateToRisks()">
-              <i class="bi bi-plus-circle me-2"></i>
-              Add New Risk
-            </button>
-          </div>
-        </div>
-        <div class="card-body p-0">
-          <div *ngIf="backendRisks.length === 0" class="text-center py-5">
-            <i class="bi bi-shield text-muted" style="font-size: 3rem;"></i>
-            <h6 class="mt-3 text-muted">No Risks Found</h6>
-            <p class="text-muted">Start by adding your first risk assessment.</p>
-            <button class="btn btn-primary" (click)="navigateToRisks()">
-              <i class="bi bi-plus-circle me-2"></i>
-              Add Risk
-            </button>
-          </div>
-
-          <div *ngIf="backendRisks.length > 0" class="table-responsive">
-            <table class="table table-hover mb-0">
-              <thead class="table-light">
-                <tr>
-                  <th scope="col">Risk ID</th>
-                  <th scope="col">Description</th>
-                  <th scope="col">Owner</th>
-                  <th scope="col">Status</th>
-                  <th scope="col">Level</th>
-                  <th scope="col">Score</th>
-                  <th scope="col">Review Date</th>
-                  <th scope="col">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr *ngFor="let risk of backendRisks" class="align-middle">
-                  <td>
-                    <strong class="text-primary">{{ risk.riskId }}</strong>
-                  </td>
-                  <td>
-                    <div class="risk-description">
-                      {{ risk.description | slice:0:80 }}<span *ngIf="(risk.description?.length || 0) > 80">...</span>
-                    </div>
-                  </td>
-                  <td>
-                    <div class="d-flex align-items-center">
-                      <i class="bi bi-person-circle me-2 text-muted"></i>
-                      {{ risk.riskOwner || 'Unassigned' }}
-                    </div>
-                  </td>
-                  <td>
-                    <span class="badge bg-{{ getRiskStatusBadgeColor(risk.status) }}">
-                      {{ getRiskStatusText(risk.status) }}
-                    </span>
-                  </td>
-                  <td>
-                    <span class="badge bg-{{ getRiskLevelBadgeColor(risk.residualRiskLevel || risk.initialRiskLevel) }}">
-                      {{ getRiskLevelText(risk.residualRiskLevel || risk.initialRiskLevel) }}
-                    </span>
-                  </td>
-                  <td>
-                    <strong class="text-{{ getRiskScoreColor(risk.residualRiskLevel || risk.initialRiskLevel) }}">
-                      {{ risk.residualRiskLevel || risk.initialRiskLevel }}
-                    </strong>
-                  </td>
-                  <td>
-                    <div *ngIf="risk.reviewDate" class="text-muted">
-                      <i class="bi bi-calendar me-1"></i>
-                      {{ formatRiskDate(risk.reviewDate) }}
-                    </div>
-                    <span *ngIf="!risk.reviewDate" class="text-muted">-</span>
-                  </td>
-                  <td>
-                    <div class="btn-group" role="group">
-                      <button class="btn btn-outline-primary btn-sm" (click)="viewRisk(risk.id)" title="View Risk">
-                        <i class="bi bi-eye"></i>
-                      </button>
-                      <button class="btn btn-outline-secondary btn-sm" (click)="editRisk(risk.id)" title="Edit Risk">
-                        <i class="bi bi-pencil"></i>
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
+      <!-- SharedRiskListComponent -->
+      <app-shared-risk-list 
+        [risks]="risks"
+        [isDashboard]="true"
+        [showTitle]="false"
+        [showPagination]="false"
+        [maxItems]="10"
+        [isLoading]="risksLoading"
+        [error]="risksError">
+      </app-shared-risk-list>
 
       <!-- View All Button -->
       <div class="text-center mt-4">
@@ -337,151 +201,21 @@
         <p class="text-muted mb-0">Track and manage all preventive and mitigation actions across risks</p>
       </div>
 
-      <!-- Action Status Summary Cards -->
-      <div class="row g-3 mb-4">
-        <div class="col-md-3">
-          <div class="card border-0 shadow-sm h-100">
-            <div class="card-body text-center">
-              <div class="text-primary mb-2">
-                <i class="bi bi-circle display-6"></i>
-              </div>
-              <h6 class="text-muted mb-1">Open</h6>
-              <h2 class="text-primary mb-0">{{ actionTrackerStats.openActionsCount }}</h2>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-md-3">
-          <div class="card border-0 shadow-sm h-100">
-            <div class="card-body text-center">
-              <div class="text-warning mb-2">
-                <i class="bi bi-clock display-6"></i>
-              </div>
-              <h6 class="text-muted mb-1">In Progress</h6>
-              <h2 class="text-warning mb-0">{{ actionTrackerStats.inProgressActionsCount }}</h2>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-md-3">
-          <div class="card border-0 shadow-sm h-100">
-            <div class="card-body text-center">
-              <div class="text-success mb-2">
-                <i class="bi bi-check-circle display-6"></i>
-              </div>
-              <h6 class="text-muted mb-1">Completed</h6>
-              <h2 class="text-success mb-0">{{ actionTrackerStats.completedActionsCount }}</h2>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-md-3">
-          <div class="card border-0 shadow-sm h-100">
-            <div class="card-body text-center">
-              <div class="text-danger mb-2">
-                <i class="bi bi-exclamation-circle display-6"></i>
-              </div>
-              <h6 class="text-muted mb-1">Overdue</h6>
-              <h2 class="text-danger mb-0">{{ actionTrackerStats.overdueActionsCount }}</h2>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Action Lists -->
-      <div class="row g-4">
-        <!-- Upcoming Actions -->
-        <div class="col-lg-6">
-          <div class="card border-0 shadow-sm h-100">
-            <div class="card-header bg-white border-bottom">
-              <h5 class="card-title mb-0">
-                <i class="bi bi-calendar-event me-2 text-primary"></i>
-                Upcoming Actions ({{ upcomingActions.length }})
-              </h5>
-            </div>
-            <div class="card-body">
-              <div *ngIf="upcomingActions.length === 0" class="text-center py-4">
-                <i class="bi bi-calendar-check text-muted" style="font-size: 3rem;"></i>
-                <h6 class="mt-3 text-muted">No Upcoming Actions</h6>
-                <p class="text-muted">All actions are on track or completed.</p>
-              </div>
-
-              <div *ngFor="let action of upcomingActions" class="action-item-card mb-3">
-                <div class="d-flex justify-content-between align-items-start">
-                  <div class="flex-grow-1">
-                    <h6 class="mb-1">{{ action.description || 'No description' }}</h6>
-                    <p class="text-muted small mb-1">
-                      <i class="bi bi-calendar me-1"></i>
-                      Due: {{ formatActionDate(action.dueDate) }}
-                    </p>
-                    <p *ngIf="action.riskDescription" class="text-muted small mb-1">
-                      <i class="bi bi-shield-exclamation me-1"></i>
-                      Risk: {{ action.riskDescription }}
-                    </p>
-                    <p *ngIf="action.assignedTo" class="text-muted small mb-0">
-                      <i class="bi bi-person me-1"></i>
-                      Assigned: {{ action.assignedTo }}
-                    </p>
-                  </div>
-                  <div class="ms-3">
-                    <span *ngIf="action.priority" class="badge {{ getPriorityCssClass(action.priority) }}">
-                      {{ getPriorityDisplayText(action.priority) }}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Overdue Actions -->
-        <div class="col-lg-6">
-          <div class="card border-0 shadow-sm h-100">
-            <div class="card-header bg-white border-bottom">
-              <h5 class="card-title mb-0">
-                <i class="bi bi-exclamation-triangle me-2 text-danger"></i>
-                Overdue Actions ({{ overdueActions.length }})
-              </h5>
-            </div>
-            <div class="card-body">
-              <div *ngIf="overdueActions.length === 0" class="text-center py-4">
-                <i class="bi bi-check-circle text-success" style="font-size: 3rem;"></i>
-                <h6 class="mt-3 text-muted">No Overdue Actions</h6>
-                <p class="text-muted">Great! All actions are on track.</p>
-              </div>
-
-              <div *ngFor="let action of overdueActions" class="action-item-card overdue mb-3">
-                <div class="d-flex justify-content-between align-items-start">
-                  <div class="flex-grow-1">
-                    <h6 class="mb-1">{{ action.description || 'No description' }}</h6>
-                    <p class="text-danger small mb-1">
-                      <i class="bi bi-exclamation-circle me-1"></i>
-                      {{ action.daysOverdue }} days overdue
-                    </p>
-                    <p class="text-muted small mb-1">
-                      <i class="bi bi-calendar me-1"></i>
-                      Due: {{ formatActionDate(action.dueDate) }}
-                    </p>
-                    <p *ngIf="action.riskDescription" class="text-muted small mb-1">
-                      <i class="bi bi-shield-exclamation me-1"></i>
-                      Risk: {{ action.riskDescription }}
-                    </p>
-                    <p *ngIf="action.assignedTo" class="text-muted small mb-0">
-                      <i class="bi bi-person me-1"></i>
-                      Assigned: {{ action.assignedTo }}
-                    </p>
-                  </div>
-                  <div class="ms-3">
-                    <span *ngIf="action.priority" class="badge {{ getPriorityCssClass(action.priority) }}">
-                      {{ getPriorityDisplayText(action.priority) }}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      <!-- SharedActionTrackerComponent -->
+      <app-shared-action-tracker 
+        [isDashboard]="true"
+        [showTitle]="false"
+        [showSummaryCards]="true"
+        [maxItems]="10"
+        [openActions]="openActions"
+        [upcomingActions]="upcomingActions"
+        [inProgressActions]="inProgressActions"
+        [completedActions]="completedActions"
+        [overdueActions]="overdueActions"
+        [actionTrackerStats]="actionTrackerStats"
+        [isLoading]="loading"
+        [error]="error">
+      </app-shared-action-tracker>
 
       <!-- View All Actions Button -->
       <div class="text-center mt-4">

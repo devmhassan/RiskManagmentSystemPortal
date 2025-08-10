@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { SharedActionTrackerComponent } from '../shared/components/shared-action-tracker/shared-action-tracker.component';
 import { ActionItem, ActionStatusSummary } from './models/action.interface';
 import { RiskService } from '../proxy/risk-managment-system/risks/risk.service';
 import { ActionTrackerStatsDto, ActionItemDto } from '../proxy/risk-managment-system/risks/dtos/models';
@@ -12,10 +13,10 @@ import { ActionPriority } from '../proxy/risk-managment-system/domain/shared/enu
   templateUrl: './action-tracker.component.html',
   styleUrls: ['./action-tracker.component.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule]
+  imports: [CommonModule, FormsModule, SharedActionTrackerComponent]
 })
 export class ActionTrackerComponent implements OnInit {
-  activeTab: 'all' | 'upcoming' | 'overdue' | 'completed' = 'all';
+  activeTab: 'all' | 'upcoming' | 'overdue' | 'completed' | 'open' | 'in-progress' = 'all';
   searchQuery = '';
   loading = false;
   error: string | null = null;
@@ -25,11 +26,15 @@ export class ActionTrackerComponent implements OnInit {
     openActionsCount: 0,
     inProgressActionsCount: 0,
     completedActionsCount: 0,
-    overdueActionsCount: 0
+    overdueActionsCount: 0,
+
   };
 
   upcomingActions: ActionItemDto[] = [];
   overdueActions: ActionItemDto[] = [];
+  openActions: ActionItemDto[] = [];
+  inProgressActions: ActionItemDto[] = [];
+  completedActions: ActionItemDto[] = [];
   allActions: ActionItemDto[] = [];
   filteredActions: ActionItemDto[] = [];
 
@@ -39,7 +44,7 @@ export class ActionTrackerComponent implements OnInit {
       open: this.actionTrackerStats.openActionsCount,
       inProgress: this.actionTrackerStats.inProgressActionsCount,
       completed: this.actionTrackerStats.completedActionsCount,
-      overdue: this.actionTrackerStats.overdueActionsCount
+      overdue: this.actionTrackerStats.overdueActionsCount,
     };
   }
 
@@ -55,6 +60,7 @@ export class ActionTrackerComponent implements OnInit {
     
     this.riskService.getActionTrackerStats().subscribe({
       next: (stats: ActionTrackerStatsDto) => {
+        debugger;
         this.updateActionTrackerStats(stats);
         this.filterActions();
         this.loading = false;
@@ -77,12 +83,15 @@ export class ActionTrackerComponent implements OnInit {
     
     this.upcomingActions = stats.upcomingActions || [];
     this.overdueActions = stats.overdueActions || [];
-    
+    this.openActions = stats.openActions || [];
+    this.inProgressActions = stats.inProgressActions || [];
+    this.completedActions = stats.completedActions || [];
+
     // Combine all actions for filtering
-    this.allActions = [...this.upcomingActions, ...this.overdueActions];
+    this.allActions = [...this.upcomingActions, ...this.overdueActions, ...this.openActions, ...this.inProgressActions, ...this.completedActions];
   }
 
-  setActiveTab(tab: 'all' | 'upcoming' | 'overdue' | 'completed') {
+  setActiveTab(tab: 'all' | 'upcoming' | 'overdue' | 'completed' | 'open' | 'in-progress') {
     this.activeTab = tab;
     this.filterActions();
   }
@@ -97,6 +106,12 @@ export class ActionTrackerComponent implements OnInit {
         break;
       case 'overdue':
         filtered = this.overdueActions;
+        break;
+      case 'open':
+        filtered = this.openActions;
+        break;
+      case 'in-progress':
+        filtered = this.inProgressActions;
         break;
       case 'completed':
         // Filter completed actions from all actions

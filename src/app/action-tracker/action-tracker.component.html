@@ -5,178 +5,19 @@
     <p class="text-muted mb-0">Track and manage all preventive and mitigation actions across risks</p>
   </div>
 
-  <!-- Loading State -->
-  <div *ngIf="loading" class="text-center py-5">
-    <div class="spinner-border text-primary" role="status">
-      <span class="visually-hidden">Loading...</span>
-    </div>
-    <p class="mt-2 text-muted">Loading action tracker data...</p>
-  </div>
-
-  <!-- Error State -->
-  <div *ngIf="error && !loading" class="alert alert-danger text-center">
-    <i class="bi bi-exclamation-triangle-fill me-2"></i>
-    {{ error }}
-    <button class="btn btn-outline-danger btn-sm ms-3" (click)="retryLoad()">
-      <i class="bi bi-arrow-clockwise me-1"></i>
-      Retry
-    </button>
-  </div>
-
-  <!-- Content -->
-  <div *ngIf="!loading && !error">
-    <!-- Summary Cards -->
-    <div class="row g-3 mb-4">
-      <div class="col-md-3">
-        <div class="card border-0 shadow-sm h-100">
-          <div class="card-body text-center">
-            <div class="text-primary mb-2">
-              <i class="bi bi-circle display-6"></i>
-            </div>
-            <h6 class="text-muted mb-1">Open</h6>
-            <h2 class="text-primary mb-0">{{ statusSummary.open }}</h2>
-          </div>
-        </div>
-      </div>
-
-      <div class="col-md-3">
-        <div class="card border-0 shadow-sm h-100">
-          <div class="card-body text-center">
-            <div class="text-warning mb-2">
-              <i class="bi bi-clock display-6"></i>
-            </div>
-            <h6 class="text-muted mb-1">In Progress</h6>
-            <h2 class="text-warning mb-0">{{ statusSummary.inProgress }}</h2>
-          </div>
-        </div>
-      </div>
-
-      <div class="col-md-3">
-        <div class="card border-0 shadow-sm h-100">
-          <div class="card-body text-center">
-            <div class="text-success mb-2">
-              <i class="bi bi-check-circle display-6"></i>
-            </div>
-            <h6 class="text-muted mb-1">Completed</h6>
-            <h2 class="text-success mb-0">{{ statusSummary.completed }}</h2>
-          </div>
-        </div>
-      </div>
-
-      <div class="col-md-3">
-        <div class="card border-0 shadow-sm h-100">
-          <div class="card-body text-center">
-            <div class="text-danger mb-2">
-              <i class="bi bi-exclamation-circle display-6"></i>
-            </div>
-            <h6 class="text-muted mb-1">Overdue</h6>
-            <h2 class="text-danger mb-0">{{ statusSummary.overdue }}</h2>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Filters and Search -->
-    <div class="card border-0 shadow-sm mb-4">
-      <div class="card-body">
-        <div class="row align-items-center">
-          <div class="col-md-6">
-            <!-- Tab Navigation -->
-            <div class="btn-group" role="group">
-              <button type="button" class="btn" 
-                      [class]="activeTab === 'all' ? 'btn-primary' : 'btn-outline-primary'"
-                      (click)="setActiveTab('all')">
-                All ({{ allActions.length }})
-              </button>
-              <button type="button" class="btn" 
-                      [class]="activeTab === 'upcoming' ? 'btn-primary' : 'btn-outline-primary'"
-                      (click)="setActiveTab('upcoming')">
-                Upcoming ({{ upcomingActions.length }})
-              </button>
-              <button type="button" class="btn" 
-                      [class]="activeTab === 'overdue' ? 'btn-primary' : 'btn-outline-primary'"
-                      (click)="setActiveTab('overdue')">
-                Overdue ({{ overdueActions.length }})
-              </button>
-            </div>
-          </div>
-          <div class="col-md-6">
-            <!-- Search -->
-            <div class="input-group">
-              <span class="input-group-text">
-                <i class="bi bi-search"></i>
-              </span>
-              <input type="text" class="form-control" placeholder="Search actions..." 
-                     [(ngModel)]="searchQuery" (input)="onSearchChange()">
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Actions List -->
-    <div class="card border-0 shadow-sm">
-      <div class="card-body">
-        <div *ngIf="filteredActions.length === 0" class="text-center py-5">
-          <i class="bi bi-inbox text-muted" style="font-size: 3rem;"></i>
-          <h5 class="mt-3 text-muted">No Actions Found</h5>
-          <p class="text-muted">No actions match your current filter criteria.</p>
-        </div>
-
-        <div *ngFor="let action of filteredActions" class="action-item border-bottom py-3">
-          <div class="row align-items-start">
-            <div class="col-md-8">
-              <div class="d-flex align-items-start">
-                <div class="flex-grow-1">
-                  <h6 class="mb-1 fw-semibold">{{ action.description || 'No description' }}</h6>
-                  <p class="text-muted small mb-2">ID: {{ action.actionId }}</p>
-                  
-                  <div class="d-flex flex-wrap gap-2 mb-2">
-                    <span class="badge {{ getBootstrapStatusBadgeClass(action) }}">
-                      {{ getActionDisplayStatus(action) }}
-                    </span>
-                    <span *ngIf="action.priority" class="badge bg-secondary">
-                      {{ getPriorityDisplayText(action.priority) }}
-                    </span>
-                  </div>
-
-                  <div class="small text-muted">
-                    <div *ngIf="action.assignedTo" class="mb-1">
-                      <i class="bi bi-person me-1"></i>
-                      Assigned to: {{ action.assignedTo }}
-                    </div>
-                    <div class="mb-1">
-                      <i class="bi bi-calendar me-1"></i>
-                      Due: {{ formatActionDate(action.dueDate) }}
-                    </div>
-                    <div *ngIf="action.riskDescription" class="mb-1">
-                      <i class="bi bi-shield-exclamation me-1"></i>
-                      Risk: {{ action.riskDescription }}
-                    </div>
-                    <div *ngIf="action.daysOverdue > 0" class="text-danger">
-                      <i class="bi bi-exclamation-triangle me-1"></i>
-                      {{ action.daysOverdue }} days overdue
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="col-md-4 text-end">
-              <div class="d-flex flex-column align-items-end gap-2">
-                <small class="text-muted">{{ formatActionDate(action.dueDate) }}</small>
-                <div class="d-flex gap-2">
-                  <button class="btn btn-sm btn-outline-primary" (click)="viewAction(action)">
-                    <i class="bi bi-eye me-1"></i>
-                    View
-                  </button>
-                  
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
+  <!-- SharedActionTrackerComponent -->
+  <app-shared-action-tracker 
+    [isDashboard]="false"
+    [showTitle]="false"
+    [showSummaryCards]="true"
+    [maxItems]="0"
+    [upcomingActions]="upcomingActions"
+    [overdueActions]="overdueActions"
+    [openActions]="openActions"
+    [inProgressActions]="inProgressActions"
+    [completedActions]="completedActions"
+    [actionTrackerStats]="actionTrackerStats"
+    [isLoading]="loading"
+    [error]="error">
+  </app-shared-action-tracker>
 </div>
-

@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { SharedRiskMatrixComponent } from '../shared/components/shared-risk-matrix/shared-risk-matrix.component';
+import { SharedRiskListComponent } from '../shared/components/shared-risk-list/shared-risk-list.component';
+import { SharedActionTrackerComponent } from '../shared/components/shared-action-tracker/shared-action-tracker.component';
 import { Risk } from '../risk/models/risk.interface';
 import { RiskService } from '../proxy/risk-managment-system/risks/risk.service';
 import { DashboardStatsDto, ActionTrackerStatsDto, ActionItemDto, RiskDto } from '../proxy/risk-managment-system/risks/dtos/models';
@@ -15,7 +17,7 @@ import { Severity } from '../proxy/risk-managment-system/domain/shared/enums/sev
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss'],
   standalone: true,
-  imports: [CommonModule, SharedRiskMatrixComponent]
+  imports: [CommonModule, SharedRiskMatrixComponent, SharedRiskListComponent, SharedActionTrackerComponent]
 })
 export class DashboardComponent implements OnInit {
   activeTab: 'overview' | 'risks' | 'actions' = 'overview';
@@ -40,7 +42,6 @@ export class DashboardComponent implements OnInit {
   risksLoading = false;
   risksError: string | null = null;
   risks: Risk[] = [];
-  backendRisks: RiskDto[] = [];
 
   // Action tracker data - will be populated from backend
   actionTrackerStats = {
@@ -52,13 +53,36 @@ export class DashboardComponent implements OnInit {
 
   upcomingActions: ActionItemDto[] = [];
   overdueActions: ActionItemDto[] = [];
+  openActions: ActionItemDto[] = [];
+  inProgressActions: ActionItemDto[] = [];
+  completedActions: ActionItemDto[] = [];
 
-  constructor(private router: Router, private riskService: RiskService) {}
+  constructor(private router: Router, private riskService: RiskService) {
+    // Initialize with demo data until API loads
+    this.initializeDemoData();
+  }
 
   ngOnInit(): void {
     this.loadDashboardStats();
     this.loadActionTrackerStats();
     this.loadRisks();
+  }
+
+  private initializeDemoData(): void {
+    // Only set demo stats, let the API provide the actual actions
+    this.actionTrackerStats = {
+      openActionsCount: 2,
+      inProgressActionsCount: 0,
+      completedActionsCount: 0,
+      overdueActionsCount: 2
+    };
+
+    // Clear demo action arrays - use real API data
+    this.upcomingActions = [];
+    this.overdueActions = [];
+    this.openActions = [];
+    this.inProgressActions = [];
+    this.completedActions = [];
   }
 
   private loadDashboardStats(): void {
@@ -97,7 +121,6 @@ export class DashboardComponent implements OnInit {
     
     this.riskService.getList().subscribe({
       next: (risks: RiskDto[]) => {
-        this.backendRisks = risks;
         this.risks = this.mapRiskDtoToRisk(risks);
         this.risksLoading = false;
       },
@@ -106,7 +129,6 @@ export class DashboardComponent implements OnInit {
         this.risksError = 'Failed to load risks. Please try again later.';
         this.risksLoading = false;
         // Keep empty arrays on error
-        this.backendRisks = [];
         this.risks = [];
       }
     });
@@ -133,66 +155,17 @@ export class DashboardComponent implements OnInit {
       overdueActionsCount: stats.overdueActionsCount
     };
     
-    this.upcomingActions = stats.upcomingActions || [];
+    // Map all action arrays from the API response
+    this.openActions = stats.openActions || [];
+    this.inProgressActions = stats.inProgressActions || [];
+    this.completedActions = stats.completedActions || [];
     this.overdueActions = stats.overdueActions || [];
+    this.upcomingActions = stats.upcomingActions || [];
   }
 
   private formatChange(change: number, period: string): string {
     const prefix = change >= 0 ? '+' : '';
     return `${prefix}${change} ${period}`;
-  }
-
-  formatActionDate(dateString?: string): string {
-    if (!dateString) return 'No due date';
-    
-    try {
-      const date = new Date(dateString);
-      return date.toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric'
-      });
-    } catch {
-      return dateString; // Return original string if parsing fails
-    }
-  }
-
-  getPriorityDisplayText(priority?: ActionPriority): string {
-    if (!priority) return '';
-    
-    switch (priority) {
-      case ActionPriority.Low:
-        return 'Low';
-      case ActionPriority.Medium:
-        return 'Medium';
-      case ActionPriority.High:
-        return 'High';
-      case ActionPriority.Urgent:
-        return 'Urgent';
-      case ActionPriority.Immediate:
-        return 'Immediate';
-      default:
-        return String(priority);
-    }
-  }
-
-  getPriorityCssClass(priority?: ActionPriority): string {
-    if (!priority) return '';
-    
-    switch (priority) {
-      case ActionPriority.Low:
-        return 'priority-low';
-      case ActionPriority.Medium:
-        return 'priority-medium';
-      case ActionPriority.High:
-        return 'priority-high';
-      case ActionPriority.Urgent:
-        return 'priority-urgent';
-      case ActionPriority.Immediate:
-        return 'priority-immediate';
-      default:
-        return '';
-    }
   }
 
   private mapRiskDtoToRisk(riskDtos: RiskDto[]): Risk[] {
@@ -201,6 +174,7 @@ export class DashboardComponent implements OnInit {
 
   private convertRiskDtoToRisk(dto: RiskDto): Risk {
     return {
+      id: dto.id,
       riskId: dto.riskId || `RISK-${dto.id}`,
       description: dto.description || 'No description',
       likelihood: this.getLikelihoodCode(dto.residualLikelihood || dto.initialLikelihood),
@@ -294,7 +268,7 @@ export class DashboardComponent implements OnInit {
     this.activeTab = tab;
     
     // Load risks data when risks tab is activated (for matrix in overview tab)
-    if (tab === 'risks' && this.backendRisks.length === 0 && !this.risksLoading) {
+    if (tab === 'risks' && this.risks.length === 0 && !this.risksLoading) {
       this.loadRisks();
     }
   }
@@ -304,7 +278,81 @@ export class DashboardComponent implements OnInit {
   }
 
   get currentActions(): ActionItemDto[] {
-    return this.activeActionTab === 'upcoming' ? this.upcomingActions : this.overdueActions;
+    // Map the data correctly based on what the API provides
+    if (this.activeActionTab === 'upcoming') {
+      // Use openActions for upcoming since that's what has non-overdue actions
+      return this.openActions.filter(action => !action.daysOverdue || action.daysOverdue <= 0);
+    } else {
+      // Use overdueActions for overdue
+      return this.overdueActions;
+    }
+  }
+
+  getUpcomingCount(): number {
+    return this.openActions.filter(action => !action.daysOverdue || action.daysOverdue <= 0).length;
+  }
+
+  formatActionDate(dateString?: string): string {
+    if (!dateString) return 'No due date';
+    
+    try {
+      const date = new Date(dateString);
+      return date.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
+      });
+    } catch {
+      return dateString; // Return original string if parsing fails
+    }
+  }
+
+  getPriorityDisplayText(priority?: ActionPriority): string {
+    if (!priority) return '';
+    
+    switch (priority) {
+      case ActionPriority.Low:
+        return 'Low';
+      case ActionPriority.Medium:
+        return 'Medium';
+      case ActionPriority.High:
+        return 'High';
+      case ActionPriority.Urgent:
+        return 'Urgent';
+      case ActionPriority.Immediate:
+        return 'Immediate';
+      default:
+        return String(priority);
+    }
+  }
+
+  getPriorityCssClass(priority?: ActionPriority): string {
+    if (!priority) return '';
+    
+    switch (priority) {
+      case ActionPriority.Low:
+        return 'priority-low';
+      case ActionPriority.Medium:
+        return 'priority-medium';
+      case ActionPriority.High:
+        return 'priority-high';
+      case ActionPriority.Urgent:
+        return 'priority-urgent';
+      case ActionPriority.Immediate:
+        return 'priority-immediate';
+      default:
+        return '';
+    }
+  }
+
+  getActionStatusClass(action: ActionItemDto): string {
+    // Determine status based on daysOverdue and completion status
+    if (action.daysOverdue && action.daysOverdue > 0) {
+      return 'action-status-overdue';
+    }
+    
+    // If not overdue, consider it open/upcoming
+    return 'action-status-open';
   }
 
   onMatrixCellClick(event: any): void {
@@ -322,91 +370,5 @@ export class DashboardComponent implements OnInit {
 
   navigateToActions(): void {
     this.router.navigate(['/action-tracker']);
-  }
-
-  // Risk helper methods
-  getCriticalRisksCount(): number {
-    return this.backendRisks.filter(risk => 
-      (risk.residualRiskLevel || risk.initialRiskLevel) >= 20
-    ).length;
-  }
-
-  getHighRisksCount(): number {
-    return this.backendRisks.filter(risk => {
-      const level = risk.residualRiskLevel || risk.initialRiskLevel;
-      return level >= 12 && level < 20;
-    }).length;
-  }
-
-  getMediumRisksCount(): number {
-    return this.backendRisks.filter(risk => {
-      const level = risk.residualRiskLevel || risk.initialRiskLevel;
-      return level >= 6 && level < 12;
-    }).length;
-  }
-
-  getLowRisksCount(): number {
-    return this.backendRisks.filter(risk => 
-      (risk.residualRiskLevel || risk.initialRiskLevel) < 6
-    ).length;
-  }
-
-  getRiskStatusBadgeColor(status?: RiskStatus): string {
-    if (!status) return 'secondary';
-    
-    switch (status) {
-      case RiskStatus.Identified:
-      case RiskStatus.UnderAssessment:
-        return 'warning';
-      case RiskStatus.Assessed:
-      case RiskStatus.Mitigating:
-      case RiskStatus.Reopened:
-        return 'primary';
-      case RiskStatus.Mitigated:
-        return 'success';
-      case RiskStatus.Closed:
-        return 'secondary';
-      default:
-        return 'secondary';
-    }
-  }
-
-  getRiskLevelBadgeColor(riskLevel: number): string {
-    if (riskLevel >= 20) return 'danger';
-    if (riskLevel >= 12) return 'warning';
-    if (riskLevel >= 6) return 'info';
-    return 'success';
-  }
-
-  getRiskScoreColor(riskLevel: number): string {
-    if (riskLevel >= 20) return 'danger';
-    if (riskLevel >= 12) return 'warning';
-    if (riskLevel >= 6) return 'info';
-    return 'success';
-  }
-
-  formatRiskDate(dateString: string): string {
-    try {
-      const date = new Date(dateString);
-      return date.toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric'
-      });
-    } catch {
-      return dateString;
-    }
-  }
-
-  viewRisk(riskId?: number): void {
-    if (riskId) {
-      this.router.navigate(['/risk/risk-detail', riskId]);
-    }
-  }
-
-  editRisk(riskId?: number): void {
-    if (riskId) {
-      this.router.navigate(['/risk/edit-risk', riskId]);
-    }
   }
 }
