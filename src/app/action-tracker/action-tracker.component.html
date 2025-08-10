@@ -165,14 +165,11 @@
               <div class="d-flex flex-column align-items-end gap-2">
                 <small class="text-muted">{{ formatActionDate(action.dueDate) }}</small>
                 <div class="d-flex gap-2">
-                  <button class="btn btn-sm btn-outline-primary">
+                  <button class="btn btn-sm btn-outline-primary" (click)="viewAction(action)">
                     <i class="bi bi-eye me-1"></i>
                     View
                   </button>
-                  <button class="btn btn-sm btn-outline-secondary">
-                    <i class="bi bi-pencil me-1"></i>
-                    Edit
-                  </button>
+                  
                 </div>
               </div>
             </div>

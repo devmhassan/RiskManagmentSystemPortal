@@ -1,0 +1,42 @@
+// Comments specific styles
+.comment-item {
+  transition: all 0.2s ease-in-out;
+  border: 1px solid #e9ecef !important;
+}
+
+.comment-item:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transform: translateY(-1px);
+}
+
+.user-avatar {
+  min-width: 40px;
+  min-height: 40px;
+  font-size: 0.875rem;
+}
+
+.comment-content {
+  line-height: 1.5;
+  color: #495057;
+}
+
+.comment-textarea {
+  border: 1px solid #ced4da;
+  border-radius: 8px;
+  resize: vertical;
+  min-height: 100px;
+}
+
+.comment-textarea:focus {
+  border-color: #80bdff;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.card {
+  border-radius: 10px;
+}
+
+.btn-dark:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

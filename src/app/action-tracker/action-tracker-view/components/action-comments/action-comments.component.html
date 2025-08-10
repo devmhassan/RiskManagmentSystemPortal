@@ -1,0 +1,55 @@
+<!-- Comments List -->
+<div class="mb-4" *ngIf="comments.length > 0">
+  <div class="comment-item border rounded p-3 mb-3 bg-light" *ngFor="let comment of comments">
+    <div class="d-flex justify-content-between align-items-start mb-2">
+      <div class="d-flex align-items-center">
+        <div class="user-avatar rounded-circle d-flex align-items-center justify-content-center me-3" 
+             [ngClass]="getUserAvatarClass(comment.author)"
+             style="width: 40px; height: 40px;">
+          <span class="text-white fw-semibold">{{ getInitials(comment.author) }}</span>
+        </div>
+        <div>
+          <h6 class="mb-0 fw-semibold">{{ comment.author }}</h6>
+          <small class="text-muted">{{ comment.createdDate }}</small>
+        </div>
+      </div>
+    </div>
+    <p class="mb-0 comment-content">{{ comment.content }}</p>
+  </div>
+</div>
+
+<!-- No Comments State -->
+<div class="text-center py-4 mb-4" *ngIf="comments.length === 0">
+  <i class="bi bi-chat-text text-muted" style="font-size: 2rem;"></i>
+  <h6 class="mt-2 text-muted">No Comments Yet</h6>
+  <p class="text-muted small">Be the first to add a comment about this action.</p>
+</div>
+
+<!-- Add Comment -->
+<div class="card border-0 bg-light">
+  <div class="card-body">
+    <h6 class="card-title mb-3">
+      <i class="bi bi-plus-circle me-2"></i>
+      Add Comment
+    </h6>
+    <div class="mb-3">
+      <label for="commentText" class="form-label">Write your comment here...</label>
+      <textarea 
+        class="form-control comment-textarea" 
+        id="commentText" 
+        rows="4" 
+        [(ngModel)]="newComment"
+        placeholder="Share updates, ask questions, or provide feedback about this action...">
+      </textarea>
+    </div>
+    <div class="d-flex justify-content-end">
+      <button 
+        class="btn btn-dark" 
+        (click)="addComment()"
+        [disabled]="!newComment.trim()">
+        <i class="bi bi-send me-2"></i>
+        Add Comment
+      </button>
+    </div>
+  </div>
+</div>

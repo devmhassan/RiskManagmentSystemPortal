@@ -1,0 +1,65 @@
+// Attachments specific styles
+.attachment-card {
+  transition: all 0.2s ease-in-out;
+  border: 1px solid #e9ecef !important;
+  border-radius: 10px;
+}
+
+.attachment-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+.file-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 50px;
+}
+
+.file-name {
+  font-size: 0.9rem;
+  color: #212529;
+  word-break: break-word;
+}
+
+.file-details {
+  font-size: 0.8rem;
+  line-height: 1.4;
+}
+
+.file-input {
+  border: 2px dashed #ced4da;
+  border-radius: 8px;
+  padding: 0.75rem;
+  transition: border-color 0.2s ease-in-out;
+}
+
+.file-input:focus {
+  border-color: #80bdff;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.file-input:hover {
+  border-color: #adb5bd;
+}
+
+.card {
+  border-radius: 10px;
+}
+
+.btn-sm {
+  font-size: 0.8rem;
+  padding: 0.25rem 0.5rem;
+}
+
+.btn-dark:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.form-text {
+  font-size: 0.8rem;
+  color: #6c757d;
+}

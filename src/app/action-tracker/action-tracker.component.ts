@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import { ActionItem, ActionStatusSummary } from './models/action.interface';
 import { RiskService } from '../proxy/risk-managment-system/risks/risk.service';
 import { ActionTrackerStatsDto, ActionItemDto } from '../proxy/risk-managment-system/risks/dtos/models';
@@ -42,7 +43,7 @@ export class ActionTrackerComponent implements OnInit {
     };
   }
 
-  constructor(private riskService: RiskService) {}
+  constructor(private riskService: RiskService, private router: Router) {}
 
   ngOnInit() {
     this.loadActionTrackerStats();
@@ -255,5 +256,9 @@ export class ActionTrackerComponent implements OnInit {
       case 'overdue': return 'Overdue';
       default: return 'Unknown';
     }
+  }
+
+  viewAction(action: ActionItemDto): void {
+    this.router.navigate(['/action-tracker/view', action.actionId]);
   }
 }

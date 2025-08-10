@@ -1,0 +1,78 @@
+<!-- Attachments List -->
+<div class="mb-4" *ngIf="attachments.length > 0">
+  <div class="row g-3">
+    <div class="col-md-6" *ngFor="let attachment of attachments">
+      <div class="card border-0 bg-light attachment-card">
+        <div class="card-body">
+          <div class="d-flex align-items-start">
+            <div class="me-3 file-icon">
+              <i class="{{ getFileIcon(attachment.fileType) }}" style="font-size: 2rem;"></i>
+            </div>
+            <div class="flex-grow-1">
+              <h6 class="mb-1 fw-semibold file-name">{{ attachment.fileName }}</h6>
+              <p class="text-muted small mb-2 file-details">
+                <span>{{ attachment.fileSize }}</span> • 
+                <span>Uploaded by {{ attachment.uploadedBy }}</span> • 
+                <span>{{ attachment.uploadDate }}</span>
+              </p>
+              <div class="d-flex gap-2">
+                <button class="btn btn-sm btn-outline-primary" (click)="downloadFile(attachment)">
+                  <i class="bi bi-download me-1"></i>
+                  Download
+                </button>
+                <button class="btn btn-sm btn-outline-danger" (click)="deleteAttachment(attachment.id)">
+                  <i class="bi bi-trash me-1"></i>
+                  Delete
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- No Attachments State -->
+<div class="text-center py-4 mb-4" *ngIf="attachments.length === 0">
+  <i class="bi bi-paperclip text-muted" style="font-size: 2rem;"></i>
+  <h6 class="mt-2 text-muted">No Attachments</h6>
+  <p class="text-muted small">Upload documents, images, or other files related to this action.</p>
+</div>
+
+<!-- Upload Attachment -->
+<div class="card border-0 bg-light">
+  <div class="card-body">
+    <h6 class="card-title mb-3">
+      <i class="bi bi-cloud-upload me-2"></i>
+      Upload Attachment
+    </h6>
+    <div class="mb-3">
+      <label for="fileUpload" class="form-label">File</label>
+      <input 
+        class="form-control file-input" 
+        type="file" 
+        id="fileUpload" 
+        (change)="onFileSelected($event)"
+        accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg,.gif,.zip,.rar">
+      <div class="form-text">
+        Supported formats: PDF, DOC, DOCX, XLS, XLSX, PNG, JPG, JPEG, GIF, ZIP, RAR (Max: 10MB)
+      </div>
+      <div class="mt-2" *ngIf="selectedFile">
+        <small class="text-success">
+          <i class="bi bi-check-circle me-1"></i>
+          Selected: {{ selectedFile.name }}
+        </small>
+      </div>
+    </div>
+    <div class="d-flex justify-content-end">
+      <button 
+        class="btn btn-dark" 
+        (click)="uploadFile()"
+        [disabled]="!selectedFile">
+        <i class="bi bi-upload me-2"></i>
+        Upload
+      </button>
+    </div>
+  </div>
+</div>

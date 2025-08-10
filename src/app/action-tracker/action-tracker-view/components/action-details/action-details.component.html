@@ -1,0 +1,85 @@
+<div class="row" *ngIf="action">
+  <div class="col-md-6">
+    <div class="card border-0 bg-light h-100">
+      <div class="card-body">
+        <h6 class="card-title text-primary mb-3">
+          <i class="bi bi-info-circle me-2"></i>
+          Action Information
+        </h6>
+        
+        <div class="row g-3">
+          <div class="col-12">
+            <label class="form-label fw-semibold text-muted">Type</label>
+            <p class="mb-0">Preventive</p>
+          </div>
+          
+          <div class="col-12">
+            <label class="form-label fw-semibold text-muted">Priority</label>
+            <p class="mb-0">
+              <span class="badge" [ngClass]="getPriorityBadgeClass(action.priority)">
+                {{ getPriorityText(action.priority) }}
+              </span>
+            </p>
+          </div>
+          
+          <div class="col-6">
+            <label class="form-label fw-semibold text-muted">Owner</label>
+            <p class="mb-0">John Smith</p>
+          </div>
+          
+          <div class="col-6">
+            <label class="form-label fw-semibold text-muted">Assigned To</label>
+            <p class="mb-0">{{ action.assignedTo || 'N/A' }}</p>
+          </div>
+          
+          <div class="col-6">
+            <label class="form-label fw-semibold text-muted">Business Unit</label>
+            <p class="mb-0">IT Security</p>
+          </div>
+          
+          <div class="col-6">
+            <label class="form-label fw-semibold text-muted">Status</label>
+            <p class="mb-0">
+              <span class="badge" [ngClass]="getBootstrapStatusBadgeClass(action)">
+                {{ getActionDisplayStatus(action) }}
+              </span>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="col-md-6">
+    <div class="card border-0 bg-light h-100">
+      <div class="card-body">
+        <h6 class="card-title text-success mb-3">
+          <i class="bi bi-calendar-check me-2"></i>
+          Financial Information
+        </h6>
+        
+        <div class="row g-3">
+          <div class="col-6">
+            <label class="form-label fw-semibold text-muted">Estimated Cost</label>
+            <p class="mb-0">$5,000</p>
+          </div>
+          
+          <div class="col-6">
+            <label class="form-label fw-semibold text-muted">Actual Cost</label>
+            <p class="mb-0">$4,800</p>
+          </div>
+          
+          <div class="col-12">
+            <label class="form-label fw-semibold text-muted">Cost Variance</label>
+            <p class="mb-0 text-success">-$200 (Under budget)</p>
+          </div>
+          
+          <div class="col-12">
+            <label class="form-label fw-semibold text-muted">Description</label>
+            <p class="mb-0">{{ action.description || action.riskDescription }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
