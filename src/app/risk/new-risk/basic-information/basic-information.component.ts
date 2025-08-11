@@ -4,7 +4,7 @@ import { CommonModule } from '@angular/common';
 import { RiskFormService } from '../../services/risk-form.service';
 import { RiskStatus, riskStatusOptions } from '../../../proxy/risk-managment-system/domain/shared/enums/risk-status.enum';
 import { BusinessDomainService } from '../../../proxy/risk-managment-system/lookups/business-domain.service';
-import { BusinessDomainLookupDto } from '../../../proxy/risk-managment-system/lookups/dtos/models';
+import { BusinessDomainLookupDto } from '../../../proxy/risk-managment-system/lookups/dtos';
 
 @Component({
   selector: 'app-basic-information',

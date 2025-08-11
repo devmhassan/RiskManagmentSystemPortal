@@ -6,7 +6,7 @@ import { RiskTrendsComponent } from './components/risk-trends/risk-trends.compon
 import { ActionStatusComponent } from './components/action-status/action-status.component';
 import { DepartmentPerformanceComponent } from './components/department-performance/department-performance.component';
 import { BusinessDomainService } from '../proxy/risk-managment-system/lookups/business-domain.service';
-import { BusinessDomainLookupDto } from '../proxy/risk-managment-system/lookups/dtos/models';
+import { BusinessDomainLookupDto } from '../proxy/risk-managment-system/lookups/dtos';
 
 @Component({
   selector: 'app-reports',
