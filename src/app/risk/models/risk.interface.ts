@@ -11,10 +11,12 @@ export interface Risk {
   status: string;
   statusColor: 'open' | 'mitigated' | 'closed';
   reviewDate: string;
+  businessDomain?: string; // Business domain for the risk
   initialRisk?: string;
   residualRisk?: string;
   initialRiskColor?: 'critical' | 'high' | 'medium' | 'low';
   residualRiskColor?: 'critical' | 'high' | 'medium' | 'low';
+  triggerEvents?: string[]; // Array of trigger event strings from backend
   causes?: RiskCause[];
   consequences?: RiskConsequence[];
   discussions?: RiskDiscussion[];

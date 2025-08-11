@@ -83,12 +83,12 @@
                 type="button" 
                 data-bs-toggle="dropdown" 
                 aria-expanded="false"
-                (click)="toggleDropdown($event, risk.riskId)">
+                (click)="toggleDropdown($event, risk)">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M12 13a1 1 0 1 0 0-2 1 1 0 0 0 0 2ZM19 13a1 1 0 1 0 0-2 1 1 0 0 0 0 2ZM5 13a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
               </button>
-              <ul class="dropdown-menu dropdown-menu-end shadow-sm" [class.show]="openDropdownId === risk.riskId">
+              <ul class="dropdown-menu dropdown-menu-end shadow-sm" [class.show]="openDropdownId === (risk.id?.toString() || risk.riskId)">
                 <li>
                   <button class="dropdown-item d-flex align-items-center" (click)="viewBowtie($event, risk)">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="me-2">

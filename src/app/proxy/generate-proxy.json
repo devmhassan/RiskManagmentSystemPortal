@@ -1395,6 +1395,106 @@
             }
           }
         },
+        "RiskManagmentSystem.Actions.ActionDetailsAppService": {
+          "controllerName": "ActionDetails",
+          "controllerGroupName": "ActionDetails",
+          "isRemoteService": true,
+          "isIntegrationService": false,
+          "apiVersion": null,
+          "type": "RiskManagmentSystem.Actions.ActionDetailsAppService",
+          "interfaces": [
+            {
+              "type": "RiskManagmentSystem.Risks.IActionDetailsAppService",
+              "name": "IActionDetailsAppService",
+              "methods": [
+                {
+                  "name": "GetActionDetailsAsync",
+                  "parametersOnMethod": [
+                    {
+                      "name": "actionType",
+                      "typeAsString": "RiskManagmentSystem.Domain.Shared.Enums.ActionType, RiskManagmentSystem.Domain.Shared",
+                      "type": "RiskManagmentSystem.Domain.Shared.Enums.ActionType",
+                      "typeSimple": "enum",
+                      "isOptional": false,
+                      "defaultValue": null
+                    },
+                    {
+                      "name": "actionId",
+                      "typeAsString": "System.Int32, System.Private.CoreLib",
+                      "type": "System.Int32",
+                      "typeSimple": "number",
+                      "isOptional": false,
+                      "defaultValue": null
+                    }
+                  ],
+                  "returnValue": {
+                    "type": "RiskManagmentSystem.Risks.Dtos.ActionDetailsDto",
+                    "typeSimple": "RiskManagmentSystem.Risks.Dtos.ActionDetailsDto"
+                  }
+                }
+              ]
+            }
+          ],
+          "actions": {
+            "GetActionDetailsAsyncByActionTypeAndActionId": {
+              "uniqueName": "GetActionDetailsAsyncByActionTypeAndActionId",
+              "name": "GetActionDetailsAsync",
+              "httpMethod": "GET",
+              "url": "api/app/action-details/action-details/{actionId}",
+              "supportedVersions": [],
+              "parametersOnMethod": [
+                {
+                  "name": "actionType",
+                  "typeAsString": "RiskManagmentSystem.Domain.Shared.Enums.ActionType, RiskManagmentSystem.Domain.Shared",
+                  "type": "RiskManagmentSystem.Domain.Shared.Enums.ActionType",
+                  "typeSimple": "enum",
+                  "isOptional": false,
+                  "defaultValue": null
+                },
+                {
+                  "name": "actionId",
+                  "typeAsString": "System.Int32, System.Private.CoreLib",
+                  "type": "System.Int32",
+                  "typeSimple": "number",
+                  "isOptional": false,
+                  "defaultValue": null
+                }
+              ],
+              "parameters": [
+                {
+                  "nameOnMethod": "actionType",
+                  "name": "actionType",
+                  "jsonName": null,
+                  "type": "System.String",
+                  "typeSimple": "string",
+                  "isOptional": false,
+                  "defaultValue": null,
+                  "constraintTypes": null,
+                  "bindingSourceId": "ModelBinding",
+                  "descriptorName": ""
+                },
+                {
+                  "nameOnMethod": "actionId",
+                  "name": "actionId",
+                  "jsonName": null,
+                  "type": "System.Int32",
+                  "typeSimple": "number",
+                  "isOptional": false,
+                  "defaultValue": null,
+                  "constraintTypes": [],
+                  "bindingSourceId": "Path",
+                  "descriptorName": ""
+                }
+              ],
+              "returnValue": {
+                "type": "RiskManagmentSystem.Risks.Dtos.ActionDetailsDto",
+                "typeSimple": "RiskManagmentSystem.Risks.Dtos.ActionDetailsDto"
+              },
+              "allowAnonymous": null,
+              "implementFrom": "RiskManagmentSystem.Risks.IActionDetailsAppService"
+            }
+          }
+        },
         "RiskManagmentSystem.Actions.ActionStatusAppService": {
           "controllerName": "ActionStatus",
           "controllerGroupName": "ActionStatus",
@@ -2696,6 +2796,31 @@
                     "type": "RiskManagmentSystem.Risks.Dtos.ActionStatusSummaryDto",
                     "typeSimple": "RiskManagmentSystem.Risks.Dtos.ActionStatusSummaryDto"
                   }
+                },
+                {
+                  "name": "GetActionDetailsAsync",
+                  "parametersOnMethod": [
+                    {
+                      "name": "actionType",
+                      "typeAsString": "RiskManagmentSystem.Domain.Shared.Enums.ActionType, RiskManagmentSystem.Domain.Shared",
+                      "type": "RiskManagmentSystem.Domain.Shared.Enums.ActionType",
+                      "typeSimple": "enum",
+                      "isOptional": false,
+                      "defaultValue": null
+                    },
+                    {
+                      "name": "actionId",
+                      "typeAsString": "System.Int32, System.Private.CoreLib",
+                      "type": "System.Int32",
+                      "typeSimple": "number",
+                      "isOptional": false,
+                      "defaultValue": null
+                    }
+                  ],
+                  "returnValue": {
+                    "type": "RiskManagmentSystem.Risks.Dtos.ActionDetailsDto",
+                    "typeSimple": "RiskManagmentSystem.Risks.Dtos.ActionDetailsDto"
+                  }
                 }
               ]
             }
@@ -3206,6 +3331,63 @@
               "returnValue": {
                 "type": "RiskManagmentSystem.Risks.Dtos.ActionStatusSummaryDto",
                 "typeSimple": "RiskManagmentSystem.Risks.Dtos.ActionStatusSummaryDto"
+              },
+              "allowAnonymous": null,
+              "implementFrom": "RiskManagmentSystem.Risks.IRiskAppService"
+            },
+            "GetActionDetailsAsyncByActionTypeAndActionId": {
+              "uniqueName": "GetActionDetailsAsyncByActionTypeAndActionId",
+              "name": "GetActionDetailsAsync",
+              "httpMethod": "GET",
+              "url": "api/app/risk/action-details/{actionId}",
+              "supportedVersions": [],
+              "parametersOnMethod": [
+                {
+                  "name": "actionType",
+                  "typeAsString": "RiskManagmentSystem.Domain.Shared.Enums.ActionType, RiskManagmentSystem.Domain.Shared",
+                  "type": "RiskManagmentSystem.Domain.Shared.Enums.ActionType",
+                  "typeSimple": "enum",
+                  "isOptional": false,
+                  "defaultValue": null
+                },
+                {
+                  "name": "actionId",
+                  "typeAsString": "System.Int32, System.Private.CoreLib",
+                  "type": "System.Int32",
+                  "typeSimple": "number",
+                  "isOptional": false,
+                  "defaultValue": null
+                }
+              ],
+              "parameters": [
+                {
+                  "nameOnMethod": "actionType",
+                  "name": "actionType",
+                  "jsonName": null,
+                  "type": "System.String",
+                  "typeSimple": "string",
+                  "isOptional": false,
+                  "defaultValue": null,
+                  "constraintTypes": null,
+                  "bindingSourceId": "ModelBinding",
+                  "descriptorName": ""
+                },
+                {
+                  "nameOnMethod": "actionId",
+                  "name": "actionId",
+                  "jsonName": null,
+                  "type": "System.Int32",
+                  "typeSimple": "number",
+                  "isOptional": false,
+                  "defaultValue": null,
+                  "constraintTypes": [],
+                  "bindingSourceId": "Path",
+                  "descriptorName": ""
+                }
+              ],
+              "returnValue": {
+                "type": "RiskManagmentSystem.Risks.Dtos.ActionDetailsDto",
+                "typeSimple": "RiskManagmentSystem.Risks.Dtos.ActionDetailsDto"
               },
               "allowAnonymous": null,
               "implementFrom": "RiskManagmentSystem.Risks.IRiskAppService"
@@ -6230,6 +6412,30 @@
           "regex": null
         },
         {
+          "name": "FileUrl",
+          "jsonName": null,
+          "type": "System.String",
+          "typeSimple": "string",
+          "isRequired": false,
+          "minLength": null,
+          "maxLength": null,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        },
+        {
+          "name": "UploadedDate",
+          "jsonName": null,
+          "type": "System.DateTime",
+          "typeSimple": "string",
+          "isRequired": false,
+          "minLength": null,
+          "maxLength": null,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        },
+        {
           "name": "PreventionActionId",
           "jsonName": null,
           "type": "System.Int32?",
@@ -6275,6 +6481,18 @@
           "regex": null
         },
         {
+          "name": "Comment",
+          "jsonName": null,
+          "type": "System.String",
+          "typeSimple": "string",
+          "isRequired": false,
+          "minLength": null,
+          "maxLength": null,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        },
+        {
           "name": "AuthorName",
           "jsonName": null,
           "type": "System.String",
@@ -6287,7 +6505,31 @@
           "regex": null
         },
         {
+          "name": "CommentedBy",
+          "jsonName": null,
+          "type": "System.String",
+          "typeSimple": "string",
+          "isRequired": false,
+          "minLength": null,
+          "maxLength": null,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        },
+        {
           "name": "CreationTime",
+          "jsonName": null,
+          "type": "System.DateTime",
+          "typeSimple": "string",
+          "isRequired": false,
+          "minLength": null,
+          "maxLength": null,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        },
+        {
+          "name": "CommentedDate",
           "jsonName": null,
           "type": "System.DateTime",
           "typeSimple": "string",
@@ -6384,6 +6626,351 @@
           "jsonName": null,
           "type": "System.Int32?",
           "typeSimple": "number?",
+          "isRequired": false,
+          "minLength": null,
+          "maxLength": null,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        }
+      ]
+    },
+    "RiskManagmentSystem.Risks.Dtos.ActionDetailsDto": {
+      "baseType": null,
+      "isEnum": false,
+      "enumNames": null,
+      "enumValues": null,
+      "genericArguments": null,
+      "properties": [
+        {
+          "name": "ActionId",
+          "jsonName": null,
+          "type": "System.String",
+          "typeSimple": "string",
+          "isRequired": false,
+          "minLength": null,
+          "maxLength": null,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        },
+        {
+          "name": "Description",
+          "jsonName": null,
+          "type": "System.String",
+          "typeSimple": "string",
+          "isRequired": false,
+          "minLength": null,
+          "maxLength": null,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        },
+        {
+          "name": "Type",
+          "jsonName": null,
+          "type": "RiskManagmentSystem.Domain.Shared.Enums.ActionType",
+          "typeSimple": "enum",
+          "isRequired": false,
+          "minLength": null,
+          "maxLength": null,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        },
+        {
+          "name": "Status",
+          "jsonName": null,
+          "type": "RiskManagmentSystem.Domain.Shared.Enums.ActionStatus",
+          "typeSimple": "enum",
+          "isRequired": false,
+          "minLength": null,
+          "maxLength": null,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        },
+        {
+          "name": "Priority",
+          "jsonName": null,
+          "type": "RiskManagmentSystem.Domain.Shared.Enums.ActionPriority",
+          "typeSimple": "enum",
+          "isRequired": false,
+          "minLength": null,
+          "maxLength": null,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        },
+        {
+          "name": "AssignedTo",
+          "jsonName": null,
+          "type": "System.String",
+          "typeSimple": "string",
+          "isRequired": false,
+          "minLength": null,
+          "maxLength": null,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        },
+        {
+          "name": "DueDate",
+          "jsonName": null,
+          "type": "System.DateTime?",
+          "typeSimple": "string?",
+          "isRequired": false,
+          "minLength": null,
+          "maxLength": null,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        },
+        {
+          "name": "CreatedDate",
+          "jsonName": null,
+          "type": "System.DateTime?",
+          "typeSimple": "string?",
+          "isRequired": false,
+          "minLength": null,
+          "maxLength": null,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        },
+        {
+          "name": "CompletedDate",
+          "jsonName": null,
+          "type": "System.DateTime?",
+          "typeSimple": "string?",
+          "isRequired": false,
+          "minLength": null,
+          "maxLength": null,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        },
+        {
+          "name": "DaysOverdue",
+          "jsonName": null,
+          "type": "System.Int32",
+          "typeSimple": "number",
+          "isRequired": false,
+          "minLength": null,
+          "maxLength": null,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        },
+        {
+          "name": "Cost",
+          "jsonName": null,
+          "type": "System.Decimal",
+          "typeSimple": "number",
+          "isRequired": false,
+          "minLength": null,
+          "maxLength": null,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        },
+        {
+          "name": "ActualCost",
+          "jsonName": null,
+          "type": "System.Decimal?",
+          "typeSimple": "number?",
+          "isRequired": false,
+          "minLength": null,
+          "maxLength": null,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        },
+        {
+          "name": "RiskId",
+          "jsonName": null,
+          "type": "System.String",
+          "typeSimple": "string",
+          "isRequired": false,
+          "minLength": null,
+          "maxLength": null,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        },
+        {
+          "name": "RiskTitle",
+          "jsonName": null,
+          "type": "System.String",
+          "typeSimple": "string",
+          "isRequired": false,
+          "minLength": null,
+          "maxLength": null,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        },
+        {
+          "name": "RiskDescription",
+          "jsonName": null,
+          "type": "System.String",
+          "typeSimple": "string",
+          "isRequired": false,
+          "minLength": null,
+          "maxLength": null,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        },
+        {
+          "name": "RiskStatus",
+          "jsonName": null,
+          "type": "RiskManagmentSystem.Domain.Shared.Enums.RiskStatus",
+          "typeSimple": "enum",
+          "isRequired": false,
+          "minLength": null,
+          "maxLength": null,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        },
+        {
+          "name": "RelatedCauseId",
+          "jsonName": null,
+          "type": "System.Int32?",
+          "typeSimple": "number?",
+          "isRequired": false,
+          "minLength": null,
+          "maxLength": null,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        },
+        {
+          "name": "RelatedCauseDescription",
+          "jsonName": null,
+          "type": "System.String",
+          "typeSimple": "string",
+          "isRequired": false,
+          "minLength": null,
+          "maxLength": null,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        },
+        {
+          "name": "RelatedConsequenceId",
+          "jsonName": null,
+          "type": "System.Int32?",
+          "typeSimple": "number?",
+          "isRequired": false,
+          "minLength": null,
+          "maxLength": null,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        },
+        {
+          "name": "RelatedConsequenceDescription",
+          "jsonName": null,
+          "type": "System.String",
+          "typeSimple": "string",
+          "isRequired": false,
+          "minLength": null,
+          "maxLength": null,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        },
+        {
+          "name": "ProgressPercentage",
+          "jsonName": null,
+          "type": "System.Int32",
+          "typeSimple": "number",
+          "isRequired": false,
+          "minLength": null,
+          "maxLength": null,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        },
+        {
+          "name": "StatusNotes",
+          "jsonName": null,
+          "type": "System.String",
+          "typeSimple": "string",
+          "isRequired": false,
+          "minLength": null,
+          "maxLength": null,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        },
+        {
+          "name": "Comments",
+          "jsonName": null,
+          "type": "[RiskManagmentSystem.Risks.ActionCommentDto]",
+          "typeSimple": "[RiskManagmentSystem.Risks.ActionCommentDto]",
+          "isRequired": false,
+          "minLength": null,
+          "maxLength": null,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        },
+        {
+          "name": "StatusHistory",
+          "jsonName": null,
+          "type": "[RiskManagmentSystem.Risks.Dtos.ActionStatusHistoryDto]",
+          "typeSimple": "[RiskManagmentSystem.Risks.Dtos.ActionStatusHistoryDto]",
+          "isRequired": false,
+          "minLength": null,
+          "maxLength": null,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        },
+        {
+          "name": "Attachments",
+          "jsonName": null,
+          "type": "[RiskManagmentSystem.Risks.ActionAttachmentDto]",
+          "typeSimple": "[RiskManagmentSystem.Risks.ActionAttachmentDto]",
+          "isRequired": false,
+          "minLength": null,
+          "maxLength": null,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        },
+        {
+          "name": "CreatedBy",
+          "jsonName": null,
+          "type": "System.String",
+          "typeSimple": "string",
+          "isRequired": false,
+          "minLength": null,
+          "maxLength": null,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        },
+        {
+          "name": "LastModifiedBy",
+          "jsonName": null,
+          "type": "System.String",
+          "typeSimple": "string",
+          "isRequired": false,
+          "minLength": null,
+          "maxLength": null,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        },
+        {
+          "name": "LastModifiedDate",
+          "jsonName": null,
+          "type": "System.DateTime?",
+          "typeSimple": "string?",
           "isRequired": false,
           "minLength": null,
           "maxLength": null,
@@ -6513,6 +7100,87 @@
           "jsonName": null,
           "type": "RiskManagmentSystem.Domain.Shared.Enums.ActionType",
           "typeSimple": "enum",
+          "isRequired": false,
+          "minLength": null,
+          "maxLength": null,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        }
+      ]
+    },
+    "RiskManagmentSystem.Risks.Dtos.ActionStatusHistoryDto": {
+      "baseType": null,
+      "isEnum": false,
+      "enumNames": null,
+      "enumValues": null,
+      "genericArguments": null,
+      "properties": [
+        {
+          "name": "Id",
+          "jsonName": null,
+          "type": "System.Int32",
+          "typeSimple": "number",
+          "isRequired": false,
+          "minLength": null,
+          "maxLength": null,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        },
+        {
+          "name": "FromStatus",
+          "jsonName": null,
+          "type": "RiskManagmentSystem.Domain.Shared.Enums.ActionStatus",
+          "typeSimple": "enum",
+          "isRequired": false,
+          "minLength": null,
+          "maxLength": null,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        },
+        {
+          "name": "ToStatus",
+          "jsonName": null,
+          "type": "RiskManagmentSystem.Domain.Shared.Enums.ActionStatus",
+          "typeSimple": "enum",
+          "isRequired": false,
+          "minLength": null,
+          "maxLength": null,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        },
+        {
+          "name": "ChangedBy",
+          "jsonName": null,
+          "type": "System.String",
+          "typeSimple": "string",
+          "isRequired": false,
+          "minLength": null,
+          "maxLength": null,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        },
+        {
+          "name": "ChangedDate",
+          "jsonName": null,
+          "type": "System.DateTime",
+          "typeSimple": "string",
+          "isRequired": false,
+          "minLength": null,
+          "maxLength": null,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        },
+        {
+          "name": "Reason",
+          "jsonName": null,
+          "type": "System.String",
+          "typeSimple": "string",
           "isRequired": false,
           "minLength": null,
           "maxLength": null,
@@ -8525,6 +9193,18 @@
       "genericArguments": null,
       "properties": [
         {
+          "name": "Id",
+          "jsonName": null,
+          "type": "System.Int32?",
+          "typeSimple": "number?",
+          "isRequired": false,
+          "minLength": null,
+          "maxLength": null,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        },
+        {
           "name": "Description",
           "jsonName": null,
           "type": "System.String",
@@ -8627,6 +9307,18 @@
       "genericArguments": null,
       "properties": [
         {
+          "name": "Id",
+          "jsonName": null,
+          "type": "System.Int32?",
+          "typeSimple": "number?",
+          "isRequired": false,
+          "minLength": null,
+          "maxLength": null,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        },
+        {
           "name": "Description",
           "jsonName": null,
           "type": "System.String",
@@ -8704,6 +9396,18 @@
       "enumValues": null,
       "genericArguments": null,
       "properties": [
+        {
+          "name": "Id",
+          "jsonName": null,
+          "type": "System.Int32?",
+          "typeSimple": "number?",
+          "isRequired": false,
+          "minLength": null,
+          "maxLength": null,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        },
         {
           "name": "Description",
           "jsonName": null,
@@ -8785,6 +9489,18 @@
       "enumValues": null,
       "genericArguments": null,
       "properties": [
+        {
+          "name": "Id",
+          "jsonName": null,
+          "type": "System.Int32?",
+          "typeSimple": "number?",
+          "isRequired": false,
+          "minLength": null,
+          "maxLength": null,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        },
         {
           "name": "Description",
           "jsonName": null,

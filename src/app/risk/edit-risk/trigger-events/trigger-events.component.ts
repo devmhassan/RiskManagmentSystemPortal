@@ -6,7 +6,6 @@ import { Risk } from '../../models/risk.interface';
 interface TriggerEvent {
   id: string;
   name: string;
-  description?: string;
 }
 
 @Component({
@@ -20,25 +19,21 @@ export class TriggerEventsComponent {
   @Input() risk: Risk | null = null;
   @Output() riskUpdated = new EventEmitter<Risk>();
 
-  // Mock trigger events data - in real app this would come from service
-  triggerEvents: TriggerEvent[] = [
-    {
-      id: 'TE1',
-      name: 'Unusual login patterns',
-      description: 'Multiple login attempts from different geographic locations within a short time frame'
-    },
-    {
-      id: 'TE2',
-      name: 'Multiple failed login attempts',
-      description: 'Repeated failed authentication attempts that could indicate brute force attacks'
-    }
-  ];
-
   newTriggerEvent: TriggerEvent = {
     id: '',
-    name: '',
-    description: ''
+    name: ''
   };
+
+  // Convert string array to TriggerEvent objects for display
+  get triggerEvents(): TriggerEvent[] {
+    if (!this.risk?.triggerEvents) {
+      return [];
+    }
+    return this.risk.triggerEvents.map((eventName, index) => ({
+      id: `TE${index + 1}`,
+      name: eventName
+    }));
+  }
 
   updateRisk(): void {
     if (this.risk) {
@@ -47,28 +42,31 @@ export class TriggerEventsComponent {
   }
 
   addTriggerEvent(): void {
-    if (this.newTriggerEvent.name.trim()) {
-      const triggerEvent: TriggerEvent = {
-        id: 'TE' + (Date.now()),
-        name: this.newTriggerEvent.name.trim(),
-        description: this.newTriggerEvent.description?.trim() || ''
-      };
-      this.triggerEvents.push(triggerEvent);
+    if (this.newTriggerEvent.name.trim() && this.risk) {
+      if (!this.risk.triggerEvents) {
+        this.risk.triggerEvents = [];
+      }
+      this.risk.triggerEvents.push(this.newTriggerEvent.name.trim());
       this.resetNewTriggerEvent();
       this.updateRisk();
     }
   }
 
   removeTriggerEvent(triggerEventId: string): void {
-    this.triggerEvents = this.triggerEvents.filter(te => te.id !== triggerEventId);
-    this.updateRisk();
+    if (this.risk?.triggerEvents) {
+      // Extract index from the ID (e.g., "TE1" -> index 0)
+      const index = parseInt(triggerEventId.replace('TE', '')) - 1;
+      if (index >= 0 && index < this.risk.triggerEvents.length) {
+        this.risk.triggerEvents.splice(index, 1);
+        this.updateRisk();
+      }
+    }
   }
 
   resetNewTriggerEvent(): void {
     this.newTriggerEvent = {
       id: '',
-      name: '',
-      description: ''
+      name: ''
     };
   }
 }

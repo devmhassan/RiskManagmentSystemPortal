@@ -8,14 +8,19 @@ export interface ActionAttachmentDto extends EntityDto<number> {
   fileSize: number;
   uploadedBy?: string;
   creationTime?: string;
+  fileUrl?: string;
+  uploadedDate?: string;
   preventionActionId?: number;
   mitigationActionId?: number;
 }
 
 export interface ActionCommentDto extends EntityDto<number> {
   content?: string;
+  comment?: string;
   authorName?: string;
+  commentedBy?: string;
   creationTime?: string;
+  commentedDate?: string;
   lastModificationTime?: string;
   preventionActionId?: number;
   mitigationActionId?: number;

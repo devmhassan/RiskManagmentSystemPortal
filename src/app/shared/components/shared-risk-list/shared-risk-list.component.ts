@@ -189,28 +189,39 @@ export class SharedRiskListComponent implements OnInit, OnChanges {
     this.router.navigate(['/risk', risk.riskId]);
   }
 
-  toggleDropdown(event: Event, riskId: string): void {
+  toggleDropdown(event: Event, risk: Risk): void {
     event.stopPropagation();
+    const riskId = risk.id?.toString() || risk.riskId;
     this.openDropdownId = this.openDropdownId === riskId ? null : riskId;
   }
 
   viewBowtie(event: Event, risk: Risk): void {
     event.stopPropagation();
     this.openDropdownId = null;
-    this.router.navigate(['/risk', risk.riskId]);
+    // Navigate using numeric ID if available, fallback to string riskId
+    if (risk.id) {
+      this.router.navigate(['/risk', risk.id]);
+    } else if (risk.riskId) {
+      this.router.navigate(['/risk', risk.riskId]);
+    }
   }
 
   editRisk(event: Event, risk: Risk): void {
     event.stopPropagation();
     this.openDropdownId = null;
-    this.router.navigate(['/risk', risk.riskId, 'edit']);
+    // Navigate to edit using numeric ID if available, fallback to string riskId
+    if (risk.id) {
+      this.router.navigate(['/risk', risk.id, 'edit']);
+    } else if (risk.riskId) {
+      this.router.navigate(['/risk', risk.riskId, 'edit']);
+    }
   }
 
   deleteRisk(event: Event, risk: Risk): void {
     event.stopPropagation();
     this.openDropdownId = null;
     // Implement delete logic
-    console.log('Delete risk:', risk.riskId);
+    console.log('Delete risk:', risk.id || risk.riskId);
   }
 
   onSearchChange(): void {

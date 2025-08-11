@@ -7,7 +7,9 @@ import { GeneralInformationComponent } from './general-information/general-infor
 import { CausesPreventionComponent } from './causes-prevention/causes-prevention.component';
 import { ConsequencesMitigationComponent } from './consequences-mitigation/consequences-mitigation.component';
 import { TriggerEventsComponent } from './trigger-events/trigger-events.component';
-import { BowtieComponentsComponent } from '../new-risk/bowtie-components/bowtie-components.component';
+import { RiskService } from '../../proxy/risk-managment-system/risks/risk.service';
+import { RiskMapperService } from '../services/risk-mapper.service';
+import { finalize } from 'rxjs/operators';
 
 @Component({
   selector: 'app-edit-risk',
@@ -20,198 +22,66 @@ import { BowtieComponentsComponent } from '../new-risk/bowtie-components/bowtie-
     GeneralInformationComponent,
     CausesPreventionComponent,
     ConsequencesMitigationComponent,
-    TriggerEventsComponent,
-    BowtieComponentsComponent
+    TriggerEventsComponent
   ]
 })
 export class EditRiskComponent implements OnInit {
   activeTab: string = 'general';
   riskId: string = '';
   risk: Risk | null = null;
+  isLoading: boolean = false;
+  isSaving: boolean = false;
+  error: string | null = null;
+  successMessage: string | null = null;
 
   constructor(
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private riskService: RiskService,
+    private riskMapper: RiskMapperService
   ) {}
 
   ngOnInit(): void {
     this.riskId = this.route.snapshot.paramMap.get('id') || '';
-    this.loadRisk();
+    if (this.riskId) {
+      this.loadRisk();
+    } else {
+      this.error = 'No risk ID provided';
+    }
   }
 
   loadRisk(): void {
-    // Mock data - in real app this would come from a service
-    this.risk = {
-      riskId: 'RISK-001',
-      description: 'Data breach due to unauthorized access',
-      likelihood: 'L5',
-      severity: 'S5',
-      riskLevel: 'Critical',
-      riskLevelColor: 'critical',
-      riskScore: 25,
-      owner: 'Security Team',
-      status: 'Open',
-      statusColor: 'open',
-      reviewDate: '2023-12-15',
-      initialRisk: 'Critical (20)',
-      residualRisk: 'High (8)',
-      initialRiskColor: 'critical',
-      residualRiskColor: 'high',
-      causes: [
-        {
-          id: 'C1',
-          name: 'Weak password policies',
-          likelihood: 'L4',
-          priority: 'high',
-          preventiveActions: [
-            {
-              id: 'PA1',
-              name: 'Implement strong password requirements',
-              cost: 5000,
-              priority: 'high',
-              status: 'completed',
-              assignedTo: 'John Smith (IT Security)',
-              dueDate: '11/15/2023'
-            },
-            {
-              id: 'PA2',
-              name: 'Regular password rotation',
-              cost: 2000,
-              priority: 'medium',
-              status: 'in-progress',
-              assignedTo: 'Sarah Johnson (IT Operations)',
-              dueDate: '12/20/2023'
-            }
-          ]
+    // Convert string ID to number for the API call
+    const riskIdNumber = parseInt(this.riskId, 10);
+    
+    if (isNaN(riskIdNumber)) {
+      this.error = 'Invalid risk ID format';
+      return;
+    }
+
+    this.isLoading = true;
+    this.error = null;
+
+    console.log('Loading risk with ID:', riskIdNumber);
+
+    this.riskService.get(riskIdNumber)
+      .pipe(
+        finalize(() => {
+          this.isLoading = false;
+        })
+      )
+      .subscribe({
+        next: (riskDto) => {
+          console.log('Risk loaded from backend:', riskDto);
+          this.risk = this.riskMapper.mapRiskDtoToRisk(riskDto);
+          console.log('Mapped risk data:', this.risk);
         },
-        {
-          id: 'C2',
-          name: 'Lack of access controls',
-          likelihood: 'L3',
-          priority: 'medium',
-          preventiveActions: [
-            {
-              id: 'PA3',
-              name: 'Implement role-based access control',
-              cost: 15000,
-              priority: 'high',
-              status: 'completed',
-              assignedTo: 'Michael Chen (IT Security)',
-              dueDate: '10/30/2023'
-            }
-          ]
-        },
-        {
-          id: 'C3',
-          name: 'Insufficient security training',
-          likelihood: 'L5',
-          priority: 'highest',
-          preventiveActions: [
-            {
-              id: 'PA4',
-              name: 'Security awareness training',
-              cost: 12000,
-              priority: 'high',
-              status: 'completed',
-              assignedTo: 'David Wilson (HR)',
-              dueDate: '09/15/2023'
-            },
-            {
-              id: 'PA5',
-              name: 'Phishing simulations',
-              cost: 7500,
-              priority: 'medium',
-              status: 'in-progress',
-              assignedTo: 'David Wilson (HR)',
-              dueDate: '12/10/2023'
-            }
-          ]
+        error: (error) => {
+          console.error('Error loading risk:', error);
+          this.error = 'Failed to load risk data. Please try again.';
+          this.risk = null;
         }
-      ],
-      consequences: [
-        {
-          id: 'CON1',
-          name: 'Regulatory penalties',
-          severity: 'S4',
-          cost: 250000,
-          priority: 'high',
-          mitigationActions: [
-            {
-              id: 'MA1',
-              name: 'Compliance documentation',
-              cost: 10000,
-              priority: 'high',
-              status: 'completed',
-              assignedTo: 'Jessica Lee (Legal)',
-              dueDate: '11/1/2023'
-            },
-            {
-              id: 'MA2',
-              name: 'Regulatory reporting procedures',
-              cost: 5000,
-              priority: 'medium',
-              status: 'completed',
-              assignedTo: 'Jessica Lee (Legal)',
-              dueDate: '10/15/2023'
-            }
-          ]
-        },
-        {
-          id: 'CON2',
-          name: 'Reputation damage',
-          severity: 'S5',
-          cost: 500000,
-          priority: 'highest',
-          mitigationActions: [
-            {
-              id: 'MA3',
-              name: 'PR crisis management plan',
-              cost: 25000,
-              priority: 'high',
-              status: 'completed',
-              assignedTo: 'Robert Taylor (Communications)',
-              dueDate: '09/30/2023'
-            },
-            {
-              id: 'MA4',
-              name: 'Transparent communication strategy',
-              cost: 15000,
-              priority: 'medium',
-              status: 'in-progress',
-              assignedTo: 'Robert Taylor (Communications)',
-              dueDate: '01/30/2024'
-            }
-          ]
-        },
-        {
-          id: 'CON3',
-          name: 'Customer data exposure',
-          severity: 'S3',
-          cost: 350000,
-          priority: 'high',
-          mitigationActions: [
-            {
-              id: 'MA5',
-              name: 'Customer notification procedures',
-              cost: 20000,
-              priority: 'medium',
-              status: 'completed',
-              assignedTo: 'Amanda Brown (Customer Service)',
-              dueDate: '10/20/2023'
-            },
-            {
-              id: 'MA6',
-              name: 'Identity protection services',
-              cost: 75000,
-              priority: 'high',
-              status: 'completed',
-              assignedTo: 'Amanda Brown (Customer Service)',
-              dueDate: '11/15/2023'
-            }
-          ]
-        }
-      ]
-    };
+      });
   }
 
   setActiveTab(tab: string): void {
@@ -223,8 +93,50 @@ export class EditRiskComponent implements OnInit {
   }
 
   saveChanges(): void {
-    console.log('Saving changes for risk:', this.risk);
-    // Implementation for saving changes
+    if (!this.risk) {
+      this.error = 'No risk data to save';
+      return;
+    }
+
+    this.isSaving = true;
+    this.error = null;
+    this.successMessage = null;
+
+    console.log('Saving risk changes:', this.risk);
+
+    // Map the frontend Risk to UpdateRiskDto
+    const updateRiskDto = this.riskMapper.mapRiskToUpdateRiskDto(this.risk);
+    console.log('Mapped UpdateRiskDto:', updateRiskDto);
+
+    this.riskService.update(updateRiskDto)
+      .pipe(
+        finalize(() => {
+          this.isSaving = false;
+        })
+      )
+      .subscribe({
+        next: (updatedRiskDto) => {
+          console.log('Risk successfully updated:', updatedRiskDto);
+          this.successMessage = 'Risk has been successfully updated.';
+          
+          // Update the local risk data with the response from backend
+          this.risk = this.riskMapper.mapRiskDtoToRisk(updatedRiskDto);
+          
+          // Clear success message after 3 seconds
+          setTimeout(() => {
+            this.successMessage = null;
+          }, 3000);
+        },
+        error: (error) => {
+          console.error('Error saving risk:', error);
+          this.error = 'Failed to save risk changes. Please try again.';
+          
+          // Clear error message after 5 seconds
+          setTimeout(() => {
+            this.error = null;
+          }, 5000);
+        }
+      });
   }
 
   onRiskUpdated(updatedRisk: Risk): void {

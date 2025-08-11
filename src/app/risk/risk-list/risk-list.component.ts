@@ -171,27 +171,35 @@ export class RiskListComponent implements OnInit {
   }
 
   onRiskClick(risk: Risk): void {
-    // Navigate to risk details
-    this.router.navigate(['/risk', risk.id]);
+    // Navigate to risk details using numeric ID
+    if (risk.id) {
+      this.router.navigate(['/risk', risk.id]);
+    }
   }
 
-  toggleDropdown(event: Event, riskId: string): void {
+  toggleDropdown(event: Event, risk: Risk): void {
     event.stopPropagation();
+    const riskId = risk.id?.toString() || risk.riskId;
     this.openDropdownId = this.openDropdownId === riskId ? null : riskId;
   }
 
   viewBowtie(event: Event, risk: Risk): void {
     event.stopPropagation();
     this.openDropdownId = null;
-    // Navigate to risk detail view
-    this.router.navigate(['/risk', risk.id]);
+    // Navigate to risk detail view using numeric ID
+    if (risk.id) {
+      this.router.navigate(['/risk', risk.id]);
+    }
   }
 
   editRisk(event: Event, risk: Risk): void {
     event.stopPropagation();
     console.log('Edit risk:', risk.id);
     this.openDropdownId = null;
-    this.router.navigate(['/risk', risk.id, 'edit']);
+    // Navigate to edit using numeric ID
+    if (risk.id) {
+      this.router.navigate(['/risk', risk.id, 'edit']);
+    }
   }
 
   deleteRisk(event: Event, risk: Risk): void {
