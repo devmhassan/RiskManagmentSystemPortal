@@ -508,4 +508,383 @@
       }
     }
   }
+
+  // Risk Action Card Styles
+  .risk-action-card {
+    border: 1px solid #e5e7eb;
+    border-radius: 16px;
+    transition: all 0.3s ease;
+    overflow: hidden;
+    background: #fff;
+    
+    &:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 1rem 2rem rgba(0, 0, 0, 0.1) !important;
+      border-color: #0d6efd;
+    }
+    
+    .card-header {
+      background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+      border-bottom: 1px solid #e5e7eb;
+      padding: 1.5rem;
+      
+      .risk-icon-container {
+        width: 40px;
+        height: 40px;
+        background: linear-gradient(135deg, #0d6efd, #6f42c1);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.2rem;
+      }
+      
+      .risk-info {
+        .card-title {
+          font-size: 1.25rem;
+          margin-bottom: 0.5rem;
+          
+          span {
+            background: linear-gradient(135deg, #0d6efd, #6f42c1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+          }
+        }
+        
+        .card-text {
+          font-size: 0.9rem;
+          line-height: 1.5;
+          color: #6c757d;
+        }
+      }
+      
+      .risk-status-indicators {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        
+        .badge {
+          font-size: 0.75rem;
+          font-weight: 500;
+        }
+      }
+      
+      .risk-summary-info {
+        small {
+          font-size: 0.8rem;
+          color: #6c757d;
+          
+          .bi {
+            color: #0d6efd;
+          }
+        }
+      }
+      
+      .collapse-toggle-btn {
+        border: 1px solid #dee2e6;
+        background: rgba(255, 255, 255, 0.8);
+        color: #495057;
+        font-size: 0.85rem;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        font-weight: 500;
+        transition: all 0.2s ease;
+        backdrop-filter: blur(10px);
+        
+        &:hover {
+          background: #fff;
+          border-color: #0d6efd;
+          color: #0d6efd;
+          transform: translateY(-1px);
+          box-shadow: 0 0.25rem 0.5rem rgba(13, 110, 253, 0.15);
+        }
+        
+        &:focus {
+          box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+          border-color: #0d6efd;
+        }
+        
+        .bi {
+          transition: transform 0.2s ease;
+        }
+        
+        &[aria-expanded="true"] {
+          background: #0d6efd;
+          color: #fff;
+          border-color: #0d6efd;
+          
+          .bi {
+            transform: rotate(180deg);
+          }
+        }
+      }
+    }
+    
+    .list-group-item {
+      transition: all 0.2s ease;
+      padding: 1.25rem 1.5rem;
+      border-left: 4px solid transparent;
+      
+      &:hover {
+        background-color: rgba(13, 110, 253, 0.03) !important;
+        border-left-color: #0d6efd;
+      }
+      
+      &.action-completed {
+        background-color: rgba(25, 135, 84, 0.05) !important;
+        border-left-color: #198754;
+      }
+      
+      &.action-overdue {
+        background-color: rgba(220, 53, 69, 0.05) !important;
+        border-left-color: #dc3545;
+      }
+      
+      &.action-progress {
+        background-color: rgba(255, 193, 7, 0.05) !important;
+        border-left-color: #ffc107;
+      }
+      
+      .status-badge {
+        font-size: 0.8rem;
+        padding: 0.4rem 0.8rem;
+        border-radius: 8px;
+        font-weight: 500;
+        
+        .bi {
+          font-size: 0.85rem;
+        }
+      }
+      
+      .action-id-badge {
+        font-size: 0.75rem;
+        padding: 0.3rem 0.6rem;
+        border-radius: 6px;
+        font-weight: 600;
+        background: #f8f9fa !important;
+        border: 1px solid #dee2e6 !important;
+      }
+      
+      .priority-badge {
+        font-size: 0.75rem;
+        padding: 0.3rem 0.6rem;
+        border-radius: 6px;
+        font-weight: 500;
+        
+        &.priority-low {
+          background: #d1ecf1;
+          color: #0c5460;
+          border: 1px solid #b6d4da;
+        }
+        
+        &.priority-medium {
+          background: #fff3cd;
+          color: #856404;
+          border: 1px solid #ffeaa7;
+        }
+        
+        &.priority-high {
+          background: #f8d7da;
+          color: #721c24;
+          border: 1px solid #f5c6cb;
+        }
+        
+        &.priority-urgent, &.priority-immediate {
+          background: #d1ecf1;
+          color: #721c24;
+          border: 1px solid #f5c6cb;
+          animation: pulse-priority 2s infinite;
+        }
+      }
+      
+      .action-title {
+        color: #212529;
+        line-height: 1.4;
+        font-size: 1rem;
+        margin-bottom: 0.75rem;
+      }
+      
+      .action-meta {
+        .d-flex {
+          align-items: center;
+          margin-bottom: 0.25rem;
+          
+          .fw-medium {
+            color: #495057;
+            margin-right: 0.25rem;
+          }
+          
+          i {
+            font-size: 0.9rem;
+          }
+        }
+      }
+      
+      .action-view-btn {
+        border-color: #0d6efd;
+        color: #0d6efd;
+        font-size: 0.875rem;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        font-weight: 500;
+        transition: all 0.2s ease;
+        
+        &:hover {
+          background-color: #0d6efd;
+          border-color: #0d6efd;
+          color: #fff;
+          transform: translateY(-1px);
+          box-shadow: 0 0.25rem 0.5rem rgba(13, 110, 253, 0.25);
+        }
+      }
+    }
+    
+    // Collapse Animation Enhancements
+    .collapse {
+      transition: all 0.3s ease-in-out;
+      
+      &:not(.show) {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      
+      &.show {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    // When risk is collapsed, add subtle styling to indicate more content
+    &:has(.collapse:not(.show)) {
+      .card-header {
+        border-bottom: 2px solid #0d6efd;
+        background: linear-gradient(135deg, rgba(13, 110, 253, 0.05) 0%, rgba(111, 66, 193, 0.05) 100%);
+      }
+    }
+  }
+  
+  // Search and Filter Enhancements
+  .filter-controls {
+    .search-container {
+      .form-control {
+        border-radius: 12px;
+        border: 2px solid #e9ecef;
+        padding: 0.75rem 1rem 0.75rem 2.5rem;
+        font-size: 0.9rem;
+        transition: all 0.2s ease;
+        
+        &:focus {
+          border-color: #0d6efd;
+          box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.15);
+        }
+      }
+      
+      .btn-link {
+        border: none;
+        color: #6c757d;
+        
+        &:hover {
+          color: #dc3545;
+        }
+      }
+    }
+  }
+  
+  // Enhanced Tab Styling
+  .action-tabs {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    
+    .action-tab {
+      background: #fff;
+      border: 2px solid #e9ecef;
+      color: #6c757d;
+      padding: 0.75rem 1.25rem;
+      border-radius: 12px;
+      font-weight: 500;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      
+      .badge {
+        font-size: 0.75rem;
+        padding: 0.25rem 0.5rem;
+      }
+      
+      &:hover {
+        border-color: #0d6efd;
+        color: #0d6efd;
+        transform: translateY(-1px);
+      }
+      
+      &.active {
+        background: linear-gradient(135deg, #0d6efd, #6f42c1);
+        border-color: #0d6efd;
+        color: #fff;
+        transform: translateY(-2px);
+        box-shadow: 0 0.5rem 1rem rgba(13, 110, 253, 0.25);
+        
+        .badge {
+          background: rgba(255, 255, 255, 0.2) !important;
+          color: #fff !important;
+        }
+      }
+    }
+  }
+  
+  // Animation for urgent priorities
+  @keyframes pulse-priority {
+    0%, 100% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.05);
+    }
+  }
+  
+  // Responsive adjustments
+  @media (max-width: 768px) {
+    .risk-action-card {
+      .card-header {
+        padding: 1rem;
+        
+        .d-flex {
+          flex-direction: column;
+          gap: 1rem;
+        }
+        
+        .risk-status-indicators {
+          align-self: flex-start;
+        }
+      }
+      
+      .list-group-item {
+        padding: 1rem;
+        
+        .d-flex {
+          flex-direction: column;
+          gap: 1rem;
+        }
+        
+        .action-meta {
+          .col-lg-4, .col-md-6, .col-md-12 {
+            margin-bottom: 0.5rem;
+          }
+        }
+      }
+    }
+    
+    .action-tabs {
+      .action-tab {
+        flex: 1;
+        justify-content: center;
+        padding: 0.6rem 0.8rem;
+        font-size: 0.85rem;
+      }
+    }
+  }
 }

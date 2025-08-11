@@ -1,26 +1,40 @@
+<!-- Error Message -->
+<div class="alert alert-danger" *ngIf="errorMessage">
+  <i class="bi bi-exclamation-triangle me-2"></i>
+  {{ errorMessage }}
+</div>
+
+<!-- Loading State -->
+<div class="text-center py-4" *ngIf="isLoading">
+  <div class="spinner-border text-primary" role="status">
+    <span class="visually-hidden">Loading attachments...</span>
+  </div>
+  <p class="mt-2 text-muted">Loading attachments...</p>
+</div>
+
 <!-- Attachments List -->
-<div class="mb-4" *ngIf="attachments.length > 0">
+<div class="mb-4" *ngIf="attachments.length > 0 && !isLoading">
   <div class="row g-3">
     <div class="col-md-6" *ngFor="let attachment of attachments">
       <div class="card border-0 bg-light attachment-card">
         <div class="card-body">
           <div class="d-flex align-items-start">
             <div class="me-3 file-icon">
-              <i class="{{ getFileIcon(attachment.fileType) }}" style="font-size: 2rem;"></i>
+              <i class="{{ getFileIcon(attachment) }}" style="font-size: 2rem;"></i>
             </div>
             <div class="flex-grow-1">
-              <h6 class="mb-1 fw-semibold file-name">{{ attachment.fileName }}</h6>
+              <h6 class="mb-1 fw-semibold file-name">{{ attachment.fileName || attachment.originalFileName }}</h6>
               <p class="text-muted small mb-2 file-details">
-                <span>{{ attachment.fileSize }}</span> • 
+                <span>{{ getFormattedFileSize(attachment) }}</span> • 
                 <span>Uploaded by {{ attachment.uploadedBy }}</span> • 
-                <span>{{ attachment.uploadDate }}</span>
+                <span>{{ getFormattedUploadDate(attachment) }}</span>
               </p>
               <div class="d-flex gap-2">
                 <button class="btn btn-sm btn-outline-primary" (click)="downloadFile(attachment)">
                   <i class="bi bi-download me-1"></i>
                   Download
                 </button>
-                <button class="btn btn-sm btn-outline-danger" (click)="deleteAttachment(attachment.id)">
+                <button class="btn btn-sm btn-outline-danger" (click)="deleteAttachment(attachment.id!)">
                   <i class="bi bi-trash me-1"></i>
                   Delete
                 </button>
@@ -34,7 +48,7 @@
 </div>
 
 <!-- No Attachments State -->
-<div class="text-center py-4 mb-4" *ngIf="attachments.length === 0">
+<div class="text-center py-4 mb-4" *ngIf="attachments.length === 0 && !isLoading">
   <i class="bi bi-paperclip text-muted" style="font-size: 2rem;"></i>
   <h6 class="mt-2 text-muted">No Attachments</h6>
   <p class="text-muted small">Upload documents, images, or other files related to this action.</p>
@@ -69,9 +83,10 @@
       <button 
         class="btn btn-dark" 
         (click)="uploadFile()"
-        [disabled]="!selectedFile">
-        <i class="bi bi-upload me-2"></i>
-        Upload
+        [disabled]="!selectedFile || isUploading">
+        <span *ngIf="isUploading" class="spinner-border spinner-border-sm me-2" role="status"></span>
+        <i *ngIf="!isUploading" class="bi bi-upload me-2"></i>
+        {{ isUploading ? 'Uploading...' : 'Upload' }}
       </button>
     </div>
   </div>

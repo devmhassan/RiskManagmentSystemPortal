@@ -1,6 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActionItemDto } from '../../../../proxy/risk-managment-system/risks/dtos/models';
+import { ActionDetailsDto } from '../../../../proxy/risk-managment-system/risks/dtos/models';
+import { ActionType } from '../../../../proxy/risk-managment-system/domain/shared/enums/action-type.enum';
 
 @Component({
   selector: 'app-action-details',
@@ -10,20 +11,42 @@ import { ActionItemDto } from '../../../../proxy/risk-managment-system/risks/dto
   imports: [CommonModule]
 })
 export class ActionDetailsComponent {
-  @Input() action: ActionItemDto | null = null;
+  @Input() action: ActionDetailsDto | null = null;
 
-  getBootstrapStatusBadgeClass(action: ActionItemDto): string {
+  getBootstrapStatusBadgeClass(action: ActionDetailsDto): string {
     if (action.daysOverdue && action.daysOverdue > 0) {
       return 'bg-danger';
     }
-    return 'bg-success';
+    
+    switch (action.status) {
+      case 3: return 'bg-success'; // Completed
+      case 2: return 'bg-warning'; // In Progress
+      case 4: return 'bg-danger';  // Overdue
+      case 1: return 'bg-primary'; // Open
+      default: return 'bg-secondary';
+    }
   }
 
-  getActionDisplayStatus(action: ActionItemDto): string {
+  getActionDisplayStatus(action: ActionDetailsDto): string {
     if (action.daysOverdue && action.daysOverdue > 0) {
       return 'Overdue';
     }
-    return 'Completed';
+    
+    switch (action.status) {
+      case 1: return 'Open';
+      case 2: return 'In Progress';
+      case 3: return 'Completed';
+      case 4: return 'Overdue';
+      default: return 'Unknown';
+    }
+  }
+
+  getActionTypeText(type?: ActionType): string {
+    switch (type) {
+      case ActionType.Preventive: return 'Preventive';
+      case ActionType.Mitigation: return 'Mitigation';
+      default: return 'Unknown';
+    }
   }
 
   getPriorityText(priority?: number): string {

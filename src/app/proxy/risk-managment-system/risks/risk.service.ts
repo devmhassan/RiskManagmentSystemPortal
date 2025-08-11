@@ -1,6 +1,7 @@
-import type { ActionStatusSummaryDto, ActionTrackerItemDto, ActionTrackerStatsDto, CostBenefitAnalysisDto, CreateRiskDto, DashboardStatsDto, RiskDto, RiskMatrixDto, UpdateRiskDto } from './dtos/models';
+import type { ActionDetailsDto, ActionStatusSummaryDto, ActionTrackerItemDto, ActionTrackerStatsDto, CostBenefitAnalysisDto, CreateRiskDto, DashboardStatsDto, RiskDto, RiskMatrixDto, UpdateRiskDto } from './dtos/models';
 import { RestService, Rest } from '@abp/ng.core';
 import { Injectable } from '@angular/core';
+import type { ActionType } from '../domain/shared/enums/action-type.enum';
 
 @Injectable({
   providedIn: 'root',
@@ -22,6 +23,15 @@ export class RiskService {
     this.restService.request<any, RiskDto>({
       method: 'GET',
       url: `/api/app/risk/${id}`,
+    },
+    { apiName: this.apiName,...config });
+  
+
+  getActionDetails = (actionType: ActionType, actionId: number, config?: Partial<Rest.Config>) =>
+    this.restService.request<any, ActionDetailsDto>({
+      method: 'GET',
+      url: `/api/app/risk/action-details/${actionId}`,
+      params: { actionType },
     },
     { apiName: this.apiName,...config });
   

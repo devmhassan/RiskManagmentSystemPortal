@@ -1,10 +1,51 @@
-import type { ActionPriority } from '../../domain/shared/enums/action-priority.enum';
-import type { ActionStatus } from '../../domain/shared/enums/action-status.enum';
-import type { EntityDto, FullAuditedEntityDto } from '@abp/ng.core';
 import type { ActionType } from '../../domain/shared/enums/action-type.enum';
+import type { ActionStatus } from '../../domain/shared/enums/action-status.enum';
+import type { ActionPriority } from '../../domain/shared/enums/action-priority.enum';
+import type { RiskStatus } from '../../domain/shared/enums/risk-status.enum';
+import type { ActionAttachmentDto, ActionCommentDto } from '../models';
+import type { EntityDto, FullAuditedEntityDto } from '@abp/ng.core';
 import type { Likelihood } from '../../domain/shared/enums/likelihood.enum';
 import type { Severity } from '../../domain/shared/enums/severity.enum';
-import type { RiskStatus } from '../../domain/shared/enums/risk-status.enum';
+
+export interface ActionDetailsDto {
+  actionId?: string;
+  description?: string;
+  type?: ActionType;
+  status?: ActionStatus;
+  priority?: ActionPriority;
+  assignedTo?: string;
+  dueDate?: string;
+  createdDate?: string;
+  completedDate?: string;
+  daysOverdue: number;
+  cost: number;
+  actualCost?: number;
+  riskId?: string;
+  riskTitle?: string;
+  riskDescription?: string;
+  riskStatus?: RiskStatus;
+  relatedCauseId?: number;
+  relatedCauseDescription?: string;
+  relatedConsequenceId?: number;
+  relatedConsequenceDescription?: string;
+  progressPercentage: number;
+  statusNotes?: string;
+  comments: ActionCommentDto[];
+  statusHistory: ActionStatusHistoryDto[];
+  attachments: ActionAttachmentDto[];
+  createdBy?: string;
+  lastModifiedBy?: string;
+  lastModifiedDate?: string;
+}
+
+export interface ActionStatusHistoryDto {
+  id: number;
+  fromStatus?: ActionStatus;
+  toStatus?: ActionStatus;
+  changedBy?: string;
+  changedDate?: string;
+  reason?: string;
+}
 
 export interface CreateMitigationActionForConsequenceDto {
   consequenceId: number;
@@ -46,6 +87,7 @@ export interface PreventionActionDto extends EntityDto<number> {
 }
 
 export interface UpdateMitigationActionDto {
+  id?: number;
   description: string;
   priority: ActionPriority;
   estimatedCost: number;
@@ -55,6 +97,7 @@ export interface UpdateMitigationActionDto {
 }
 
 export interface UpdatePreventionActionDto {
+  id?: number;
   description: string;
   cost: number;
   priority: ActionPriority;
@@ -256,6 +299,7 @@ export interface RiskMatrixDto {
 }
 
 export interface UpdateCauseDto {
+  id?: number;
   description: string;
   likelihood: Likelihood;
   severity: Severity;
@@ -269,6 +313,7 @@ export interface UpdateCauseForRiskDto {
 }
 
 export interface UpdateConsequenceDto {
+  id?: number;
   description: string;
   potentialCost: number;
   mitigationActions: UpdateMitigationActionDto[];

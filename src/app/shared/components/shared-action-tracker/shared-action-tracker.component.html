@@ -84,6 +84,53 @@
         <p class="action-tracker-section-subtitle">Track and manage all preventive and mitigation actions</p>
       </div>
 
+      <!-- Search and Filter Bar -->
+      <div class="filter-controls mb-4">
+        <div class="row g-3 align-items-center">
+          <div class="col-md-6">
+            <div class="search-container position-relative">
+              <i class="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-3 text-muted"></i>
+              <input 
+                type="text" 
+                class="form-control ps-5" 
+                placeholder="Search actions, risks, or assignees..."
+                [(ngModel)]="searchQuery"
+                (input)="onSearchChange()">
+              <button *ngIf="searchQuery" 
+                      class="btn btn-link position-absolute top-50 end-0 translate-middle-y me-2 p-1"
+                      (click)="searchQuery = ''; onSearchChange()">
+                <i class="bi bi-x-circle text-muted"></i>
+              </button>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="d-flex justify-content-md-end align-items-center gap-3">
+              <!-- Expand/Collapse All Controls -->
+              <div class="btn-group" role="group" aria-label="Expand collapse controls">
+                <button type="button" 
+                        class="btn btn-outline-secondary btn-sm"
+                        (click)="expandAllRisks()"
+                        title="Expand All Risks">
+                  <i class="bi bi-arrows-expand me-1"></i>
+                  Expand All
+                </button>
+                <button type="button" 
+                        class="btn btn-outline-secondary btn-sm"
+                        (click)="collapseAllRisks()"
+                        title="Collapse All Risks">
+                  <i class="bi bi-arrows-collapse me-1"></i>
+                  Collapse All
+                </button>
+              </div>
+              <small class="text-muted">
+                <i class="bi bi-info-circle me-1"></i>
+                Showing {{ displayedActions.length }} of {{ filteredActions.length }} actions
+              </small>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- Filter Tabs -->
       <div class="action-tabs-container mb-4">
         <div class="action-tabs">
@@ -91,25 +138,33 @@
                   class="action-tab" 
                   [class.active]="activeTab === 'all'"
                   (click)="setActiveTab('all')">
+            <i class="bi bi-list-ul me-1"></i>
             All Actions
+            <span class="badge bg-light text-dark ms-2">{{ allActions.length }}</span>
           </button>
           <button type="button" 
                   class="action-tab" 
                   [class.active]="activeTab === 'upcoming'"
                   (click)="setActiveTab('upcoming')">
+            <i class="bi bi-clock me-1"></i>
             Upcoming
+            <span class="badge bg-light text-dark ms-2">{{ getUpcomingCount() }}</span>
           </button>
           <button type="button" 
                   class="action-tab" 
                   [class.active]="activeTab === 'overdue'"
                   (click)="setActiveTab('overdue')">
+            <i class="bi bi-exclamation-triangle me-1"></i>
             Overdue
+            <span class="badge bg-danger text-white ms-2">{{ statusSummary.overdue }}</span>
           </button>
           <button type="button" 
                   class="action-tab" 
                   [class.active]="activeTab === 'completed'"
                   (click)="setActiveTab('completed')">
+            <i class="bi bi-check-circle me-1"></i>
             Completed
+            <span class="badge bg-success text-white ms-2">{{ statusSummary.completed }}</span>
           </button>
         </div>
       </div>
@@ -125,60 +180,154 @@
         </div>
 
         <div *ngIf="displayedActions.length > 0" class="action-items-list">
-          <div *ngFor="let action of displayedActions" 
-               class="action-item-card"
-               [ngClass]="{
-                 'action-status-completed': getActionStatus(action) === 'completed',
-                 'action-status-progress': getActionStatus(action) === 'progress', 
-                 'action-status-overdue': getActionStatus(action) === 'overdue',
-                 'action-status-open': getActionStatus(action) === 'open'
-               }">
-            <!-- Action Header -->
-            <div class="action-item-header">
-              <div class="action-item-id-section">
-                <span class="action-item-id">{{ action.riskId || 'ACT-000' }}</span>
-                <span class="action-item-status-badge" 
-                      [ngClass]="{
-                        'status-completed': getActionStatus(action) === 'completed',
-                        'status-progress': getActionStatus(action) === 'progress', 
-                        'status-overdue': getActionStatus(action) === 'overdue',
-                        'status-open': getActionStatus(action) === 'open'
-                      }">
-                  <i class="bi" 
-                     [ngClass]="{
-                       'bi-check-circle-fill': getActionStatus(action) === 'completed',
-                       'bi-hourglass-split': getActionStatus(action) === 'progress',
-                       'bi-exclamation-triangle-fill': getActionStatus(action) === 'overdue',
-                       'bi-circle': getActionStatus(action) === 'open'
-                     }"></i>
-                  {{ getStatusDisplayText(action) }}
-                </span>
-              </div>
-              <button class="action-item-view-btn" (click)="viewAction(action)">
-                View
-                <i class="bi bi-chevron-right"></i>
-              </button>
-            </div>
-
-            <!-- Action Content -->
-            <div class="action-item-content">
-              <h3 class="action-item-title">{{ action.description || 'No description available' }}</h3>
-              
-              <div class="action-item-meta">
-                <div class="action-meta-row">
-                  <span class="action-meta-label">Risk:</span>
-                  <span class="action-meta-value">{{ action.riskDescription || action.actionId || 'RISK-001' }} - Data breach due to unauthorized access</span>
+          <div *ngFor="let riskId of getRiskIds(displayedActions); let riskIndex = index" class="card risk-action-card mb-4 shadow-sm border-0">
+            <!-- Risk Header -->
+            <div class="card-header border-0 bg-gradient">
+              <div class="d-flex justify-content-between align-items-start">
+                <div class="risk-info flex-grow-1">
+                  <h5 class="card-title mb-1 fw-bold d-flex align-items-center">
+                    <div class="risk-icon-container me-2">
+                      <i class="bi bi-shield-exclamation"></i>
+                    </div>
+                    <span class="text-primary">{{ riskId }}</span>
+                  </h5>
+                  <p class="card-text text-muted mb-0 small lh-sm">
+                    {{ getRiskDescriptionById(riskId, displayedActions) }}
+                  </p>
                 </div>
-                <div class="action-meta-row">
-                  <span class="action-meta-label">Assigned to:</span>
-                  <span class="action-meta-value">{{ action.assignedTo || 'Unassigned' }}</span>
-                </div>
-                <div class="action-meta-row">
-                  <span class="action-meta-label">Due Date:</span>
-                  <span class="action-meta-value">{{ formatActionDate(action.dueDate) }}</span>
-                  <span *ngIf="action.daysOverdue && action.daysOverdue > 0" class="overdue-indicator">
-                    ({{ action.daysOverdue }} days overdue)
+                <div class="d-flex flex-column align-items-end gap-2">
+                  <span class="badge bg-primary rounded-pill px-3 py-2">
+                    <i class="bi bi-list-task me-1"></i>
+                    {{ getActionsGroupedByRisk(displayedActions)[riskId].length }} 
+                    {{ getActionsGroupedByRisk(displayedActions)[riskId].length === 1 ? 'Action' : 'Actions' }}
                   </span>
+                  <div class="risk-status-indicators">
+                    <span *ngIf="getRiskOverdueCount(riskId) > 0" 
+                          class="badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill px-2 py-1 me-1">
+                      <i class="bi bi-exclamation-triangle-fill me-1"></i>
+                      {{ getRiskOverdueCount(riskId) }} overdue
+                    </span>
+                    <span *ngIf="getRiskCompletedCount(riskId) > 0" 
+                          class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2 py-1">
+                      <i class="bi bi-check-circle-fill me-1"></i>
+                      {{ getRiskCompletedCount(riskId) }} completed
+                    </span>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Collapse/Expand Controls -->
+              <div class="d-flex justify-content-between align-items-center mt-3 pt-3 border-top border-light">
+                <div class="risk-summary-info d-flex gap-3">
+                  <small class="text-muted">
+                    <i class="bi bi-clock me-1"></i>
+                    {{ getRiskOpenCount(riskId) }} open
+                  </small>
+                  <small class="text-muted">
+                    <i class="bi bi-hourglass-split me-1"></i>
+                    {{ getRiskInProgressCount(riskId) }} in progress
+                  </small>
+                </div>
+                <button 
+                  class="btn btn-sm btn-outline-secondary collapse-toggle-btn"
+                  type="button"
+                  [attr.data-bs-toggle]="'collapse'"
+                  [attr.data-bs-target]="'#riskActions' + riskIndex"
+                  [attr.aria-expanded]="isRiskExpanded(riskId)"
+                  [attr.aria-controls]="'riskActions' + riskIndex"
+                  (click)="toggleRiskExpansion(riskId)">
+                  <i class="bi me-1" 
+                     [ngClass]="isRiskExpanded(riskId) ? 'bi-chevron-up' : 'bi-chevron-down'"></i>
+                  {{ isRiskExpanded(riskId) ? 'Hide' : 'Show' }} Actions
+                </button>
+              </div>
+            </div>
+            
+            <!-- Actions List (Collapsible) -->
+            <div class="collapse" 
+                 [class.show]="isRiskExpanded(riskId)"
+                 [id]="'riskActions' + riskIndex">
+              <div class="card-body p-0">
+                <div class="list-group list-group-flush">
+                  <div *ngFor="let action of getActionsGroupedByRisk(displayedActions)[riskId]; let isLast = last" 
+                       class="list-group-item list-group-item-action border-0 py-3 action-item"
+                       [ngClass]="{
+                         'border-bottom': !isLast,
+                         'action-completed': getActionStatus(action) === 'completed',
+                         'action-overdue': getActionStatus(action) === 'overdue',
+                         'action-progress': getActionStatus(action) === 'progress'
+                       }">
+                    
+                    <div class="d-flex justify-content-between align-items-start">
+                      <!-- Action Content -->
+                      <div class="flex-grow-1 me-3">
+                        <div class="d-flex align-items-center mb-2 flex-wrap gap-2">
+                          <span class="badge status-badge"
+                                [ngClass]="{
+                                  'bg-success': getActionStatus(action) === 'completed',
+                                  'bg-danger': getActionStatus(action) === 'overdue',
+                                  'bg-warning': getActionStatus(action) === 'progress',
+                                  'bg-primary': getActionStatus(action) === 'open'
+                                }">
+                            <i class="bi me-1" 
+                               [ngClass]="{
+                                 'bi-check-circle-fill': getActionStatus(action) === 'completed',
+                                 'bi-hourglass-split': getActionStatus(action) === 'progress',
+                                 'bi-exclamation-triangle-fill': getActionStatus(action) === 'overdue',
+                                 'bi-circle': getActionStatus(action) === 'open'
+                               }"></i>
+                            {{ getStatusDisplayText(action) }}
+                          </span>
+                          
+                          <span class="badge bg-light text-dark border action-id-badge">
+                            #{{ action.actionId }}
+                          </span>
+                          
+                          <span *ngIf="action.priority" 
+                                class="badge priority-badge"
+                                [ngClass]="getPriorityCssClass(action.priority)">
+                            <i class="bi bi-flag-fill me-1"></i>
+                            {{ getPriorityDisplayText(action.priority) }}
+                          </span>
+                        </div>
+                        
+                        <h6 class="mb-2 fw-semibold action-title">{{ action.description || 'No description available' }}</h6>
+                        
+                        <div class="row g-2 small text-muted action-meta">
+                          <div class="col-lg-4 col-md-6">
+                            <div class="d-flex align-items-center">
+                              <i class="bi bi-person me-1 text-primary"></i>
+                              <span class="fw-medium">Assigned:</span>
+                              <span class="ms-1 {{ action.assignedTo === 'Unassigned' ? 'text-warning' : '' }}">
+                                {{ action.assignedTo || 'Unassigned' }}
+                              </span>
+                            </div>
+                          </div>
+                          <div class="col-lg-4 col-md-6">
+                            <div class="d-flex align-items-center">
+                              <i class="bi bi-calendar3 me-1 text-info"></i>
+                              <span class="fw-medium">Due:</span>
+                              <span class="ms-1">{{ formatActionDate(action.dueDate) }}</span>
+                            </div>
+                          </div>
+                          <div class="col-lg-4 col-md-12" *ngIf="action.daysOverdue && action.daysOverdue > 0">
+                            <div class="d-flex align-items-center">
+                              <i class="bi bi-exclamation-triangle text-danger me-1"></i>
+                              <span class="text-danger fw-bold">{{ action.daysOverdue }} days overdue</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <!-- Action Button -->
+                      <div class="flex-shrink-0">
+                        <button class="btn btn-outline-primary btn-sm action-view-btn" (click)="viewAction(action)">
+                          <i class="bi bi-eye me-1"></i>
+                          View
+                        </button>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
