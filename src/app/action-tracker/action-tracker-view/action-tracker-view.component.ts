@@ -96,6 +96,10 @@ export class ActionTrackerViewComponent implements OnInit {
     this.router.navigate(['/action-tracker']);
   }
 
+  viewRisk(riskId: string): void {
+    this.router.navigate(['/risk', riskId]);
+  }
+
   getTabBadgeCount(tab: 'details' | 'comments' | 'attachments'): number {
     if (!this.action) return 0;
     
@@ -141,6 +145,30 @@ export class ActionTrackerViewComponent implements OnInit {
       case ActionType.Preventive: return 'Preventive';
       case ActionType.Mitigation: return 'Mitigation';
       default: return 'Unknown';
+    }
+  }
+
+  getProgressPercentage(): number {
+    if (!this.action?.status) return 0;
+    
+    switch (this.action.status) {
+      case 1: return 0;   // Open
+      case 2: return 50;  // In Progress
+      case 3: return 100; // Completed
+      case 4: return 50;  // Overdue (treat as in progress)
+      default: return 0;
+    }
+  }
+
+  getProgressBarClass(): string {
+    if (!this.action?.status) return 'bg-secondary';
+    
+    switch (this.action.status) {
+      case 1: return 'bg-secondary';   // Open - gray
+      case 2: return 'bg-warning';     // In Progress - yellow
+      case 3: return 'bg-success';     // Completed - green
+      case 4: return 'bg-danger';      // Overdue - red
+      default: return 'bg-secondary';
     }
   }
 

@@ -152,9 +152,21 @@
           <!-- Status -->
           <div class="mb-4">
             <h6 class="text-muted mb-2">Status</h6>
-            <span class="badge bg-success fs-6 px-3 py-2">
-              <i class="bi bi-check-circle me-1"></i>
-              Completed
+            <span class="badge fs-6 px-3 py-2"
+                  [ngClass]="{
+                    'bg-success': action.status === 3,
+                    'bg-danger': action.status === 4,
+                    'bg-warning': action.status === 2,
+                    'bg-secondary': action.status === 1
+                  }">
+              <i class="bi me-1" 
+                 [ngClass]="{
+                   'bi-check-circle': action.status === 3,
+                   'bi-exclamation-triangle': action.status === 4,
+                   'bi-hourglass-split': action.status === 2,
+                   'bi-circle': action.status === 1
+                 }"></i>
+              {{ getStatusDisplayText() }}
             </span>
           </div>
 
@@ -162,15 +174,16 @@
           <div class="mb-4">
             <h6 class="text-muted mb-2">Progress</h6>
             <div class="progress mb-2" style="height: 8px;">
-              <div class="progress-bar bg-dark" 
+              <div class="progress-bar" 
+                   [ngClass]="getProgressBarClass()"
                    role="progressbar" 
-                   style="width: 100%"
-                   aria-valuenow="100" 
+                   [style.width.%]="getProgressPercentage()"
+                   [attr.aria-valuenow]="getProgressPercentage()" 
                    aria-valuemin="0" 
                    aria-valuemax="100">
               </div>
             </div>
-            <small class="text-muted">100%</small>
+            <small class="text-muted">{{ getProgressPercentage() }}%</small>
           </div>
 
           <!-- Timeline -->
@@ -179,19 +192,28 @@
             <div class="row g-3">
               <div class="col-6">
                 <label class="form-label text-muted small fw-semibold">Start Date:</label>
-                <p class="mb-0 small">10/15/2023</p>
+                <p class="mb-0 small">{{ formatDate(action.createdDate) }}</p>
               </div>
               <div class="col-6">
                 <label class="form-label text-muted small fw-semibold">Due Date:</label>
-                <p class="mb-0 small">11/15/2023</p>
+                <p class="mb-0 small">{{ formatDate(action.dueDate) }}</p>
               </div>
               <div class="col-6">
                 <label class="form-label text-muted small fw-semibold">Completion Date:</label>
-                <p class="mb-0 small">11/10/2023</p>
+                <p class="mb-0 small">{{ formatDate(action.completedDate) }}</p>
               </div>
               <div class="col-6">
-                <label class="form-label text-muted small fw-semibold">Remaining:</label>
-                <p class="mb-0 small">Completed</p>
+                <label class="form-label text-muted small fw-semibold">Days Overdue:</label>
+                <p class="mb-0 small" 
+                   [ngClass]="{
+                     'text-danger': action.daysOverdue && action.daysOverdue > 0,
+                     'text-success': action.status === 3,
+                     'text-muted': !action.daysOverdue || action.daysOverdue <= 0
+                   }">
+                  <span *ngIf="action.status === 3">Completed</span>
+                  <span *ngIf="action.status !== 3 && (!action.daysOverdue || action.daysOverdue <= 0)">On Time</span>
+                  <span *ngIf="action.status !== 3 && action.daysOverdue && action.daysOverdue > 0">{{ action.daysOverdue }} days</span>
+                </p>
               </div>
             </div>
           </div>
@@ -199,9 +221,12 @@
           <!-- Related Risk -->
           <div class="mb-4">
             <h6 class="text-muted mb-2">Related Risk</h6>
-            <button class="btn btn-outline-primary btn-sm w-100">
-              View Risk RISK-001
+            <button class="btn btn-outline-primary btn-sm w-100" 
+                    *ngIf="action.riskId"
+                    (click)="viewRisk(action.riskId)">
+              View Risk {{ action.riskId }}
             </button>
+            <p class="text-muted small mb-0" *ngIf="!action.riskId">No related risk</p>
           </div>
 
           <!-- Actions -->

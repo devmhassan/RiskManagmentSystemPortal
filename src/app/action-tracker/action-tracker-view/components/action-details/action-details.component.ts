@@ -82,4 +82,43 @@ export class ActionDetailsComponent {
       return dateString;
     }
   }
+
+  formatCurrency(amount?: number): string {
+    if (amount === undefined || amount === null) return 'N/A';
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 2
+    }).format(amount);
+  }
+
+  getCostVariance(): { amount: number; text: string; class: string } {
+    if (!this.action?.cost || !this.action?.actualCost) {
+      return { amount: 0, text: 'N/A', class: 'text-muted' };
+    }
+
+    const variance = this.action.actualCost - this.action.cost;
+    const formattedVariance = this.formatCurrency(Math.abs(variance));
+    
+    if (variance < 0) {
+      return {
+        amount: variance,
+        text: `-${formattedVariance} (Under budget)`,
+        class: 'text-success'
+      };
+    } else if (variance > 0) {
+      return {
+        amount: variance,
+        text: `+${formattedVariance} (Over budget)`,
+        class: 'text-danger'
+      };
+    } else {
+      return {
+        amount: 0,
+        text: 'On budget',
+        class: 'text-primary'
+      };
+    }
+  }
 }

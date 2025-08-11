@@ -10,7 +10,7 @@
         <div class="row g-3">
           <div class="col-12">
             <label class="form-label fw-semibold text-muted">Type</label>
-            <p class="mb-0">Preventive</p>
+            <p class="mb-0">{{ getActionTypeText(action.type) }}</p>
           </div>
           
           <div class="col-12">
@@ -23,8 +23,8 @@
           </div>
           
           <div class="col-6">
-            <label class="form-label fw-semibold text-muted">Owner</label>
-            <p class="mb-0">John Smith</p>
+            <label class="form-label fw-semibold text-muted">Created By</label>
+            <p class="mb-0">{{ action.createdBy || 'N/A' }}</p>
           </div>
           
           <div class="col-6">
@@ -33,8 +33,8 @@
           </div>
           
           <div class="col-6">
-            <label class="form-label fw-semibold text-muted">Business Unit</label>
-            <p class="mb-0">IT Security</p>
+            <label class="form-label fw-semibold text-muted">Last Modified By</label>
+            <p class="mb-0">{{ action.lastModifiedBy || 'N/A' }}</p>
           </div>
           
           <div class="col-6">
@@ -61,17 +61,17 @@
         <div class="row g-3">
           <div class="col-6">
             <label class="form-label fw-semibold text-muted">Estimated Cost</label>
-            <p class="mb-0">$5,000</p>
+            <p class="mb-0">{{ formatCurrency(action.cost) }}</p>
           </div>
           
           <div class="col-6">
             <label class="form-label fw-semibold text-muted">Actual Cost</label>
-            <p class="mb-0">$4,800</p>
+            <p class="mb-0">{{ formatCurrency(action.actualCost) }}</p>
           </div>
           
           <div class="col-12">
             <label class="form-label fw-semibold text-muted">Cost Variance</label>
-            <p class="mb-0 text-success">-$200 (Under budget)</p>
+            <p class="mb-0" [ngClass]="getCostVariance().class">{{ getCostVariance().text }}</p>
           </div>
           
           <div class="col-12">
