@@ -11,6 +11,10 @@ const routes: Routes = [
   {
     path: 'view/:actionId',
     component: ActionTrackerViewComponent
+  },
+  {
+    path: 'view/:actionId/:riskId',
+    component: ActionTrackerViewComponent
   }
 ];
 

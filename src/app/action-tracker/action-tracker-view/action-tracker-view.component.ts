@@ -2,7 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ActionItemDto } from '../../proxy/risk-managment-system/risks/dtos/models';
+import { ActionDetailsDto } from '../../proxy/risk-managment-system/risks/dtos/models';
+import { ActionType } from '../../proxy/risk-managment-system/domain/shared/enums/action-type.enum';
 import { RiskService } from '../../proxy/risk-managment-system/risks/risk.service';
 import { ActionDetailsComponent } from './components/action-details/action-details.component';
 import { ActionCommentsComponent } from './components/action-comments/action-comments.component';
@@ -22,8 +23,9 @@ import { ActionAttachmentsComponent } from './components/action-attachments/acti
   ]
 })
 export class ActionTrackerViewComponent implements OnInit {
-  action: ActionItemDto | null = null;
+  action: ActionDetailsDto | null = null;
   actionId: string | null = null;
+  riskId: string | null = null;
   loading = false;
   error: string | null = null;
   
@@ -38,6 +40,7 @@ export class ActionTrackerViewComponent implements OnInit {
   ngOnInit(): void {
     this.route.params.subscribe(params => {
       this.actionId = params['actionId'];
+      this.riskId = params['riskId'];
       if (this.actionId) {
         this.loadActionData(this.actionId);
       } else {
@@ -50,38 +53,39 @@ export class ActionTrackerViewComponent implements OnInit {
     this.loading = true;
     this.error = null;
     
-    // For now, we'll create a mock action based on the ID
-    // In a real implementation, you would fetch this from your service
-    this.action = this.createMockAction(actionId);
-    this.loading = false;
+    // Convert actionId to number for the API call
+    const actionIdNumber = parseInt(actionId, 10);
+    if (isNaN(actionIdNumber)) {
+      this.error = 'Invalid action ID format';
+      this.loading = false;
+      return;
+    }
     
-    // Uncomment this when you have a real service method to fetch action by ID
-    // this.riskService.getActionById(actionId).subscribe({
-    //   next: (action) => {
-    //     this.action = action;
-    //     this.loading = false;
-    //   },
-    //   error: (error) => {
-    //     console.error('Error loading action:', error);
-    //     this.error = 'Failed to load action data';
-    //     this.loading = false;
-    //   }
-    // });
+    // Try to load action details. We'll first try Preventive, then Mitigation
+    this.tryLoadActionWithType(ActionType.Preventive, actionIdNumber);
   }
 
-  private createMockAction(actionId: string): ActionItemDto {
-    // Mock action data for demonstration
-    return {
-      actionId: actionId,
-      description: 'Implement strong password requirements',
-      riskDescription: 'Weak password policy increases security risks',
-      riskId: 'RISK-001',
-      assignedTo: 'John Smith',
-      dueDate: '2023-11-15',
-      status: 1, // Assuming this maps to completed
-      priority: 2, // Assuming this maps to high
-      daysOverdue: 0
-    } as ActionItemDto;
+  private tryLoadActionWithType(actionType: ActionType, actionId: number): void {
+    this.riskService.getActionDetails(actionType, actionId).subscribe({
+      next: (action) => {
+        this.action = action;
+        this.loading = false;
+        console.log('Action loaded successfully:', action);
+      },
+      error: (error) => {
+        console.error(`Error loading action with type ${actionType}:`, error);
+        
+        // If Preventive failed, try Mitigation
+        if (actionType === ActionType.Preventive) {
+          console.log('Trying Mitigation action type...');
+          this.tryLoadActionWithType(ActionType.Mitigation, actionId);
+        } else {
+          // Both types failed
+          this.error = `Failed to load action data. Action ${actionId} not found as either Preventive or Mitigation action.`;
+          this.loading = false;
+        }
+      }
+    });
   }
 
   setActiveTab(tab: 'details' | 'comments' | 'attachments'): void {
@@ -93,13 +97,65 @@ export class ActionTrackerViewComponent implements OnInit {
   }
 
   getTabBadgeCount(tab: 'details' | 'comments' | 'attachments'): number {
+    if (!this.action) return 0;
+    
     switch (tab) {
       case 'comments':
-        return 3; // Mock count from the image
+        return this.action.comments?.length || 0;
       case 'attachments':
-        return 2; // Mock count from the image
+        return this.action.attachments?.length || 0;
       default:
         return 0;
+    }
+  }
+
+  getStatusDisplayText(): string {
+    if (!this.action?.status) return 'Unknown';
+    
+    switch (this.action.status) {
+      case 1: return 'Open';
+      case 2: return 'In Progress';
+      case 3: return 'Completed';
+      case 4: return 'Overdue';
+      default: return 'Unknown';
+    }
+  }
+
+  getPriorityDisplayText(): string {
+    if (!this.action?.priority) return 'Unknown';
+    
+    switch (this.action.priority) {
+      case 1: return 'Low';
+      case 2: return 'Medium';
+      case 3: return 'High';
+      case 4: return 'Urgent';
+      case 5: return 'Immediate';
+      default: return 'Unknown';
+    }
+  }
+
+  getActionTypeDisplayText(): string {
+    if (!this.action?.type) return 'Unknown';
+    
+    switch (this.action.type) {
+      case ActionType.Preventive: return 'Preventive';
+      case ActionType.Mitigation: return 'Mitigation';
+      default: return 'Unknown';
+    }
+  }
+
+  formatDate(dateString?: string): string {
+    if (!dateString) return 'Not set';
+    
+    try {
+      const date = new Date(dateString);
+      return date.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
+      });
+    } catch {
+      return dateString;
     }
   }
 }

@@ -1,16 +1,11 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActionItemDto } from '../../../../proxy/risk-managment-system/risks/dtos/models';
-
-export interface ActionAttachment {
-  id: string;
-  fileName: string;
-  fileSize: string;
-  uploadedBy: string;
-  uploadDate: string;
-  fileType: string;
-  downloadUrl?: string;
-}
+import { RestService } from '@abp/ng.core';
+import { ActionDetailsDto } from '../../../../proxy/risk-managment-system/risks/dtos/models';
+import { ActionAttachmentDto, UploadActionAttachmentDto } from '../../../../proxy/risk-managment-system/risks/models';
+import { ActionAttachmentService } from '../../../../proxy/risk-managment-system/actions/action-attachment.service';
+import { ActionType } from '../../../../proxy/risk-managment-system/domain/shared/enums/action-type.enum';
+import { finalize } from 'rxjs/operators';
 
 @Component({
   selector: 'app-action-attachments',
@@ -19,30 +14,37 @@ export interface ActionAttachment {
   standalone: true,
   imports: [CommonModule]
 })
-export class ActionAttachmentsComponent {
-  @Input() action: ActionItemDto | null = null;
+export class ActionAttachmentsComponent implements OnInit {
+  @Input() action: ActionDetailsDto | null = null;
   
   selectedFile: File | null = null;
-  
-  // Mock attachments data based on the attached images
-  attachments: ActionAttachment[] = [
-    {
-      id: '1',
-      fileName: 'Password Policy Document.pdf',
-      fileSize: '2.5 MB',
-      uploadedBy: 'John Smith',
-      uploadDate: '10/16/2023',
-      fileType: 'pdf'
-    },
-    {
-      id: '2',
-      fileName: 'Implementation Report.xlsx',
-      fileSize: '1.8 MB',
-      uploadedBy: 'John Smith',
-      uploadDate: '11/10/2023',
-      fileType: 'xlsx'
+  attachments: ActionAttachmentDto[] = [];
+  isLoading = false;
+  isUploading = false;
+  errorMessage = '';
+
+  constructor(
+    private actionAttachmentService: ActionAttachmentService,
+    private restService: RestService
+  ) {}
+
+  ngOnInit(): void {
+    this.loadAttachments();
+  }
+
+  loadAttachments(): void {
+    if (!this.action) return;
+
+    // Use attachments from ActionDetailsDto if available
+    if (this.action.attachments && this.action.attachments.length > 0) {
+      this.attachments = this.action.attachments;
+      return;
     }
-  ];
+
+    // If no attachments in the DTO, we could load them separately if needed
+    // For now, we'll use the attachments from the action details
+    this.attachments = [];
+  }
 
   onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
@@ -52,39 +54,113 @@ export class ActionAttachmentsComponent {
   }
 
   uploadFile(): void {
-    if (this.selectedFile) {
-      // Mock upload - in real app, upload to server
-      const newAttachment: ActionAttachment = {
-        id: Date.now().toString(),
-        fileName: this.selectedFile.name,
-        fileSize: this.formatFileSize(this.selectedFile.size),
+    if (!this.selectedFile || !this.action) return;
+
+    this.isUploading = true;
+    this.errorMessage = '';
+
+    // Convert file to byte array as expected by the backend
+    const reader = new FileReader();
+    reader.onload = () => {
+      const arrayBuffer = reader.result as ArrayBuffer;
+      const uint8Array = new Uint8Array(arrayBuffer);
+      const fileContent = Array.from(uint8Array);
+
+      // Create the DTO structure that matches the backend expectations
+      const uploadDto: UploadActionAttachmentDto = {
+        fileName: this.selectedFile!.name,
+        contentType: this.selectedFile!.type || 'application/octet-stream',
+        fileContent: fileContent,
         uploadedBy: 'Current User', // In real app, get from auth service
-        uploadDate: new Date().toLocaleDateString(),
-        fileType: this.getFileExtension(this.selectedFile.name)
+        // Set the appropriate action ID based on action type - ensure only one is set
+        preventionActionId: this.action!.type === ActionType.Preventive ? Number(this.action!.actionId) : undefined,
+        mitigationActionId: this.action!.type === ActionType.Mitigation ? Number(this.action!.actionId) : undefined
       };
-      
-      this.attachments.push(newAttachment);
-      this.selectedFile = null;
-      
-      // Reset the file input
-      const fileInput = document.getElementById('fileUpload') as HTMLInputElement;
-      if (fileInput) {
-        fileInput.value = '';
-      }
-    }
+
+      console.log('Upload DTO:', {
+        fileName: uploadDto.fileName,
+        contentType: uploadDto.contentType,
+        fileContentLength: uploadDto.fileContent.length,
+        uploadedBy: uploadDto.uploadedBy,
+        preventionActionId: uploadDto.preventionActionId,
+        mitigationActionId: uploadDto.mitigationActionId,
+        actionType: this.action!.type,
+        actionId: this.action!.actionId
+      });
+
+      // Use RestService directly with "input" wrapper as expected by ABP
+      this.restService.request<any, ActionAttachmentDto>({
+        method: 'POST',
+        url: '/api/app/action-attachment/upload',
+        body: { input: uploadDto }, // Wrap in "input" object
+      }, { apiName: 'Default' })
+        .pipe(finalize(() => this.isUploading = false))
+        .subscribe({
+          next: (attachment) => {
+            console.log('Upload successful:', attachment);
+            this.attachments.push(attachment);
+            this.selectedFile = null;
+            
+            // Reset the file input
+            const fileInput = document.getElementById('fileUpload') as HTMLInputElement;
+            if (fileInput) {
+              fileInput.value = '';
+            }
+          },
+          error: (error) => {
+            console.error('Error uploading file:', error);
+            this.errorMessage = error?.error?.message || error?.message || 'Failed to upload file. Please try again.';
+          }
+        });
+    };
+
+    reader.onerror = () => {
+      this.isUploading = false;
+      this.errorMessage = 'Failed to read file. Please try again.';
+    };
+
+    reader.readAsArrayBuffer(this.selectedFile);
   }
 
-  downloadFile(attachment: ActionAttachment): void {
-    // Mock download - in real app, download from server
-    console.log('Downloading file:', attachment.fileName);
-    // You would typically create a download link or call an API endpoint here
+  downloadFile(attachment: ActionAttachmentDto): void {
+    if (!attachment.id) return;
+
+    this.actionAttachmentService.download(attachment.id)
+      .subscribe({
+        next: (blob) => {
+          const url = window.URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = attachment.fileName || 'download';
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          window.URL.revokeObjectURL(url);
+        },
+        error: (error) => {
+          console.error('Error downloading file:', error);
+          this.errorMessage = 'Failed to download file. Please try again.';
+        }
+      });
   }
 
-  deleteAttachment(attachmentId: string): void {
-    this.attachments = this.attachments.filter(a => a.id !== attachmentId);
+  deleteAttachment(attachmentId: number): void {
+    if (!confirm('Are you sure you want to delete this attachment?')) return;
+
+    this.actionAttachmentService.delete(attachmentId)
+      .subscribe({
+        next: () => {
+          this.attachments = this.attachments.filter(a => a.id !== attachmentId);
+        },
+        error: (error) => {
+          console.error('Error deleting attachment:', error);
+          this.errorMessage = 'Failed to delete attachment. Please try again.';
+        }
+      });
   }
 
-  getFileIcon(fileType: string): string {
+  getFileIcon(attachment: ActionAttachmentDto): string {
+    const fileType = this.getFileExtension(attachment.fileName || '');
     switch (fileType.toLowerCase()) {
       case 'pdf':
         return 'bi-file-earmark-pdf text-danger';
@@ -116,6 +192,15 @@ export class ActionAttachmentsComponent {
     const sizes = ['Bytes', 'KB', 'MB', 'GB'];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  }
+
+  getFormattedFileSize(attachment: ActionAttachmentDto): string {
+    return this.formatFileSize(attachment.fileSize || 0);
+  }
+
+  getFormattedUploadDate(attachment: ActionAttachmentDto): string {
+    if (!attachment.creationTime) return '';
+    return new Date(attachment.creationTime).toLocaleDateString();
   }
 
   private getFileExtension(fileName: string): string {

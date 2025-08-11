@@ -2,32 +2,74 @@
 .comment-item {
   transition: all 0.2s ease-in-out;
   border: 1px solid #e9ecef !important;
-}
-
-.comment-item:hover {
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  transform: translateY(-1px);
+  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%) !important;
+  
+  &:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+    border-color: #dee2e6 !important;
+  }
 }
 
 .user-avatar {
   min-width: 40px;
   min-height: 40px;
   font-size: 0.875rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease;
+  
+  &:hover {
+    transform: scale(1.05);
+  }
 }
 
 .comment-content {
-  line-height: 1.5;
+  line-height: 1.6;
   color: #495057;
+  word-wrap: break-word;
+  white-space: pre-wrap;
 }
 
 .comment-textarea {
-  border: 1px solid #ced4da;
-  border-radius: 8px;
+  border: 2px solid #e9ecef;
+  border-radius: 12px;
   resize: vertical;
   min-height: 100px;
+  transition: all 0.2s ease;
+  
+  &:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.15);
+    outline: none;
+  }
 }
 
-.comment-textarea:focus {
+// Enhanced button styles
+.btn-outline-danger {
+  opacity: 0.7;
+  transition: all 0.2s ease;
+  
+  &:hover {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+}
+
+// Loading and empty states
+.text-center {
+  i {
+    opacity: 0.7;
+  }
+}
+
+// Header section
+h6 {
+  color: #495057;
+  font-weight: 600;
+}
+
+// Form controls
+.form-control:focus {
   border-color: #80bdff;
   box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
 }

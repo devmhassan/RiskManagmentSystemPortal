@@ -60,7 +60,6 @@ export class ActionTrackerComponent implements OnInit {
     
     this.riskService.getActionTrackerStats().subscribe({
       next: (stats: ActionTrackerStatsDto) => {
-        debugger;
         this.updateActionTrackerStats(stats);
         this.filterActions();
         this.loading = false;

@@ -34,6 +34,7 @@ export class SharedActionTrackerComponent implements OnInit, OnChanges {
 
   activeTab: 'all' | 'upcoming' | 'overdue' | 'completed' = 'all';
   searchQuery = '';
+  expandedRisks: Set<string> = new Set();
 
   get statusSummary(): ActionStatusSummary {
     return {
@@ -53,10 +54,14 @@ export class SharedActionTrackerComponent implements OnInit, OnChanges {
   ngOnInit(): void {
    
     this.initializeActions();
+    // Expand all risks by default
+    this.expandAllRisks();
   }
 
   ngOnChanges(): void {
     this.initializeActions();
+    // Expand all risks when data changes (you can modify this behavior as needed)
+    this.expandAllRisks();
   }
 
   private initializeActions(): void {
@@ -70,13 +75,13 @@ export class SharedActionTrackerComponent implements OnInit, OnChanges {
     ];
 
     // Remove duplicates based on actionId
-    const uniqueActionsMap = new Map<string, ActionItemDto>();
-    this.allActions.forEach(action => {
-      if (action.actionId) {
-        uniqueActionsMap.set(action.actionId, action);
-      }
-    });
-    this.allActions = Array.from(uniqueActionsMap.values());
+    // const uniqueActionsMap = new Map<string, ActionItemDto>();
+    // this.allActions.forEach(action => {
+    //   if (action.actionId) {
+    //     uniqueActionsMap.set(action.actionId, action);
+    //   }
+    // });
+    // this.allActions = Array.from(uniqueActionsMap.values());
     this.filterActions();
   }
 
@@ -241,7 +246,79 @@ export class SharedActionTrackerComponent implements OnInit, OnChanges {
     }
   }
 
+  getActionsGroupedByRisk(actions: ActionItemDto[]): { [riskId: string]: ActionItemDto[] } {
+    return actions.reduce((groups, action) => {
+      const riskId = action.riskId || 'Unknown Risk';
+      if (!groups[riskId]) {
+        groups[riskId] = [];
+      }
+      groups[riskId].push(action);
+      return groups;
+    }, {} as { [riskId: string]: ActionItemDto[] });
+  }
+
+  getRiskIds(actions: ActionItemDto[]): string[] {
+    return Object.keys(this.getActionsGroupedByRisk(actions));
+  }
+
+  getRiskDescriptionById(riskId: string, actions: ActionItemDto[]): string {
+    const action = actions.find(a => a.riskId === riskId);
+    return action?.riskDescription || riskId;
+  }
+
+  getUpcomingCount(): number {
+    return this.allActions.filter(action => 
+      this.getActionStatus(action) === 'open' && (!action.daysOverdue || action.daysOverdue <= 0)
+    ).length;
+  }
+
+  getRiskOverdueCount(riskId: string): number {
+    const riskActions = this.getActionsGroupedByRisk(this.displayedActions)[riskId] || [];
+    return riskActions.filter(action => this.getActionStatus(action) === 'overdue').length;
+  }
+
+  getRiskCompletedCount(riskId: string): number {
+    const riskActions = this.getActionsGroupedByRisk(this.displayedActions)[riskId] || [];
+    return riskActions.filter(action => this.getActionStatus(action) === 'completed').length;
+  }
+
+  getRiskOpenCount(riskId: string): number {
+    const riskActions = this.getActionsGroupedByRisk(this.displayedActions)[riskId] || [];
+    return riskActions.filter(action => this.getActionStatus(action) === 'open').length;
+  }
+
+  getRiskInProgressCount(riskId: string): number {
+    const riskActions = this.getActionsGroupedByRisk(this.displayedActions)[riskId] || [];
+    return riskActions.filter(action => this.getActionStatus(action) === 'progress').length;
+  }
+
+  isRiskExpanded(riskId: string): boolean {
+    return this.expandedRisks.has(riskId);
+  }
+
+  toggleRiskExpansion(riskId: string): void {
+    if (this.expandedRisks.has(riskId)) {
+      this.expandedRisks.delete(riskId);
+    } else {
+      this.expandedRisks.add(riskId);
+    }
+  }
+
+  expandAllRisks(): void {
+    const riskIds = this.getRiskIds(this.allActions);
+    riskIds.forEach(riskId => this.expandedRisks.add(riskId));
+  }
+
+  collapseAllRisks(): void {
+    this.expandedRisks.clear();
+  }
+
   viewAction(action: ActionItemDto): void {
-    this.router.navigate(['/action-tracker/view', action.actionId]);
+    // Navigate with both actionId and riskId for better context
+    if (action.riskId) {
+      this.router.navigate(['/action-tracker/view', action.actionId, action.riskId]);
+    } else {
+      this.router.navigate(['/action-tracker/view', action.actionId]);
+    }
   }
 }

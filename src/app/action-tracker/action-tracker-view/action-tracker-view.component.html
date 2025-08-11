@@ -27,7 +27,7 @@
               Back to Actions
             </button>
             <div class="mt-2">
-            <h4 class="mb-0 fw-semibold">ACT-001: Implement strong password requirements</h4>
+            <h4 class="mb-0 fw-semibold">{{ action.actionId }}: {{ action.description || 'No description available' }}</h4>
           </div>
           </div>
       <div class="card border-0 shadow-sm">
@@ -35,14 +35,28 @@
         
           <div class="d-flex align-items-center justify-content-between">
             <div class="mt-2">
-            <h4 class="mb-0 fw-semibold">Implement strong password requirements</h4>
+            <h4 class="mb-0 fw-semibold">{{ action.description || 'No description available' }}</h4>
           </div>
-            <span class="badge bg-success fs-6">
-              <i class="bi bi-check-circle me-1"></i>
-              Completed
+            <span class="badge fs-6"
+                  [ngClass]="{
+                    'bg-success': action.status === 3,
+                    'bg-danger': action.status === 4 || (action.daysOverdue && action.daysOverdue > 0),
+                    'bg-warning': action.status === 2,
+                    'bg-primary': action.status === 1
+                  }">
+              <i class="bi me-1" 
+                 [ngClass]="{
+                   'bi-check-circle': action.status === 3,
+                   'bi-exclamation-triangle': action.status === 4 || (action.daysOverdue && action.daysOverdue > 0),
+                   'bi-hourglass-split': action.status === 2,
+                   'bi-circle': action.status === 1
+                 }"></i>
+              {{ getStatusDisplayText() }}
             </span>
           </div>
-            <p class="mb-0 text-muted">Risk: {{ action.riskId || 'RISK-001' }}</p>
+            <p class="mb-0 text-muted">
+              <strong>Risk:</strong> {{ action.riskId }} - {{ action.riskTitle || action.riskDescription }}
+            </p>
           
         </div>
 
