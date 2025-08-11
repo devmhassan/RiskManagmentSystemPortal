@@ -2309,6 +2309,202 @@
             }
           }
         },
+        "RiskManagmentSystem.Controllers.Lookups.BusinessDomainController": {
+          "controllerName": "BusinessDomain",
+          "controllerGroupName": null,
+          "isRemoteService": false,
+          "isIntegrationService": false,
+          "apiVersion": null,
+          "type": "RiskManagmentSystem.Controllers.Lookups.BusinessDomainController",
+          "interfaces": [],
+          "actions": {
+            "GetListAsync": {
+              "uniqueName": "GetListAsync",
+              "name": "GetListAsync",
+              "httpMethod": "GET",
+              "url": "api/lookups/business-domains",
+              "supportedVersions": [],
+              "parametersOnMethod": [],
+              "parameters": [],
+              "returnValue": {
+                "type": "System.Collections.Generic.List<RiskManagmentSystem.Lookups.Dtos.BusinessDomainDto>",
+                "typeSimple": "[RiskManagmentSystem.Lookups.Dtos.BusinessDomainDto]"
+              },
+              "allowAnonymous": null,
+              "implementFrom": "RiskManagmentSystem.Controllers.Lookups.BusinessDomainController"
+            },
+            "GetLookupListAsync": {
+              "uniqueName": "GetLookupListAsync",
+              "name": "GetLookupListAsync",
+              "httpMethod": "GET",
+              "url": "api/lookups/business-domains/lookup",
+              "supportedVersions": [],
+              "parametersOnMethod": [],
+              "parameters": [],
+              "returnValue": {
+                "type": "System.Collections.Generic.List<RiskManagmentSystem.Lookups.Dtos.BusinessDomainLookupDto>",
+                "typeSimple": "[RiskManagmentSystem.Lookups.Dtos.BusinessDomainLookupDto]"
+              },
+              "allowAnonymous": null,
+              "implementFrom": "RiskManagmentSystem.Controllers.Lookups.BusinessDomainController"
+            },
+            "GetAsyncById": {
+              "uniqueName": "GetAsyncById",
+              "name": "GetAsync",
+              "httpMethod": "GET",
+              "url": "api/lookups/business-domains/{id}",
+              "supportedVersions": [],
+              "parametersOnMethod": [
+                {
+                  "name": "id",
+                  "typeAsString": "System.Int32, System.Private.CoreLib",
+                  "type": "System.Int32",
+                  "typeSimple": "number",
+                  "isOptional": false,
+                  "defaultValue": null
+                }
+              ],
+              "parameters": [
+                {
+                  "nameOnMethod": "id",
+                  "name": "id",
+                  "jsonName": null,
+                  "type": "System.Int32",
+                  "typeSimple": "number",
+                  "isOptional": false,
+                  "defaultValue": null,
+                  "constraintTypes": [],
+                  "bindingSourceId": "Path",
+                  "descriptorName": ""
+                }
+              ],
+              "returnValue": {
+                "type": "RiskManagmentSystem.Lookups.Dtos.BusinessDomainDto",
+                "typeSimple": "RiskManagmentSystem.Lookups.Dtos.BusinessDomainDto"
+              },
+              "allowAnonymous": null,
+              "implementFrom": "RiskManagmentSystem.Controllers.Lookups.BusinessDomainController"
+            }
+          }
+        },
+        "RiskManagmentSystem.Lookups.BusinessDomainAppService": {
+          "controllerName": "BusinessDomain",
+          "controllerGroupName": "BusinessDomain",
+          "isRemoteService": true,
+          "isIntegrationService": false,
+          "apiVersion": null,
+          "type": "RiskManagmentSystem.Lookups.BusinessDomainAppService",
+          "interfaces": [
+            {
+              "type": "RiskManagmentSystem.Lookups.IBusinessDomainAppService",
+              "name": "IBusinessDomainAppService",
+              "methods": [
+                {
+                  "name": "GetListAsync",
+                  "parametersOnMethod": [],
+                  "returnValue": {
+                    "type": "System.Collections.Generic.List<RiskManagmentSystem.Lookups.Dtos.BusinessDomainDto>",
+                    "typeSimple": "[RiskManagmentSystem.Lookups.Dtos.BusinessDomainDto]"
+                  }
+                },
+                {
+                  "name": "GetLookupListAsync",
+                  "parametersOnMethod": [],
+                  "returnValue": {
+                    "type": "System.Collections.Generic.List<RiskManagmentSystem.Lookups.Dtos.BusinessDomainLookupDto>",
+                    "typeSimple": "[RiskManagmentSystem.Lookups.Dtos.BusinessDomainLookupDto]"
+                  }
+                },
+                {
+                  "name": "GetAsync",
+                  "parametersOnMethod": [
+                    {
+                      "name": "id",
+                      "typeAsString": "System.Int32, System.Private.CoreLib",
+                      "type": "System.Int32",
+                      "typeSimple": "number",
+                      "isOptional": false,
+                      "defaultValue": null
+                    }
+                  ],
+                  "returnValue": {
+                    "type": "RiskManagmentSystem.Lookups.Dtos.BusinessDomainDto",
+                    "typeSimple": "RiskManagmentSystem.Lookups.Dtos.BusinessDomainDto"
+                  }
+                }
+              ]
+            }
+          ],
+          "actions": {
+            "GetListAsync": {
+              "uniqueName": "GetListAsync",
+              "name": "GetListAsync",
+              "httpMethod": "GET",
+              "url": "api/app/business-domain",
+              "supportedVersions": [],
+              "parametersOnMethod": [],
+              "parameters": [],
+              "returnValue": {
+                "type": "System.Collections.Generic.List<RiskManagmentSystem.Lookups.Dtos.BusinessDomainDto>",
+                "typeSimple": "[RiskManagmentSystem.Lookups.Dtos.BusinessDomainDto]"
+              },
+              "allowAnonymous": null,
+              "implementFrom": "RiskManagmentSystem.Lookups.IBusinessDomainAppService"
+            },
+            "GetLookupListAsync": {
+              "uniqueName": "GetLookupListAsync",
+              "name": "GetLookupListAsync",
+              "httpMethod": "GET",
+              "url": "api/app/business-domain/lookup-list",
+              "supportedVersions": [],
+              "parametersOnMethod": [],
+              "parameters": [],
+              "returnValue": {
+                "type": "System.Collections.Generic.List<RiskManagmentSystem.Lookups.Dtos.BusinessDomainLookupDto>",
+                "typeSimple": "[RiskManagmentSystem.Lookups.Dtos.BusinessDomainLookupDto]"
+              },
+              "allowAnonymous": null,
+              "implementFrom": "RiskManagmentSystem.Lookups.IBusinessDomainAppService"
+            },
+            "GetAsyncById": {
+              "uniqueName": "GetAsyncById",
+              "name": "GetAsync",
+              "httpMethod": "GET",
+              "url": "api/app/business-domain/{id}",
+              "supportedVersions": [],
+              "parametersOnMethod": [
+                {
+                  "name": "id",
+                  "typeAsString": "System.Int32, System.Private.CoreLib",
+                  "type": "System.Int32",
+                  "typeSimple": "number",
+                  "isOptional": false,
+                  "defaultValue": null
+                }
+              ],
+              "parameters": [
+                {
+                  "nameOnMethod": "id",
+                  "name": "id",
+                  "jsonName": null,
+                  "type": "System.Int32",
+                  "typeSimple": "number",
+                  "isOptional": false,
+                  "defaultValue": null,
+                  "constraintTypes": [],
+                  "bindingSourceId": "Path",
+                  "descriptorName": ""
+                }
+              ],
+              "returnValue": {
+                "type": "RiskManagmentSystem.Lookups.Dtos.BusinessDomainDto",
+                "typeSimple": "RiskManagmentSystem.Lookups.Dtos.BusinessDomainDto"
+              },
+              "allowAnonymous": null,
+              "implementFrom": "RiskManagmentSystem.Lookups.IBusinessDomainAppService"
+            }
+          }
+        },
         "RiskManagmentSystem.Risks.ActionAttachmentController": {
           "controllerName": "ActionAttachment",
           "controllerGroupName": null,
@@ -2658,10 +2854,10 @@
                   "name": "GetListByBusinessDomainAsync",
                   "parametersOnMethod": [
                     {
-                      "name": "businessDomain",
-                      "typeAsString": "System.String, System.Private.CoreLib",
-                      "type": "System.String",
-                      "typeSimple": "string",
+                      "name": "businessDomainId",
+                      "typeAsString": "System.Int32, System.Private.CoreLib",
+                      "type": "System.Int32",
+                      "typeSimple": "number",
                       "isOptional": false,
                       "defaultValue": null
                     }
@@ -3031,33 +3227,33 @@
               "allowAnonymous": null,
               "implementFrom": "RiskManagmentSystem.Risks.IRiskAppService"
             },
-            "GetListByBusinessDomainAsyncByBusinessDomain": {
-              "uniqueName": "GetListByBusinessDomainAsyncByBusinessDomain",
+            "GetListByBusinessDomainAsyncByBusinessDomainId": {
+              "uniqueName": "GetListByBusinessDomainAsyncByBusinessDomainId",
               "name": "GetListByBusinessDomainAsync",
               "httpMethod": "GET",
-              "url": "api/app/risk/by-business-domain",
+              "url": "api/app/risk/by-business-domain/{businessDomainId}",
               "supportedVersions": [],
               "parametersOnMethod": [
                 {
-                  "name": "businessDomain",
-                  "typeAsString": "System.String, System.Private.CoreLib",
-                  "type": "System.String",
-                  "typeSimple": "string",
+                  "name": "businessDomainId",
+                  "typeAsString": "System.Int32, System.Private.CoreLib",
+                  "type": "System.Int32",
+                  "typeSimple": "number",
                   "isOptional": false,
                   "defaultValue": null
                 }
               ],
               "parameters": [
                 {
-                  "nameOnMethod": "businessDomain",
-                  "name": "businessDomain",
+                  "nameOnMethod": "businessDomainId",
+                  "name": "businessDomainId",
                   "jsonName": null,
-                  "type": "System.String",
-                  "typeSimple": "string",
+                  "type": "System.Int32",
+                  "typeSimple": "number",
                   "isOptional": false,
                   "defaultValue": null,
-                  "constraintTypes": null,
-                  "bindingSourceId": "ModelBinding",
+                  "constraintTypes": [],
+                  "bindingSourceId": "Path",
                   "descriptorName": ""
                 }
               ],
@@ -6332,6 +6528,84 @@
       "genericArguments": null,
       "properties": null
     },
+    "RiskManagmentSystem.Lookups.Dtos.BusinessDomainDto": {
+      "baseType": "Volo.Abp.Application.Dtos.EntityDto<System.Int32>",
+      "isEnum": false,
+      "enumNames": null,
+      "enumValues": null,
+      "genericArguments": null,
+      "properties": [
+        {
+          "name": "Name",
+          "jsonName": null,
+          "type": "System.String",
+          "typeSimple": "string",
+          "isRequired": false,
+          "minLength": null,
+          "maxLength": null,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        },
+        {
+          "name": "Description",
+          "jsonName": null,
+          "type": "System.String",
+          "typeSimple": "string",
+          "isRequired": false,
+          "minLength": null,
+          "maxLength": null,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        },
+        {
+          "name": "IsActive",
+          "jsonName": null,
+          "type": "System.Boolean",
+          "typeSimple": "boolean",
+          "isRequired": false,
+          "minLength": null,
+          "maxLength": null,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        }
+      ]
+    },
+    "RiskManagmentSystem.Lookups.Dtos.BusinessDomainLookupDto": {
+      "baseType": null,
+      "isEnum": false,
+      "enumNames": null,
+      "enumValues": null,
+      "genericArguments": null,
+      "properties": [
+        {
+          "name": "Id",
+          "jsonName": null,
+          "type": "System.Int32",
+          "typeSimple": "number",
+          "isRequired": false,
+          "minLength": null,
+          "maxLength": null,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        },
+        {
+          "name": "Name",
+          "jsonName": null,
+          "type": "System.String",
+          "typeSimple": "string",
+          "isRequired": false,
+          "minLength": null,
+          "maxLength": null,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        }
+      ]
+    },
     "RiskManagmentSystem.Risks.ActionAttachmentDto": {
       "baseType": "Volo.Abp.Application.Dtos.EntityDto<System.Int32>",
       "isEnum": false,
@@ -8305,13 +8579,13 @@
           "regex": null
         },
         {
-          "name": "BusinessDomain",
+          "name": "BusinessDomainId",
           "jsonName": null,
-          "type": "System.String",
-          "typeSimple": "string",
+          "type": "System.Int32",
+          "typeSimple": "number",
           "isRequired": true,
-          "minLength": 0,
-          "maxLength": 100,
+          "minLength": null,
+          "maxLength": null,
           "minimum": null,
           "maximum": null,
           "regex": null
@@ -8947,7 +9221,19 @@
           "regex": null
         },
         {
-          "name": "BusinessDomain",
+          "name": "BusinessDomainId",
+          "jsonName": null,
+          "type": "System.Int32",
+          "typeSimple": "number",
+          "isRequired": false,
+          "minLength": null,
+          "maxLength": null,
+          "minimum": null,
+          "maximum": null,
+          "regex": null
+        },
+        {
+          "name": "BusinessDomainName",
           "jsonName": null,
           "type": "System.String",
           "typeSimple": "string",
@@ -9619,11 +9905,11 @@
           "regex": null
         },
         {
-          "name": "BusinessDomain",
+          "name": "BusinessDomainId",
           "jsonName": null,
-          "type": "System.String",
-          "typeSimple": "string",
-          "isRequired": false,
+          "type": "System.Int32",
+          "typeSimple": "number",
+          "isRequired": true,
           "minLength": null,
           "maxLength": null,
           "minimum": null,

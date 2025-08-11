@@ -3,6 +3,8 @@ import { FormBuilder, FormGroup, Validators, FormsModule, ReactiveFormsModule } 
 import { CommonModule } from '@angular/common';
 import { RiskFormService } from '../../services/risk-form.service';
 import { RiskStatus, riskStatusOptions } from '../../../proxy/risk-managment-system/domain/shared/enums/risk-status.enum';
+import { BusinessDomainService } from '../../../proxy/risk-managment-system/lookups/business-domain.service';
+import { BusinessDomainLookupDto } from '../../../proxy/risk-managment-system/lookups/dtos/models';
 
 @Component({
   selector: 'app-basic-information',
@@ -17,19 +19,20 @@ export class BasicInformationComponent implements OnInit {
   private isUpdatingFromService = false; // Guard to prevent circular updates
   
   // Dropdown options
-  businessDomains = ['Finance', 'Healthcare', 'IT', 'Operations', 'Sales', 'Marketing', 'HR', 'Legal'];
+  businessDomains: BusinessDomainLookupDto[] = [];
   riskStatusOptions = riskStatusOptions;
   RiskStatus = RiskStatus;
 
   constructor(
     private fb: FormBuilder,
-    private riskFormService: RiskFormService
+    private riskFormService: RiskFormService,
+    private businessDomainService: BusinessDomainService
   ) {
     this.basicInfoForm = this.fb.group({
       riskId: ['', [Validators.required, Validators.pattern(/^[A-Z]{2,3}-\d{4}$/)]],
       status: [RiskStatus.Identified, Validators.required],
       description: ['', [Validators.required, Validators.minLength(10)]],
-      businessDomain: ['', Validators.required],
+      businessDomainId: ['', Validators.required],
       riskOwner: ['', [Validators.required, Validators.email]],
       reviewDate: ['', Validators.required],
       triggerEventInput: ['']
@@ -37,6 +40,9 @@ export class BasicInformationComponent implements OnInit {
   }
 
   ngOnInit() {
+    // Load business domains from backend
+    this.loadBusinessDomains();
+    
     // Load existing form data if available
     this.riskFormService.riskFormData$.subscribe(data => {
       if (data.riskId) {
@@ -45,7 +51,7 @@ export class BasicInformationComponent implements OnInit {
           riskId: data.riskId,
           status: data.status,
           description: data.description,
-          businessDomain: data.businessDomain,
+          businessDomainId: data.businessDomainId,
           riskOwner: data.riskOwner,
           reviewDate: data.reviewDate
         });
@@ -82,7 +88,7 @@ export class BasicInformationComponent implements OnInit {
       riskId: formValue.riskId,
       status: formValue.status,
       description: formValue.description,
-      businessDomain: formValue.businessDomain,
+      businessDomainId: formValue.businessDomainId,
       riskOwner: formValue.riskOwner,
       reviewDate: formValue.reviewDate,
       triggerEvents: this.triggerEvents
@@ -107,5 +113,18 @@ export class BasicInformationComponent implements OnInit {
   get riskOwnerInvalid() {
     const control = this.basicInfoForm.get('riskOwner');
     return control?.invalid && (control?.dirty || control?.touched);
+  }
+
+  private loadBusinessDomains() {
+    this.businessDomainService.getLookupList().subscribe({
+      next: (domains) => {
+        this.businessDomains = domains;
+      },
+      error: (error) => {
+        console.error('Error loading business domains:', error);
+        // Fallback to empty array or show error message
+        this.businessDomains = [];
+      }
+    });
   }
 }

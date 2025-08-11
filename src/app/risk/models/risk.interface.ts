@@ -11,7 +11,8 @@ export interface Risk {
   status: string;
   statusColor: 'open' | 'mitigated' | 'closed';
   reviewDate: string;
-  businessDomain?: string; // Business domain for the risk
+  businessDomainId?: number; // Business domain ID from the backend
+  businessDomainName?: string; // Business domain name from the backend
   initialRisk?: string;
   residualRisk?: string;
   initialRiskColor?: 'critical' | 'high' | 'medium' | 'low';

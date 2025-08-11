@@ -10,7 +10,7 @@ export interface RiskFormData {
   riskId: string;
   status: RiskStatus;
   description: string;
-  businessDomain: string;
+  businessDomainId: number;
   riskOwner: string;
   reviewDate?: string;
   triggerEvents: string[];
@@ -90,7 +90,7 @@ export class RiskFormService {
       riskId: formData.riskId!,
       status: formData.status!,
       description: formData.description!,
-      businessDomain: formData.businessDomain!,
+      businessDomainId: formData.businessDomainId!,
       riskOwner: formData.riskOwner!,
       reviewDate: formData.reviewDate,
       triggerEvents: formData.triggerEvents || [],
@@ -109,7 +109,7 @@ export class RiskFormService {
       data.riskId &&
       data.status &&
       data.description &&
-      data.businessDomain &&
+      data.businessDomainId &&
       data.riskOwner &&
       data.reviewDate &&
       data.triggerEvents && 
@@ -137,7 +137,7 @@ export class RiskFormService {
       data.riskId &&
       data.status &&
       data.description &&
-      data.businessDomain &&
+      data.businessDomainId &&
       data.riskOwner &&
       data.reviewDate &&
       data.triggerEvents && 

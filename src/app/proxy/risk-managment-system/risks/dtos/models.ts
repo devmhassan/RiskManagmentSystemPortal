@@ -226,7 +226,7 @@ export interface CreateRiskDto {
   riskId: string;
   status: RiskStatus;
   description: string;
-  businessDomain: string;
+  businessDomainId: number;
   riskOwner: string;
   reviewDate?: string;
   triggerEvents: string[];
@@ -274,7 +274,8 @@ export interface RiskDto extends FullAuditedEntityDto<number> {
   riskId?: string;
   status?: RiskStatus;
   description?: string;
-  businessDomain?: string;
+  businessDomainId: number;
+  businessDomainName?: string;
   riskOwner?: string;
   reviewDate?: string;
   triggerEvents: string[];
@@ -328,7 +329,7 @@ export interface UpdateRiskDto {
   riskId: string;
   status: RiskStatus;
   description: string;
-  businessDomain?: string;
+  businessDomainId: number;
   riskOwner?: string;
   reviewDate?: string;
   initialLikelihood?: Likelihood;

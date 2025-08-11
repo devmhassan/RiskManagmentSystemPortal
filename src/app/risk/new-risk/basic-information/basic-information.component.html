@@ -35,12 +35,12 @@
     </div>
 
     <div class="form-group">
-      <label for="businessDomain">Business Domain <span class="required">*</span></label>
-      <select id="businessDomain" formControlName="businessDomain" class="form-control">
+      <label for="businessDomainId">Business Domain <span class="required">*</span></label>
+      <select id="businessDomainId" formControlName="businessDomainId" class="form-control">
         <option value="">Select a business domain</option>
-        <option *ngFor="let domain of businessDomains" [value]="domain">{{domain}}</option>
+        <option *ngFor="let domain of businessDomains" [value]="domain.id">{{domain.name}}</option>
       </select>
-      <div class="error-message" *ngIf="basicInfoForm.get('businessDomain')?.touched && basicInfoForm.get('businessDomain')?.errors?.['required']">
+      <div class="error-message" *ngIf="basicInfoForm.get('businessDomainId')?.touched && basicInfoForm.get('businessDomainId')?.errors?.['required']">
         Business domain is required
       </div>
     </div>

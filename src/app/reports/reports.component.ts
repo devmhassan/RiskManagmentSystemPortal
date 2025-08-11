@@ -5,6 +5,8 @@ import { RiskOverviewComponent } from './components/risk-overview/risk-overview.
 import { RiskTrendsComponent } from './components/risk-trends/risk-trends.component';
 import { ActionStatusComponent } from './components/action-status/action-status.component';
 import { DepartmentPerformanceComponent } from './components/department-performance/department-performance.component';
+import { BusinessDomainService } from '../proxy/risk-managment-system/lookups/business-domain.service';
+import { BusinessDomainLookupDto } from '../proxy/risk-managment-system/lookups/dtos/models';
 
 @Component({
   selector: 'app-reports',
@@ -24,6 +26,7 @@ export class ReportsComponent {
   selectedReport: string = 'Risk Overview';
   timeFrame: string = 'Last 30 Days';
   businessUnit: string = 'All Business Units';
+  businessUnitOptions: { value: string; label: string }[] = [];
 
   reportOptions = [
     { value: 'Risk Overview', label: 'Risk Overview' },
@@ -40,14 +43,9 @@ export class ReportsComponent {
     { value: 'Last Year', label: 'Last Year' }
   ];
 
-  businessUnitOptions = [
-    { value: 'All Business Units', label: 'All Business Units' },
-    { value: 'IT Department', label: 'IT Department' },
-    { value: 'Security', label: 'Security' },
-    { value: 'Finance', label: 'Finance' },
-    { value: 'Operations', label: 'Operations' },
-    { value: 'Human Resources', label: 'Human Resources' }
-  ];
+  constructor(private businessDomainService: BusinessDomainService) {
+    this.loadBusinessUnits();
+  }
 
   onReportChange(report: string): void {
     this.selectedReport = report;
@@ -64,5 +62,26 @@ export class ReportsComponent {
   exportReport(): void {
     // Implement export functionality
     console.log('Exporting report:', this.selectedReport);
+  }
+
+  private loadBusinessUnits(): void {
+    this.businessUnitOptions = [{ value: 'All Business Units', label: 'All Business Units' }];
+    
+    this.businessDomainService.getLookupList().subscribe({
+      next: (domains) => {
+        const domainOptions = domains.map(domain => ({ 
+          value: domain.name || '', 
+          label: domain.name || '' 
+        }));
+        this.businessUnitOptions = [
+          { value: 'All Business Units', label: 'All Business Units' },
+          ...domainOptions
+        ];
+      },
+      error: (error) => {
+        console.error('Error loading business domains:', error);
+        // Keep the default "All Business Units" option if loading fails
+      }
+    });
   }
 }

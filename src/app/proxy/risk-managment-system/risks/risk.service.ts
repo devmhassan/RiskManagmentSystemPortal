@@ -86,11 +86,10 @@ export class RiskService {
     { apiName: this.apiName,...config });
   
 
-  getListByBusinessDomain = (businessDomain: string, config?: Partial<Rest.Config>) =>
+  getListByBusinessDomain = (businessDomainId: number, config?: Partial<Rest.Config>) =>
     this.restService.request<any, RiskDto[]>({
       method: 'GET',
-      url: '/api/app/risk/by-business-domain',
-      params: { businessDomain },
+      url: `/api/app/risk/by-business-domain/${businessDomainId}`,
     },
     { apiName: this.apiName,...config });
   
