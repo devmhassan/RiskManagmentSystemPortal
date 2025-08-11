@@ -29,7 +29,7 @@ export class BasicInformationComponent implements OnInit {
     private businessDomainService: BusinessDomainService
   ) {
     this.basicInfoForm = this.fb.group({
-      riskId: ['', [Validators.required, Validators.pattern(/^[A-Z]{2,3}-\d{4}$/)]],
+      riskId: ['', Validators.required],
       status: [RiskStatus.Identified, Validators.required],
       description: ['', [Validators.required, Validators.minLength(10)]],
       businessDomainId: ['', Validators.required],

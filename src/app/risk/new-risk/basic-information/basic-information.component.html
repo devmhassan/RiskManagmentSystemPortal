@@ -7,10 +7,9 @@
       <div class="form-group">
         <label for="riskId">Risk ID <span class="required">*</span></label>
         <input id="riskId" type="text" formControlName="riskId" class="form-control" 
-               placeholder="e.g., IT-2024">
+               maxlength="10" placeholder="e.g., IT-2024">
         <div class="error-message" *ngIf="riskIdInvalid">
           <span *ngIf="basicInfoForm.get('riskId')?.errors?.['required']">Risk ID is required</span>
-          <span *ngIf="basicInfoForm.get('riskId')?.errors?.['pattern']">Risk ID must follow pattern: XX-YYYY (e.g., IT-2024)</span>
         </div>
       </div>
 
