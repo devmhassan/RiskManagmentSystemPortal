@@ -29,6 +29,7 @@ import { finalize } from 'rxjs/operators';
   ]
 })
 export class RiskDetailComponent implements OnInit {
+  id: number = 0;
   riskId: string = '';
   risk: Risk | null = null;
   activeTab: string = 'bowtie';
@@ -317,12 +318,13 @@ export class RiskDetailComponent implements OnInit {
   ngOnInit(): void {
     this.route.params.subscribe(params => {
       this.riskId = params['id'];
+      this.id = parseInt(params['id'], 10); // Convert string route parameter to number
       this.loadRiskData();
     });
   }
 
   loadRiskData(): void {
-    if (!this.riskId) {
+    if (!this.riskId || !this.id) {
       this.loadError = 'No risk ID provided';
       return;
     }
@@ -330,7 +332,7 @@ export class RiskDetailComponent implements OnInit {
     this.isLoading = true;
     this.loadError = null;
 
-    this.riskService.getByRiskId(this.riskId)
+    this.riskService.get(this.id)
       .pipe(
         finalize(() => {
           this.isLoading = false;
