@@ -25,6 +25,11 @@
 
   .form-group {
     flex: 1;
+    
+    // For half-width columns (col-6 equivalent)
+    &.col-6 {
+      flex: 0 0 calc(50% - 25px); // 50% width minus half the gap
+    }
   }
 }
 

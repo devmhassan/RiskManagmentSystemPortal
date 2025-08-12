@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, FormsModule, ReactiveFormsModule, AbstractControl, ValidationErrors } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { RiskFormService } from '../../services/risk-form.service';
 import { RiskStatus, riskStatusOptions } from '../../../proxy/risk-managment-system/domain/shared/enums/risk-status.enum';
@@ -17,6 +17,7 @@ export class BasicInformationComponent implements OnInit {
   basicInfoForm: FormGroup;
   triggerEvents: string[] = [];
   private isUpdatingFromService = false; // Guard to prevent circular updates
+  minDate: string; // Minimum date for the date picker
   
   // Dropdown options
   businessDomains: BusinessDomainLookupDto[] = [];
@@ -28,13 +29,16 @@ export class BasicInformationComponent implements OnInit {
     private riskFormService: RiskFormService,
     private businessDomainService: BusinessDomainService
   ) {
+    // Set minimum date to today
+    this.minDate = new Date().toISOString().split('T')[0];
+    
     this.basicInfoForm = this.fb.group({
       riskId: ['', Validators.required],
       status: [RiskStatus.Identified, Validators.required],
       description: ['', [Validators.required, Validators.minLength(10), Validators.maxLength(500)]],
       businessDomainId: ['', Validators.required],
       riskOwner: ['', [Validators.required, Validators.email]],
-      reviewDate: ['', Validators.required],
+      reviewDate: ['', [Validators.required, this.pastDateValidator]],
       triggerEventInput: ['']
     });
   }
@@ -117,6 +121,28 @@ export class BasicInformationComponent implements OnInit {
   get riskOwnerInvalid() {
     const control = this.basicInfoForm.get('riskOwner');
     return control?.invalid && (control?.dirty || control?.touched);
+  }
+
+  get reviewDateInvalid() {
+    const control = this.basicInfoForm.get('reviewDate');
+    return control?.invalid && (control?.dirty || control?.touched);
+  }
+
+  // Custom validator for past dates
+  pastDateValidator(control: AbstractControl): ValidationErrors | null {
+    if (!control.value) {
+      return null; // Don't validate empty values here, let required validator handle it
+    }
+
+    const selectedDate = new Date(control.value);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Reset time to compare only dates
+
+    if (selectedDate < today) {
+      return { pastDate: true };
+    }
+
+    return null;
   }
 
   private loadBusinessDomains() {
