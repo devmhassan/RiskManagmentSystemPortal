@@ -26,10 +26,11 @@
     <div class="form-group">
       <label for="description">Risk Description <span class="required">*</span></label>
       <textarea id="description" formControlName="description" class="form-control" rows="3" 
-                placeholder="Describe the risk in detail..."></textarea>
+                maxlength="500" placeholder="Describe the risk in detail..."></textarea>
       <div class="error-message" *ngIf="descriptionInvalid">
         <span *ngIf="basicInfoForm.get('description')?.errors?.['required']">Risk description is required</span>
         <span *ngIf="basicInfoForm.get('description')?.errors?.['minlength']">Description must be at least 10 characters</span>
+        <span *ngIf="basicInfoForm.get('description')?.errors?.['maxlength']">Description cannot exceed 500 characters</span>
       </div>
     </div>
 

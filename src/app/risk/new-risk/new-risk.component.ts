@@ -22,7 +22,7 @@ import { finalize } from 'rxjs/operators';
   ]
 })
 export class NewRiskComponent implements OnInit {
-  currentStep = 2;
+  currentStep = 1;
   totalSteps = 3;
   isLoading = false;
 

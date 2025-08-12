@@ -31,7 +31,7 @@ export class BasicInformationComponent implements OnInit {
     this.basicInfoForm = this.fb.group({
       riskId: ['', Validators.required],
       status: [RiskStatus.Identified, Validators.required],
-      description: ['', [Validators.required, Validators.minLength(10)]],
+      description: ['', [Validators.required, Validators.minLength(10), Validators.maxLength(500)]],
       businessDomainId: ['', Validators.required],
       riskOwner: ['', [Validators.required, Validators.email]],
       reviewDate: ['', Validators.required],
