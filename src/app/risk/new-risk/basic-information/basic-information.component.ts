@@ -86,12 +86,16 @@ export class BasicInformationComponent implements OnInit {
     const formValue = this.basicInfoForm.value;
     this.riskFormService.updateBasicInformation({
       riskId: formValue.riskId,
-      status: formValue.status,
+      status: formValue.status || RiskStatus.Identified, // Ensure status always has a value
       description: formValue.description,
       businessDomainId: formValue.businessDomainId,
       riskOwner: formValue.riskOwner,
       reviewDate: formValue.reviewDate,
-      triggerEvents: this.triggerEvents
+      triggerEvents: this.triggerEvents,
+      // Ensure residual fields always send 0
+      residualLikelihood: 0,
+      residualSeverity: 0,
+      residualRiskLevel: 0
     });
   }
 

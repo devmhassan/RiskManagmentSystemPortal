@@ -59,11 +59,14 @@ export class RiskAssessmentComponent implements OnInit {
 
   private updateFormData() {
     const formValue = this.assessmentForm.value;
+    const residualRiskLevel = this.calculateRiskLevel(formValue.residualLikelihood, formValue.residualSeverity);
+    
     this.riskFormService.updateRiskAssessment({
       initialLikelihood: formValue.initialLikelihood,
       initialSeverity: formValue.initialSeverity,
-      residualLikelihood: formValue.residualLikelihood,
-      residualSeverity: formValue.residualSeverity
+      residualLikelihood: formValue.residualLikelihood || 0, // Ensure 0 as default
+      residualSeverity: formValue.residualSeverity || 0, // Ensure 0 as default
+      residualRiskLevel: residualRiskLevel
     });
   }
 

@@ -18,8 +18,9 @@ export interface RiskFormData {
   // Risk Assessment
   initialLikelihood: Likelihood;
   initialSeverity: Severity;
-  residualLikelihood: Likelihood;
-  residualSeverity: Severity;
+  residualLikelihood: Likelihood | number;
+  residualSeverity: Severity | number;
+  residualRiskLevel?: number;
   
   // Bowtie Components
   causes: CreateCauseDto[];
@@ -44,7 +45,8 @@ export class RiskFormService {
       initialLikelihood: Likelihood.Possible,
       initialSeverity: Severity.Moderate,
       residualLikelihood: Likelihood.Possible,
-      residualSeverity: Severity.Moderate,
+      residualSeverity:  Severity.Moderate,
+      residualRiskLevel: this.calculateResidualRiskLevel(0, 0),
       causes: [],
       consequences: []
     };
@@ -79,6 +81,11 @@ export class RiskFormService {
     return this.riskFormDataSubject.value;
   }
 
+  // Helper method to calculate residual risk level
+  calculateResidualRiskLevel(likelihood: number, severity: number): number {
+    return likelihood * severity;
+  }
+
   convertToCreateRiskDto(): CreateRiskDto {
     const formData = this.riskFormDataSubject.value;
     
@@ -86,9 +93,13 @@ export class RiskFormService {
       throw new Error('Form data is incomplete');
     }
 
+    // Calculate residual risk level using helper method
+    const residualLikelihood = (formData.residualLikelihood as any) || 0;
+    const residualSeverity = (formData.residualSeverity as any) || 0;
+
     return {
       riskId: formData.riskId!,
-      status: formData.status!,
+      status: formData.status || RiskStatus.Identified, // Ensure status always has a value
       description: formData.description!,
       businessDomainId: formData.businessDomainId!,
       riskOwner: formData.riskOwner!,
@@ -96,8 +107,8 @@ export class RiskFormService {
       triggerEvents: formData.triggerEvents || [],
       initialLikelihood: formData.initialLikelihood!,
       initialSeverity: formData.initialSeverity!,
-      residualLikelihood: formData.residualLikelihood!,
-      residualSeverity: formData.residualSeverity!,
+      residualLikelihood: residualLikelihood,
+      residualSeverity: residualSeverity,
       causes: formData.causes || [],
       consequences: formData.consequences || []
     };
@@ -107,7 +118,7 @@ export class RiskFormService {
     // Check basic fields
     const basicFieldsValid = !!(
       data.riskId &&
-      data.status &&
+      (data.status || data.status === RiskStatus.Identified) && // Handle status defaulting
       data.description &&
       data.businessDomainId &&
       data.riskOwner &&
@@ -116,8 +127,8 @@ export class RiskFormService {
       data.triggerEvents.length > 0 &&
       data.initialLikelihood &&
       data.initialSeverity &&
-      data.residualLikelihood &&
-      data.residualSeverity
+      (data.residualLikelihood !== undefined) && // Accept 0 as valid
+      (data.residualSeverity !== undefined) // Accept 0 as valid
     );
 
     // Check bowtie components
@@ -150,8 +161,8 @@ export class RiskFormService {
     return !!(
       data.initialLikelihood &&
       data.initialSeverity &&
-      data.residualLikelihood &&
-      data.residualSeverity
+      (data.residualLikelihood !== undefined) && // Accept 0 as valid
+      (data.residualSeverity !== undefined) // Accept 0 as valid
     );
   }
 
