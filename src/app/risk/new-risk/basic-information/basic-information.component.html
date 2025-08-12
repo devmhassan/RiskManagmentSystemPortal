@@ -73,7 +73,7 @@
       <div class="trigger-events-container">
         <div class="trigger-input-group">
           <input id="triggerEventInput" type="text" formControlName="triggerEventInput" class="form-control"
-                 placeholder="Event that would trigger this risk...">
+                 maxlength="100" placeholder="Event that would trigger this risk...">
           <button type="button" class="btn-add" (click)="addTriggerEvent()" 
                   [disabled]="!basicInfoForm.get('triggerEventInput')?.value?.trim()">
             Add
