@@ -95,7 +95,8 @@ export class BowtieComponentsComponent implements OnInit {
     return this.fb.group({
       description: ['', [Validators.required, Validators.minLength(5)]],
       cost: [0, [Validators.required, Validators.min(0)]],
-      priority: [ActionPriority.Medium, Validators.required]
+      priority: [ActionPriority.Medium, Validators.required],
+      dueDate: ['']
     });
   }
 
@@ -221,7 +222,8 @@ export class BowtieComponentsComponent implements OnInit {
         preventionActions: cause.preventionActions.map((action: any) => ({
           description: action.description,
           cost: action.cost,
-          priority: action.priority
+          priority: action.priority,
+          dueDate: action.dueDate
         }))
       }));
 

@@ -220,6 +220,7 @@ export interface CreatePreventionActionDto {
   description: string;
   cost: number;
   priority: ActionPriority;
+  dueDate?: string;
 }
 
 export interface CreateRiskDto {
