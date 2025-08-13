@@ -25,7 +25,7 @@ export class RiskMapperService {
       riskLevelColor: this.getRiskLevelColor(riskDto.residualRiskLevel),
       riskScore: riskDto.residualRiskLevel,
       owner: riskDto.riskOwner || '',
-      status: this.mapStatusToString(riskDto.status),
+      status: riskDto.status || RiskStatus.Identified,
       statusColor: this.getStatusColor(riskDto.status),
       reviewDate: riskDto.reviewDate || '',
       businessDomainId: riskDto.businessDomainId,
@@ -43,7 +43,7 @@ export class RiskMapperService {
   mapRiskToUpdateRiskDto(risk: Risk): UpdateRiskDto {
     return {
       riskId: risk.riskId,
-      status: this.mapStringToRiskStatus(risk.status),
+      status: risk.status,
       description: risk.description,
       businessDomainId: risk.businessDomainId || 0,
       riskOwner: risk.owner,
@@ -92,30 +92,16 @@ export class RiskMapperService {
     else return 'low';
   }
 
-  private mapStatusToString(status?: RiskStatus): string {
+  private getStatusColor(status?: RiskStatus): 'identified' | 'under-assessment' | 'assessed' | 'mitigating' | 'mitigated' | 'closed' | 'reopened' {
     switch (status) {
-      case RiskStatus.Identified: return 'Identified';
-      case RiskStatus.UnderAssessment: return 'Under Assessment';
-      case RiskStatus.Assessed: return 'Assessed';
-      case RiskStatus.Mitigating: return 'Mitigating';
-      case RiskStatus.Mitigated: return 'Mitigated';
-      case RiskStatus.Closed: return 'Closed';
-      case RiskStatus.Reopened: return 'Reopened';
-      default: return 'Open';
-    }
-  }
-
-  private getStatusColor(status?: RiskStatus): 'open' | 'mitigated' | 'closed' {
-    switch (status) {
-      case RiskStatus.Identified:
-      case RiskStatus.UnderAssessment:
-      case RiskStatus.Assessed:
-      case RiskStatus.Mitigating:
-      case RiskStatus.Reopened:
-        return 'open';
+      case RiskStatus.Identified: return 'identified';
+      case RiskStatus.UnderAssessment: return 'under-assessment';
+      case RiskStatus.Assessed: return 'assessed';
+      case RiskStatus.Mitigating: return 'mitigating';
       case RiskStatus.Mitigated: return 'mitigated';
       case RiskStatus.Closed: return 'closed';
-      default: return 'open';
+      case RiskStatus.Reopened: return 'reopened';
+      default: return 'identified';
     }
   }
 
@@ -227,19 +213,6 @@ export class RiskMapperService {
       case 'S4': return Severity.Major;
       case 'S5': return Severity.Critical;
       default: return Severity.Moderate;
-    }
-  }
-
-  private mapStringToRiskStatus(statusString: string): RiskStatus {
-    switch (statusString) {
-      case 'Identified': return RiskStatus.Identified;
-      case 'Under Assessment': return RiskStatus.UnderAssessment;
-      case 'Assessed': return RiskStatus.Assessed;
-      case 'Mitigating': return RiskStatus.Mitigating;
-      case 'Mitigated': return RiskStatus.Mitigated;
-      case 'Closed': return RiskStatus.Closed;
-      case 'Reopened': return RiskStatus.Reopened;
-      default: return RiskStatus.Identified;
     }
   }
 

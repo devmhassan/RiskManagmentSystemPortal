@@ -35,11 +35,14 @@
               id="status" 
               class="form-select"
               [(ngModel)]="risk.status"
-              (ngModelChange)="updateRisk()">
-              <option value="Open">Open</option>
-              <option value="In Progress">In Progress</option>
-              <option value="Mitigated">Mitigated</option>
-              <option value="Closed">Closed</option>
+              (ngModelChange)="updateRisk()"
+              [disabled]="!risk">
+              <option value="" disabled>Select Status</option>
+              <option *ngFor="let option of riskStatusOptions" 
+                      [value]="option.value"
+                      [selected]="risk?.status === option.value.toString()">
+                {{ option.key }}
+              </option>
             </select>
           </div>
         </div>

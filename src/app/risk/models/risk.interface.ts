@@ -1,3 +1,5 @@
+import { RiskStatus } from '../../proxy/risk-managment-system/domain/shared/enums/risk-status.enum';
+
 export interface Risk {
   riskId: string; // The string RiskId from the backend
   id?: number; // The integer ID from the database
@@ -8,8 +10,8 @@ export interface Risk {
   riskLevelColor: 'critical' | 'high' | 'medium' | 'low';
   riskScore: number;
   owner: string;
-  status: string;
-  statusColor: 'open' | 'mitigated' | 'closed';
+  status: RiskStatus;
+  statusColor: 'identified' | 'under-assessment' | 'assessed' | 'mitigating' | 'mitigated' | 'closed' | 'reopened';
   reviewDate: string;
   businessDomainId?: number; // Business domain ID from the backend
   businessDomainName?: string; // Business domain name from the backend

@@ -11,7 +11,7 @@ import { PreventionActionService } from '../../proxy/risk-managment-system/actio
 import { RiskCausesService } from '../../proxy/risk-managment-system/risks/risk-causes.service';
 import { RiskConsequencesService } from '../../proxy/risk-managment-system/risks/risk-consequences.service';
 import { RiskDto, CauseDto, ConsequenceDto, CreateMitigationActionForConsequenceDto, CreatePreventionActionForCauseDto, CreateCauseForRiskDto, CreateConsequenceForRiskDto, UpdateCauseForRiskDto, UpdateConsequenceForRiskDto, UpdateMitigationActionDto, UpdatePreventionActionDto } from '../../proxy/risk-managment-system/risks/dtos/models';
-import { ActionStatus, ActionPriority, Likelihood, Severity } from '../../proxy/risk-managment-system/domain/shared/enums';
+import { ActionStatus, ActionPriority, Likelihood, Severity, RiskStatus } from '../../proxy/risk-managment-system/domain/shared/enums';
 import { finalize } from 'rxjs/operators';
 
 @Component({
@@ -107,8 +107,8 @@ export class RiskDetailComponent implements OnInit {
     riskLevelColor: 'critical',
     riskScore: 25,
     owner: 'Security Team',
-    status: 'Open',
-    statusColor: 'open',
+    status: RiskStatus.Identified,
+    statusColor: 'identified',
     reviewDate: '2023-12-15',
     initialRisk: 'Critical (20)',
     residualRisk: 'High (8)',
@@ -384,7 +384,7 @@ export class RiskDetailComponent implements OnInit {
       riskLevelColor: this.getRiskLevelColor(riskDto.initialLikelihood, riskDto.initialSeverity),
       riskScore: riskDto.initialRiskLevel || 0,
       owner: riskDto.riskOwner || '',
-      status: this.mapStatusToString(riskDto.status),
+      status: riskDto.status || RiskStatus.Identified,
       statusColor: this.getStatusColor(riskDto.status),
       reviewDate: riskDto.reviewDate ? new Date(riskDto.reviewDate).toLocaleDateString() : '',
       initialRisk: `${this.calculateRiskLevel(riskDto.initialLikelihood, riskDto.initialSeverity)} (${riskDto.initialRiskLevel})`,
@@ -451,20 +451,6 @@ export class RiskDetailComponent implements OnInit {
   private mapSeverityToString(severity?: Severity): string {
     if (severity === undefined || severity === null) return 'S3';
     return `S${severity}`;
-  }
-
-  private mapStatusToString(status?: number): string {
-    // Assuming status enum: Identified=0, Assessed=1, Mitigated=2, etc.
-    const statusMap: { [key: number]: string } = {
-      0: 'Identified',
-      1: 'Assessed',
-      2: 'Mitigated',
-      3: 'Accepted',
-      4: 'Transferred',
-      5: 'Avoided',
-      6: 'Reviewed'
-    };
-    return statusMap[status || 0] || 'Open';
   }
 
   private mapActionStatusToString(status?: ActionStatus): string {
@@ -538,10 +524,27 @@ export class RiskDetailComponent implements OnInit {
     return level.toLowerCase() as 'critical' | 'high' | 'medium' | 'low';
   }
 
-  private getStatusColor(status?: number): 'open' | 'mitigated' | 'closed' {
-    if (status === 2) return 'mitigated'; // Mitigated
-    if (status === 1) return 'open'; // Assessed
-    return 'open'; // Default
+  private getStatusColor(status?: RiskStatus): 'identified' | 'under-assessment' | 'assessed' | 'mitigating' | 'mitigated' | 'closed' | 'reopened' {
+    if (!status) return 'identified';
+    
+    switch (status) {
+      case RiskStatus.Identified:
+        return 'identified';
+      case RiskStatus.UnderAssessment:
+        return 'under-assessment';
+      case RiskStatus.Assessed:
+        return 'assessed';
+      case RiskStatus.Mitigating:
+        return 'mitigating';
+      case RiskStatus.Mitigated:
+        return 'mitigated';
+      case RiskStatus.Closed:
+        return 'closed';
+      case RiskStatus.Reopened:
+        return 'reopened';
+      default:
+        return 'identified';
+    }
   }
 
   private calculatePriorityFromLikelihoodSeverity(likelihood?: Likelihood, severity?: Severity): string {

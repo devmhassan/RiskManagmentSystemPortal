@@ -183,7 +183,7 @@ export class DashboardComponent implements OnInit {
       riskLevelColor: this.getRiskLevelColor(dto.residualRiskLevel || dto.initialRiskLevel),
       riskScore: dto.residualRiskLevel || dto.initialRiskLevel,
       owner: dto.riskOwner || 'Unassigned',
-      status: this.getRiskStatusText(dto.status),
+      status: dto.status || RiskStatus.Identified,
       statusColor: this.getRiskStatusColor(dto.status),
       reviewDate: dto.reviewDate ? new Date(dto.reviewDate).toISOString().split('T')[0] : ''
     };
@@ -236,22 +236,26 @@ export class DashboardComponent implements OnInit {
     }
   }
 
-  private getRiskStatusColor(status?: RiskStatus): 'open' | 'mitigated' | 'closed' {
-    if (!status) return 'open';
+  private getRiskStatusColor(status?: RiskStatus): 'identified' | 'under-assessment' | 'assessed' | 'mitigating' | 'mitigated' | 'closed' | 'reopened' {
+    if (!status) return 'identified';
     
     switch (status) {
       case RiskStatus.Identified:
+        return 'identified';
       case RiskStatus.UnderAssessment:
+        return 'under-assessment';
       case RiskStatus.Assessed:
+        return 'assessed';
       case RiskStatus.Mitigating:
-      case RiskStatus.Reopened:
-        return 'open';
+        return 'mitigating';
       case RiskStatus.Mitigated:
         return 'mitigated';
       case RiskStatus.Closed:
         return 'closed';
+      case RiskStatus.Reopened:
+        return 'reopened';
       default:
-        return 'open';
+        return 'identified';
     }
   }
 
